@@ -53,7 +53,7 @@ p2<-ggplot(merge_water_viscous_sub_tertiles, aes(x = step, y = variable, fill = 
 
 
 # bwplot               
-png(filename=paste(output_dir,"Normalized_Discrete_Performance.png",sep=""), width = 15, height = 30, res=600, units = "cm")  
+png(filename=paste(output_dir,"Normalized_Discrete_Performance_P47_3500RPM_Glycerin_Viscosity_128.png",sep=""), width = 15, height = 30, res=600, units = "cm")  
   # Plot the bayesian network graph
   ggarrange(p1, p2, labels = c("A", "B"),    ncol = 1, nrow = 2)
 dev.off()
