@@ -36,7 +36,7 @@ colnames(merge_water_viscous_plot)<-c("n","BHP","H","step")
 merge_water_viscous_sub_melt<-reshape2::melt(merge_water_viscous_plot,id.vars="step")
 
 # Generate plot
-p1<-ggplot(merge_water_viscous_sub_melt, aes(x=step, y=value, group=variable)) +   geom_line(aes(color=variable))+   geom_point(aes(color=variable)) +  theme_bw() + theme(legend.position = "bottom") + ggtitle("P47, 3550RPM, Glycerin, inlet viscosituy 128")
+p1<-ggplot(merge_water_viscous_sub_melt, aes(x=step, y=value, group=variable)) +   geom_line(aes(color=variable))+   geom_point(aes(color=variable)) +  theme_bw() + theme(legend.position = "bottom") + ggtitle("P47, 3550RPM, Glycerin, inlet viscosituy 128") + scale_x_continuous(breaks=seq(1,dim(merge_water_viscous_sub)[1],3)) 
 ##################################################################################################################################################################
 # Take the discrete values
 merge_water_viscous_sub_tertiles$step<-1:dim(merge_water_viscous_sub_tertiles)[1]
@@ -48,16 +48,19 @@ colnames(merge_water_viscous_sub_tertiles)<-c("n","BHP","H","step")
 merge_water_viscous_sub_tertiles<-reshape2::melt(merge_water_viscous_sub_tertiles,id.vars="step")
 
 @ Generate second
-p2<-ggplot(merge_water_viscous_sub_tertiles, aes(x = step, y = variable, fill = value)) +   geom_tile() +    theme_bw() + theme(legend.position = "bottom")
+p2<-ggplot(merge_water_viscous_sub_tertiles, aes(x = step, y = variable, fill = value)) +   geom_tile() +    theme_bw() + theme(legend.position = "bottom") + scale_fill_grey()  + theme(axis.text.y = element_text(size=16),face="bold") + scale_x_continuous(breaks=seq(1,dim(merge_water_viscous_sub)[1],3)) 
 
+##################################################################################################################################################################
+# add collumn for the operational state n,H, BHO
+@ Generate second
+p3<-ggplot(merge_water_viscous_sub, aes(x = step, y = operational_states)) +   geom_tile() +    theme_bw() + theme(legend.position = "bottom")  + theme(axis.text.y = element_text(size=16),face="bold") + scale_x_continuous(breaks=seq(1,dim(merge_water_viscous_sub)[1],3)) 
 
 
 # bwplot               
-png(filename=paste(output_dir,"Normalized_Discrete_Performance_P47_3500RPM_Glycerin_Viscosity_128.png",sep=""), width = 15, height = 30, res=600, units = "cm")  
+png(filename=paste(output_dir,"Normalized_Discrete_Performance_P47_3500RPM_Glycerin_Viscosity_128.png",sep=""), width = 15, height =45, res=600, units = "cm")  
   # Plot the bayesian network graph
-  ggarrange(p1, p2, labels = c("A", "B"),    ncol = 1, nrow = 2)
+  ggarrange(p1, p2, p3, labels = c("A", "B","C"),    ncol = , nrow = 3)
 dev.off()
-
 
 
 
