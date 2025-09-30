@@ -99,16 +99,16 @@ OS5<-unique(merge_water_viscous_sub[which(merge_water_viscous_sub$operational_st
 OS6<-unique(merge_water_viscous_sub[which(merge_water_viscous_sub$operational_states=="n=High|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
 OS7<-unique(merge_water_viscous_sub[which(merge_water_viscous_sub$operational_states=="n=High|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
 #################################################################
-OS1$Operationa_State<-"n=Low|BHP=Low|H=High"
-OS2$Operationa_State<-"n=Low|BHP=High|H=Low"
-OS3$Operationa_State<-"n=Medium|BHP=Low|H=High"
-OS4$Operationa_State<-"n=Medium|BHP=Medium|H=Medium"
-OS5$Operationa_State<-"n=Medium|BHP=High|H=Low"
-OS6$Operationa_State<-"n=High|BHP=Medium|H=Medium"
-OS7$Operationa_State<-"n=High|BHP=High|H=Low"
+OS1$Operational_State<-"n=Low|BHP=Low|H=High"
+OS2$Operational_State<-"n=Low|BHP=High|H=Low"
+OS3$Operational_State<-"n=Medium|BHP=Low|H=High"
+OS4$Operational_State<-"n=Medium|BHP=Medium|H=Medium"
+OS5$Operational_State<-"n=Medium|BHP=High|H=Low"
+OS6$Operational_State<-"n=High|BHP=Medium|H=Medium"
+OS7$Operational_State<-"n=High|BHP=High|H=Low"
 #################################################################
 # Save results trable                                                  # 
-write.table(data.frame(rbind(OS1,OS2,OS3,OS4,OS5,OS6,OS7)),   paste(output_dir,"ESPsViscousFluidFlow_Operationalç_state.tsv",sep="/"), na = "NA", append = FALSE, col.names = TRUE, row.names = TRUE, sep = "\t", quote = TRUE)
+write.table(data.frame(rbind(OS1,OS2,OS3,OS4,OS5,OS6,OS7)),   paste(output_dir,"ESPsViscousFluidFlow_Operational_state.tsv",sep="/"), na = "NA", append = FALSE, col.names = TRUE, row.names = FALSE, sep = "\t", quote =   FALSE)  
 
 
 
