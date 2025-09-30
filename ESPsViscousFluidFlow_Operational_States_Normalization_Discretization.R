@@ -10,6 +10,11 @@ tertile <- function(x)
 {  
   return (cut(x, quantile(x, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High")))
 }
+# Function to calculate binary
+binary <- function(x)
+{  
+  return (cut(x, quantile(x, c(0:2/2)), include.lowest = T, labels = c("Low", "High")))
+}
 #########################################################################################################
 # Store nome of analyzed variables
 # Flow rate	Inlet Temperature T1 	Inlet Temperature T2 			Inlet Pressure P1	Outlet Pressure P2	Shaft Torque
