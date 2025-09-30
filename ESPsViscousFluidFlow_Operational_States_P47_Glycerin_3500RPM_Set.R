@@ -47,16 +47,17 @@ colnames(merge_water_viscous_sub_tertiles)<-c("n","BHP","H","step")
 # Melt table
 merge_water_viscous_sub_tertiles<-reshape2::melt(merge_water_viscous_sub_tertiles,id.vars="step")
 
-@ Generate second
+# Generate second
 p2<-ggplot(merge_water_viscous_sub_tertiles, aes(x = step, y = variable, fill = value)) +   geom_tile() +    theme_bw() + theme(legend.position = "bottom") + scale_fill_grey()  + theme(axis.text.y = element_text(size=16),face="bold") + scale_x_continuous(breaks=seq(1,dim(merge_water_viscous_sub)[1],3)) 
 
 ##################################################################################################################################################################
 # Relevel factors
-merge_water_viscous_sub$operational_states<-factor(merge_water_viscous_sub$operational_states,levels=c("n=Low|BHP=Low|H=High", "n=Low|BHP=High|H=Low", "n=Medium|BHP=Low|H=High", "n=Medium|BHP=Medium|H=Medium", "n=Medium|BHP=High|H=Low", "n=High|BHP=Medium|H=Medium", "n=High|BHP=High|H=Low"))
+merge_water_viscous_sub_tertiles$operational_states<-factor(merge_water_viscous_sub$operational_states,levels=c("n=Low|BHP=Low|H=High", "n=Low|BHP=High|H=Low", "n=Medium|BHP=Low|H=High", "n=Medium|BHP=Medium|H=Medium", "n=Medium|BHP=High|H=Low", "n=High|BHP=Medium|H=Medium", "n=High|BHP=High|H=Low"))
+merge_water_viscous_sub_binary$operational_states<-factor(merge_water_viscous_sub$operational_states,levels=c("n=Low|BHP=Low|H=High", "n=Low|BHP=High|H=Low", "n=Medium|BHP=Low|H=High", "n=Medium|BHP=Medium|H=Medium", "n=Medium|BHP=High|H=Low", "n=High|BHP=Medium|H=Medium", "n=High|BHP=High|H=Low"))
 
 # add collumn for the operational state n,H, BHO
 # Generate second
-p3<-ggplot(merge_water_viscous_sub, aes(x = step, y = operational_states)) +   geom_tile() +    theme_bw() + theme(legend.position = "bottom")  + theme(axis.text.y = element_text(size=16),face="bold") + scale_x_continuous(breaks=seq(1,dim(merge_water_viscous_sub)[1],3)) 
+p3<-ggplot(merge_water_viscous_sub_tertiles, aes(x = step, y = operational_states)) +   geom_tile() +    theme_bw() + theme(legend.position = "bottom")  + theme(axis.text.y = element_text(size=16),face="bold") + scale_x_continuous(breaks=seq(1,dim(merge_water_viscous_sub)[1],3)) 
 
 
 # bwplot               
@@ -83,12 +84,12 @@ colnames(input_variables_tertiles)<-c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "p
 colnames(input_variables_binary)<-c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")
 
 # Merge data.franmes
-merge_water_viscous_sub_tertiles<-cbind(merge_water_viscous_sub,input_variables_tertiles)
-input_variables_binary          <-cbind(merge_water_viscous_sub,input_variables_binary)
+merge_water_viscous_sub_tertiles       <-cbind(merge_water_viscous_sub_tertiles,input_variables_tertiles)
+merge_water_viscous_sub_binary         <-cbind(merge_water_viscous_sub_binary,input_variables_binary)
 
 # Take the discrete valuers
 merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")]
-input_variables_binary[which(input_variables_binary$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")]
+merge_water_viscous_sub_binary[which(merge_water_viscous_sub_binary$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")]
 
 #################################################################
 OS1<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
@@ -99,13 +100,13 @@ OS5<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_terti
 OS6<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=High|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
 OS7<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=High|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
 #################################################################
-OS1_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS2_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=Low|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS3_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=Medium|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS4_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=Medium|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS5_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=Medium|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS6_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=High|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS7_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=High|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS1_B<-unique(merge_water_viscous_sub_binary[which(merge_water_viscous_sub_binary$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS2_B<-unique(merge_water_viscous_sub_binary[which(merge_water_viscous_sub_binary$operational_states=="n=Low|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS3_B<-unique(merge_water_viscous_sub_binary[which(merge_water_viscous_sub_binary$operational_states=="n=Medium|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS4_B<-unique(merge_water_viscous_sub_binary[which(merge_water_viscous_sub_binary$operational_states=="n=Medium|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS5_B<-unique(merge_water_viscous_sub_binary[which(merge_water_viscous_sub_binary$operational_states=="n=Medium|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS6_B<-unique(merge_water_viscous_sub_binary[which(merge_water_viscous_sub_binary$operational_states=="n=High|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS7_B<-unique(merge_water_viscous_sub_binary[which(merge_water_viscous_sub_binary$operational_states=="n=High|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
 #################################################################
 OS1$Operational_State<-"n=Low|BHP=Low|H=High"
 OS2$Operational_State<-"n=Low|BHP=High|H=Low"
