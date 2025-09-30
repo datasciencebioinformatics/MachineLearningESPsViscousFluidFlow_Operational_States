@@ -61,8 +61,15 @@ png(filename=paste(output_dir,"Normalized_Discrete_Performance_P47_3500RPM_Glyce
   # Plot the bayesian network graph
   ggarrange(p1, p2, p3, labels = c("A", "B","C"),    ncol = , nrow = 3)
 dev.off()
-
-
+#################################################################
+# n=Low|BHP=Low|H=High                                          #
+# n=Low|BHP=High|H=Low                                          #
+# n=Medium|BHP=Low|H=High                                       #
+# n=Medium|BHP=Medium|H=Medium                                  #
+# n=Medium|BHP=High|H=Low                                       #
+# n=High|BHP=Medium|H=Medium                                    #
+# n=High|BHP=High|H=Low                                         #
+#################################################################
 
 
 
