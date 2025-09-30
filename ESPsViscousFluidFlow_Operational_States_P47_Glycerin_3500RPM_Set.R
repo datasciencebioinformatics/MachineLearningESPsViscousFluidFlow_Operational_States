@@ -76,28 +76,36 @@ dev.off()
 
 # Take the tertiles
 input_variables_tertiles<-as.data.frame(lapply(merge_water_viscous_sub[,c("Flow.rate", "Average.Inlet.Temp.Tm.i", "Average.Outlet.Temp.Tm.o", "Inlet.Pressure.P1", "Outlet.Pressure.P2", "Shaft.Torque", "Inlet.Density.ρi", "Inlet.Viscosity.mi", "Outlet.Viscosity.mo")], tertile))
+input_variables_binary  <-as.data.frame(lapply(merge_water_viscous_sub[,c("Flow.rate", "Average.Inlet.Temp.Tm.i", "Average.Outlet.Temp.Tm.o", "Inlet.Pressure.P1", "Outlet.Pressure.P2", "Shaft.Torque", "Inlet.Density.ρi", "Inlet.Viscosity.mi", "Outlet.Viscosity.mo")], binary))
 
 # Reset-colnames
 colnames(input_variables_tertiles)<-c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")
+colnames(input_variables_binary)<-c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")
 
 # Merge data.franmes
-merge_water_viscous_sub<-cbind(merge_water_viscous_sub,input_variables_tertiles)
+merge_water_viscous_sub_tertiles<-cbind(merge_water_viscous_sub,input_variables_tertiles)
+input_variables_binary          <-cbind(merge_water_viscous_sub,input_variables_binary)
 
 # Take the discrete valuers
-merge_water_viscous_sub[which(merge_water_viscous_sub$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")]
-
-
-
-
+merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")]
+input_variables_binary[which(input_variables_binary$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")]
 
 #################################################################
-OS1<-unique(merge_water_viscous_sub[which(merge_water_viscous_sub$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS2<-unique(merge_water_viscous_sub[which(merge_water_viscous_sub$operational_states=="n=Low|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS3<-unique(merge_water_viscous_sub[which(merge_water_viscous_sub$operational_states=="n=Medium|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS4<-unique(merge_water_viscous_sub[which(merge_water_viscous_sub$operational_states=="n=Medium|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS5<-unique(merge_water_viscous_sub[which(merge_water_viscous_sub$operational_states=="n=Medium|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS6<-unique(merge_water_viscous_sub[which(merge_water_viscous_sub$operational_states=="n=High|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
-OS7<-unique(merge_water_viscous_sub[which(merge_water_viscous_sub$operational_states=="n=High|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS1<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS2<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=Low|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS3<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=Medium|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS4<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=Medium|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS5<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=Medium|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS6<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=High|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS7<-unique(merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=High|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+#################################################################
+OS1_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS2_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=Low|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS3_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=Medium|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS4_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=Medium|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS5_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=Medium|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS6_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=High|BHP=Medium|H=Medium"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
+OS7_B<-unique(merge_water_viscous_sub_tertiles[which(input_variables_binary$operational_states=="n=High|BHP=High|H=Low"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")])
 #################################################################
 OS1$Operational_State<-"n=Low|BHP=Low|H=High"
 OS2$Operational_State<-"n=Low|BHP=High|H=Low"
@@ -107,13 +115,15 @@ OS5$Operational_State<-"n=Medium|BHP=High|H=Low"
 OS6$Operational_State<-"n=High|BHP=Medium|H=Medium"
 OS7$Operational_State<-"n=High|BHP=High|H=Low"
 #################################################################
+OS1_B$Operational_State<-"n=Low|BHP=Low|H=High"
+OS2_B$Operational_State<-"n=Low|BHP=High|H=Low"
+OS3_B$Operational_State<-"n=Medium|BHP=Low|H=High"
+OS4_B$Operational_State<-"n=Medium|BHP=Medium|H=Medium"
+OS5_B$Operational_State<-"n=Medium|BHP=High|H=Low"
+OS6_B$Operational_State<-"n=High|BHP=Medium|H=Medium"
+OS7_B$Operational_State<-"n=High|BHP=High|H=Low"
+#################################################################
 # Save results trable                                                  # 
-write.table(data.frame(rbind(OS1,OS2,OS3,OS4,OS5,OS6,OS7)),   paste(output_dir,"ESPsViscousFluidFlow_Operational_state.tsv",sep="/"), na = "NA", append = FALSE, col.names = TRUE, row.names = FALSE, sep = "\t", quote =   FALSE)  
-
-
-
-
-
-
-
-
+write.table(data.frame(rbind(OS1,OS2,OS3,OS4,OS5,OS6,OS7)),   paste(output_dir,"ESPsViscousFluidFlow_Operational_state_tertile.tsv",sep="/"), na = "NA", append = FALSE, col.names = TRUE, row.names = FALSE, sep = "\t", quote =   FALSE)  
+write.table(data.frame(rbind(OS1_B,OS2_B,OS3_B,OS4_B,OS5_B,OS6_B,OS7_B)),   paste(output_dir,"ESPsViscousFluidFlow_Operational_state_binary.tsv",sep="/"), na = "NA", append = FALSE, col.names = TRUE, row.names = FALSE, sep = "\t", quote =   FALSE)  
+#################################################################
