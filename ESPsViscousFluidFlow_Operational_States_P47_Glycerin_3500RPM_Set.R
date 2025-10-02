@@ -53,7 +53,7 @@ p2<-ggplot(merge_water_viscous_sub_tertiles, aes(x = step, y = variable, fill = 
 ##################################################################################################################################################################
 # Relevel factors
 merge_water_viscous_sub_tertiles$operational_states<-factor(merge_water_viscous_sub$operational_states,levels=c("n=Low|BHP=Low|H=High", "n=Low|BHP=High|H=Low", "n=Medium|BHP=Low|H=High", "n=Medium|BHP=Medium|H=Medium", "n=Medium|BHP=High|H=Low", "n=High|BHP=Medium|H=Medium", "n=High|BHP=High|H=Low"))
-merge_water_viscous_sub_binary$operational_states<-factor(merge_water_viscous_sub$operational_states,levels=c("n=Low|BHP=Low|H=High", "n=Low|BHP=High|H=Low", "n=Medium|BHP=Low|H=High", "n=Medium|BHP=Medium|H=Medium", "n=Medium|BHP=High|H=Low", "n=High|BHP=Medium|H=Medium", "n=High|BHP=High|H=Low"))
+
 
 # add collumn for the operational state n,H, BHO
 # Generate second
@@ -66,6 +66,36 @@ png(filename=paste(output_dir,"Normalized_Discrete_Performance_P47_3500RPM_Glyce
   ggarrange(p1, p2, p3, labels = c("A", "B","C"),    ncol = , nrow = 3)
 dev.off()
 #################################################################
+# Split the categories of Efficiency in low, medium and high.
+# Split the categories of Head and BHP accordinly (use the time)
+# Assume efficiency increasing, stationary, decreasing.
+# Assume H and BHP low, medium, and high
+# Take the values of input variables as tertiles
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #1  n=Low|BHP=Low|H=High
 #2 n=Low|BHP=High|H=Low
 #3 n=Medium|BHP=Low|H=High
