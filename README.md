@@ -29,3 +29,7 @@ source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Exploratory
 
 ##### 8) Load ESP Normalization and Discretization
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Normalization_Discretization.R",sep=""))
+
+#### 9) Generate plots
+source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_P47_Glycerin_3500RPM_Set.R",sep=""))
+
