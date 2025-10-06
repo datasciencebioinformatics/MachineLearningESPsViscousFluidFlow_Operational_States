@@ -104,7 +104,7 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
   p1<-ggplot(df_values, aes(x=Q, y=value, shape=var)) +   geom_point(aes(color=var)) +  theme_bw() + theme(legend.position = "bottom") + ggtitle(paste("Simulated time-series",series)) +  geom_line(aes(color=var)) + ylab("H, BHP, n") 
 
   # Add panel 
-  simulated_performance_curves[[series]]<-p1
+  simulated_performance_curves[[series]]<-p1 + scale_color_hue(l=40, c=35) + scale_color_hue(l=40, c=35)
 
 }
 
