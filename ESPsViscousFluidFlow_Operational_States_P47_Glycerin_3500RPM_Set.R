@@ -114,8 +114,8 @@ colnames(input_variables_tertiles)<-c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "p
 colnames(input_variables_binary)<-c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")
 
 # Merge data.franmes
-merge_water_viscous_sub_tertiles       <-cbind(merge_water_viscous_sub_tertiles,input_variables_tertiles)
-merge_water_viscous_sub_binary         <-cbind(merge_water_viscous_sub_binary,input_variables_binary)
+merge_water_viscous_sub_tertiles       <-cbind(merge_water_viscous_sub,input_variables_tertiles)
+merge_water_viscous_sub_binary         <-cbind(merge_water_viscous_sub,input_variables_binary)
 
 # Take the discrete valuers
 merge_water_viscous_sub_tertiles[which(merge_water_viscous_sub_tertiles$operational_states=="n=Low|BHP=Low|H=High"),c("Q_a", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")]
