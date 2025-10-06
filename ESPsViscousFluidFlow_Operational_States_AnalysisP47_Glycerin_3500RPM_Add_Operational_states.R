@@ -30,7 +30,7 @@ colnames(simulated_data_all)<-c("Q", "Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi
 simulated_data_all[is.na(simulated_data_all)] <- 0
 
 # Start all results
-df_results<-data.frame(Q=c(),   Tm.i=c(),   Tm.o=c(),      P1=c(),       P2=c(),      RPM=c(),           T=c(),  pi=c(),   mi=c(),   mo=c(),         n=c(),      BHP=c(),         H=c(), Time=c(), Series=c())
+df_results<-data.frame(Q=c(),   Tm.i=c(),   Tm.o=c(),      P1=c(),       P2=c(),      RPM=c(),           T=c(),  pi=c(),   mi=c(),   mo=c(),         n=c(),      BHP=c(),         H=c(), Time=c(), Series=c(), n_discrete=c(),h_discrete=c(),bhp_discrete=c(),operational_states=c())
 
 # For each simulated time-series
 for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
@@ -52,12 +52,17 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
   
   # Set the tertiles
   simulated_data_sub_tertiles<-data.frame(n_discrete=n_discrete,h_discrete=h_discrete,bhp_discrete=bhp_discrete)
+
+  
   
   # Merge tables
   simulated_data_sub<-cbind(simulated_data_sub,simulated_data_sub_tertiles)
   
   # add operational states
   simulated_data_sub$operational_states<-paste(paste("n=",simulated_data_sub$n_discrete,sep=""),paste("BHP=",simulated_data_sub$h_discrete,sep=""),paste("H=",simulated_data_sub$bhp_discrete,sep=""),sep="|")  
+
+  # Sub-simulated
+  simulated_data_sub<-simulated_data_sub[,c("Q", "Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi", "mo", "n", "BHP", "H", "Time", "Series","n_discrete","h_discrete","bhp_discrete","operational_states")]
 
   # Concatenate data.frame
   df_results<-rbind(df_results,simulated_data_sub)
