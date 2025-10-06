@@ -82,5 +82,7 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
   # Take the table for the corresponding time-series
   simulated_data_sub<-simulated_data_all[simulated_data_all[,c("Series")]==series,]
 
+  # First make a panel for the ten simulated time-series
+
 
 }
