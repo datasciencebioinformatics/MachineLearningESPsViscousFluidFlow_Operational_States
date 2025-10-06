@@ -29,6 +29,9 @@ colnames(simulated_data_all)<-c("Q", "Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi
 # Replace all NA values with 0
 simulated_data_all[is.na(simulated_data_all)] <- 0
 
+# Start all results
+df_results<-data.frame(Q=c(),   Tm.i=c(),   Tm.o=c(),      P1=c(),       P2=c(),      RPM=c(),           T=c(),  pi=c(),   mi=c(),   mo=c(),         n=c(),      BHP=c(),         H=c(), Time=c(), Series=c())
+
 # For each simulated time-series
 for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
 {
@@ -55,6 +58,14 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
   
   # add operational states
   simulated_data_sub$operational_states<-paste(paste("n=",simulated_data_sub$n_discrete,sep=""),paste("BHP=",simulated_data_sub$h_discrete,sep=""),paste("H=",simulated_data_sub$bhp_discrete,sep=""),sep="|")  
+
+  # Concatenate data.frame
+  df_results<-rbind(df_results,simulated_data_sub)
 }
 #####################################################################################################################################################################################################################################
-# Plot operati0nal states
+# Replace data.frames
+simulated_data_all<-df_results
+
+# Set rownames
+rownames(simulated_data_all)<-1:dim(simulated_data_all)[1]
+
