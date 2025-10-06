@@ -71,10 +71,12 @@ rownames(df_ranges)<-c("Low","Medium","High")
 # Save table with efficiency ranges
 write.table(df_ranges,   paste(output_dir,"Efficiency_ranges_ranges.txt",sep="/"), na = "NA", append = FALSE, col.names = TRUE, row.names = FALSE, sep = "\t", quote =   FALSE)  
 ################################################################################################################
+simulated_performance_curves<-list()
+
 # Load the simulated data
 # simulated_data_all
 # Raname collumns
-colnames(simulated_data_all)<-c("Flow.rate","Tm.i","Tm.o","P1","P2","RPM","T","pi","mi","mo","n","BHP","H","Time","Series")
+colnames(simulated_data_all)<-c("Q","Tm.i","Tm.o","P1","P2","RPM","T","pi","mi","mo","n","BHP","H","Time","Series")
 
 # For each simulated time-series
 for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
@@ -82,7 +84,34 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
   # Take the table for the corresponding time-series
   simulated_data_sub<-simulated_data_all[simulated_data_all[,c("Series")]==series,]
 
-  # First make a panel for the ten simulated time-series
+  # Remove units from bhp, head and efficiency and put them in a single plot
+  simulated_data_sub[,c("BHP")]<-normalize(simulated_data_sub[,c("BHP")])
 
+  # Rename collumns
+  simulated_data<-simulated_data_sub[,c("n","BHP","H","Q")]
+  
+  # Melt table
+  Q_values<-simulated_data[,c("Q")]
+  n_values<-simulated_data[,c("n")]
+  H_values<-simulated_data[,c("H")]
+  BHP_values<-simulated_data[,c("BHP")]
+  
+  df_values<-rbind(data.frame(Q=Q_values,value=n_values, var="n"),
+  data.frame(Q=Q_values,value=H_values, var="H"),
+  data.frame(Q=Q_values,value=BHP_values, var="BHP"))
+  
+  # Generate plot
+  p1<-ggplot(df_values, aes(x=Q, y=value, shape=var)) +   geom_point(aes(color=var)) +  theme_bw() + theme(legend.position = "bottom") + ggtitle(paste("Simulated time-series",series)) +  geom_line(aes(color=var)) + ylab("H, BHP, n") 
+
+  # Add panel 
+  simulated_performance_curves[[series]]<-p1
 
 }
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Simulated_Performance_curves.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
+  ggarrange(simulated_performance_curves[[2]], simulated_performance_curves[[3]], simulated_performance_curves[[4]], simulated_performance_curves[[5]],simulated_performance_curves[[6]],
+          simulated_performance_curves[[7]], simulated_performance_curves[[8]], simulated_performance_curves[[9]], simulated_performance_curves[[10]],simulated_performance_curves[[11]], ncol=2, nrow=5, common.legend = TRUE, legend="bottom")
+dev.off()
+
