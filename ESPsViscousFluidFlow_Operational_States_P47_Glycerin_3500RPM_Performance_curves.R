@@ -29,8 +29,11 @@ merge_water_viscous_sub_melt<-reshape2::melt(merge_water_viscous_plot,id.vars=c(
 # Generate plot
 p1<-ggplot(merge_water_viscous_sub_melt, aes(x=Q, y=value, shape=variable)) +   geom_point(aes(color=variable)) +  theme_bw() + theme(legend.position = "bottom") + ggtitle("P47, 3550RPM, Glycerin, inlet viscosituy 128") +  geom_line(aes(color=variable)) + ylab("Normalized values (H, BHP, n)") +  xlab("Normalized Q") 
 
-# To do :
-# Save this plot
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"ESP_P47_dilluted_glucerin_RPM3500_Viscosity_128_Normalized_Performance_curves.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+  p1 + scale_color_hue(l=40, c=35) + scale_color_hue(l=40, c=35)
+dev.off()
 ################################################################################################################
 # To do :
 # 1) Define the three classes for efficiency (low, medium, high)
@@ -50,12 +53,21 @@ ESP_P47_water_plot_n   <- ggplot(merge_water_viscous_sub, aes(x = Q, y = n*100))
 ################################################################################################################
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"ESP_P47_dilluted_glucerin_RPM3500_Viscosity_128.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
+png(filename=paste(project_folder,"ESP_P47_dilluted_glucerin_RPM3500_Viscosity_128_Performance_curves.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
   ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
 dev.off()
 
 # Merge tables
-# Define the ranges of efficiencies n for these vectors
-low_efficiency<-merge_water_viscous_sub[which(merge_water_viscous_sub$n_discrete=="Low"),]
-medium_efficiency<-merge_water_viscous_sub[which(merge_water_viscous_sub$n_discrete=="Medium"),]
-high_efficiency<-merge_water_viscous_sub[which(merge_water_viscous_sub$n_discrete=="High"),]
+low_efficiency<-c(min(merge_water_viscous_sub[which(merge_water_viscous_sub$n_discrete=="Low"),"n"]),max(merge_water_viscous_sub[which(merge_water_viscous_sub$n_discrete=="Low"),"n"]))
+medium_efficiency<-c(min(merge_water_viscous_sub[which(merge_water_viscous_sub$n_discrete=="Medium"),"n"]),max(merge_water_viscous_sub[which(merge_water_viscous_sub$n_discrete=="Medium"),"n"]))
+high_efficiency<-c(min(merge_water_viscous_sub[which(merge_water_viscous_sub$n_discrete=="High"),"n"]),max(merge_water_viscous_sub[which(merge_water_viscous_sub$n_discrete=="High"),"n"]))
+
+# Define the ranges
+df_ranges<-data.frame(Star=c(low_efficiency[1],medium_efficiency[1],high_efficiency[1]),End=c(low_efficiency[2],medium_efficiency[2],high_efficiency[2]))
+
+# Set tht ecolnames
+rownames(df_ranges)<-c("Low","Medium","High")
+
+# Save table with efficiency ranges
+write.table(df_ranges,   paste(output_dir,"Efficiency_ranges_ranges.txt",sep="/"), na = "NA", append = FALSE, col.names = TRUE, row.names = FALSE, sep = "\t", quote =   FALSE)  
+################################################################################################################
