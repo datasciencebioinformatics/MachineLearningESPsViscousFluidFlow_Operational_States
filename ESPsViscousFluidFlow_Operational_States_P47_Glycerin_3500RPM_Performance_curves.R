@@ -71,8 +71,16 @@ rownames(df_ranges)<-c("Low","Medium","High")
 # Save table with efficiency ranges
 write.table(df_ranges,   paste(output_dir,"Efficiency_ranges_ranges.txt",sep="/"), na = "NA", append = FALSE, col.names = TRUE, row.names = FALSE, sep = "\t", quote =   FALSE)  
 ################################################################################################################
+# Load the simulated data
 # simulated_data_all
+# Raname collumns
+colnames(simulated_data_all)<-c("Flow.rate","Tm.i","Tm.o","P1","P2","RPM","T","pi","mi","mo","n","BHP","H","Time","Series")
+
+# For each simulated time-series
+for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
+{
+  # Take the table for the corresponding time-series
+  simulated_data_sub<-simulated_data_all[simulated_data_all[,c("Series")]==series,]
 
 
-#
-
+}
