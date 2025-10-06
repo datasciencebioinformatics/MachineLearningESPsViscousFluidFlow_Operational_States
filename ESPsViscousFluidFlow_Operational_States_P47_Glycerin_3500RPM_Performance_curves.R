@@ -71,7 +71,7 @@ rownames(df_ranges)<-c("Low","Medium","High")
 # Save table with efficiency ranges
 write.table(df_ranges,   paste(output_dir,"Efficiency_ranges_ranges.txt",sep="/"), na = "NA", append = FALSE, col.names = TRUE, row.names = FALSE, sep = "\t", quote =   FALSE)  
 ################################################################################################################
-# Load all the simulated data
+# simulated_data_all
 
 
 #
