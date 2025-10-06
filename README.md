@@ -33,7 +33,9 @@ source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Normalizati
 #### 9) Generate plots
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_P47_Glycerin_3500RPM_Set.R",sep=""))
 
-#### 10) Analysis of flow rate (Q) versus performance (n, H, BHP)
+### 10) Analysis of flow rate (Q) versus performance (n, H, BHP)
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_P47_Glycerin_3500RPM_Performance_curves.R",sep=""))
 
+### 11) Analysis of flow rate (Q) versus performance (n, H, BHP)
+source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Simulated_Performance_curves.R",sep=""))
 
