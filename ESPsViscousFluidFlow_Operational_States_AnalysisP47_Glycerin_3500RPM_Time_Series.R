@@ -3,7 +3,7 @@
 time_window_length<-10
 
 # Define data.frame for the results of time-series
-df_results_P47_3500RPM_Viscosity_128_Glycerin<-data.frame(Window=c(),   mean_n=c(),   sd_n=c(),      operational_states=c(),       diagnosis=c(), adf_Dickey_Fuller=c(), adf_df=c(), adf_pvalue=c() , adf_stationarity=c(), Ljung_Box_Xsquared=c(), Ljung_Box_df=c(), Ljung_Box_pvalue=c(), Ljung_Box_whitenoise=c())
+df_results_P47_3500RPM_Viscosity_128_Glycerin<-data.frame(Window=c(),   mean_n=c(),   sd_n=c(),      operational_states=c(),       diagnosis=c(), adf_Dickey_Fuller=c(), adf_df=c(), adf_pvalue=c() , adf_stationarity=c(), Ljung_Box_Xsquared=c(), Ljung_Box_df=c(), Ljung_Box_pvalue=c(), Ljung_Box_whitenoise=c(),series=c())
 
 # First scan the P47, RPM300, Viscosity 128, Glycerin
 # Take the table for Q versus efficiency
@@ -83,52 +83,36 @@ for (time_window in names(time_windows))
       adf_pvalue              <-adf_test[[4]]
     
       # If p-value smaller than 0.05 than set 
-      if (adf_stationarity <= 0.05)
+      if (adf_pvalue <= 0.05)
       {
-      # Set stationarity to TRUE
-      adf_stationarity <-TRUE
+          # Set stationarity to TRUE
+          adf_stationarity <-TRUE
       }
     }
-  # df_results
-  df_results<-data.frame(Window=time_window,   mean_n=mean_n,   sd_n=sd_n,      operational_states=operational_states,       diagnosis=diagnosis, adf_Dickey_Fuller=adf_Dickey_Fuller, adf_df=adf_df, adf_pvalue=adf_pvalue , adf_stationarity=adf_stationarity, Ljung_Box_Xsquared=Ljung_Box_Xsquared, Ljung_Box_df=Ljung_Box_df, Ljung_Box_pvalue=Ljung_Box_pvalue, Ljung_Box_whitenoise=Ljung_Box_whitenoise)
-
-  # Add results tables
-  df_results_P47_3500RPM_Viscosity_128_Glycerin<-rbind(df_results_P47_3500RPM_Viscosity_128_Glycerin,df_results)
+    # df_results
+    df_results<-data.frame(Window=time_window,   mean_n=mean_n,   sd_n=sd_n,      operational_states=operational_states,       diagnosis=diagnosis, adf_Dickey_Fuller=adf_Dickey_Fuller, adf_df=adf_df, adf_pvalue=adf_pvalue , adf_stationarity=adf_stationarity, Ljung_Box_Xsquared=Ljung_Box_Xsquared, Ljung_Box_df=Ljung_Box_df, Ljung_Box_pvalue=Ljung_Box_pvalue, Ljung_Box_whitenoise=Ljung_Box_whitenoise,series=0)
+    
+    # Add results tables
+    df_results_P47_3500RPM_Viscosity_128_Glycerin<-rbind(df_results_P47_3500RPM_Viscosity_128_Glycerin,df_results)
 }
-
-
-
-# For each data.point
-for (row_id in rownames(merge_water_viscous_sub))
-{
-  print(row_id)
-  merge_water_viscous_sub[row_id,]
-}
-
 ######################################################################################################################
-# Assert diagnosis and classification equal to normal 
-merge_water_viscous_sub<-cbind(merge_water_viscous_sub,Diagnosis="normal")
+# Fix data.frame
+simulated_data_all<-data.frame(simulated_data_all)
 
-# If efficiency not stationary, then Diagnosis is fault
-merge_water_viscous_sub[which(merge_water_viscous_sub$n_discrete!="High"),"Diagnosis"]<-"Fault"
+ # Set colnames
+colnames(simulated_data_all)<-c("Q","Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi","mo","n","H","BHP","Time","Series")
 
-# Assert diagnosis and classification equal to normal 
-simulated_data_all<-cbind( data.frame(simulated_data_all,Diagnosis="normal"))
-
-# Start all results
-df_results<-data.frame(Q=c(),   Tm.i=c(),   Tm.o=c(),      P1=c(),       P2=c(),      RPM=c(),           T=c(),  pi=c(),   mi=c(),   mo=c(),         n=c(),      BHP=c(),         H=c(), Time=c(), Series=c(),operational_states=c(),Diagnosis=c())
+# Define data.frame for the results of time-series
+df_results_simulated<-data.frame(Window=c(),   mean_n=c(),   sd_n=c(),      operational_states=c(),       diagnosis=c(), adf_Dickey_Fuller=c(), adf_df=c(), adf_pvalue=c() , adf_stationarity=c(), Ljung_Box_Xsquared=c(), Ljung_Box_df=c(), Ljung_Box_pvalue=c(), Ljung_Box_whitenoise=c(),series=c())
 
 # For each simulated time-series
 for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
 {
   # Take the table for the corresponding time-series
-  simulated_data_sub<-simulated_data_all[simulated_data_all[,c("Series")]==series,]
-
-  # If efficiency not stationary, then Diagnosis is fault
-  simulated_data_sub[which(simulated_data_sub$n_discrete!="High"),"Diagnosis"]<-"Fault"
+  simulated_data_sub<-data.frame(simulated_data_all[simulated_data_all[,c("Series")]==series,])
 
   # Concatenate data.frame
-  df_results<-rbind(df_results,simulated_data_sub)
+  df_results<-rbind(df_results,df_results_simulated)
 }
 # Replace dataset
 simulated_data_all<-df_results
