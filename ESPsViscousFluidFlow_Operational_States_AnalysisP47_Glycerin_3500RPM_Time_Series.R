@@ -37,34 +37,33 @@ for (time_window in names(time_windows))
   
     # Store also the diagnosis in a single variable
     diagnosis<-paste(unique(merge_water_viscous_sub[which(merge_water_viscous_sub$n %in% data_points),"Diagnosis"]),collapse = ",")
-  
-    # Convert the time series to a data frame
-    # It is altready on a data.frame format
-    # Check what frequency means in the ts means
-    ts_time_windows <- ts(data_points)    
-    
-    # turns best ARIMA model according to either AIC, AICc or BIC value.
-    arima_model_window <- forecast::auto.arima(ts_time_windows)
-    
-    # Ljung-Box test. 
-    residuals <- residuals(arima_model)
-    
-    # Perform Ljung-Box test
-    box.test<-Box.test(residuals, lag = 1, type = "Ljung-Box")
-    
-    # Concatenate title
-    Ljung_Box_Xsquared      <-round(box.test$statistic,3)
-    Ljung_Box_df            <-round(box.test$parameter,3)
-    Ljung_Box_pvalue        <-round(box.test$p.value,3)
-    Ljung_Box_whitenoise    <-FALSE
-    
-    # If p-value smaller than 0.05 than set 
-    if (Ljung_Box_pvalue > 0.05)
-    {
-      # Set stationarity to TRUE
-      Ljung_Box_whitenoise <-TRUE
-    }
 
+    # Concatenate title
+    Ljung_Box_Xsquared      <-NA
+    Ljung_Box_df            <-NA
+    Ljung_Box_pvalue        <-NA
+    Ljung_Box_whitenoise    <-NA
+      
+    # Perform Ljung-Box test
+    box.test<-Box.test(data_points, lag = 1, type = "Ljung-Box")
+
+    # If pvalue is not nan
+    if(!is.na(box.test$p.value))
+    {
+        # Concatenate title
+        Ljung_Box_Xsquared      <-round(box.test$statistic,3)
+        Ljung_Box_df            <-round(box.test$parameter,3)
+        Ljung_Box_pvalue        <-round(box.test$p.value,3)
+        Ljung_Box_whitenoise    <-FALSE
+
+        # If p-value smaller than 0.05 than set 
+        if (Ljung_Box_pvalue > 0.05)
+        {
+            # Set stationarity to TRUE
+            Ljung_Box_whitenoise <-TRUE
+        }
+    }    
+    
     # Concatenate title
     adf_Dickey_Fuller       <-NA
     adf_df                  <-NA
@@ -72,10 +71,10 @@ for (time_window in names(time_windows))
     adf_stationarity        <-FALSE
     
     # If at least two data.points
-    if (length(as.vector(ts_time_windows))>1)
+    if (length(data_points)>1)
     {  
         # Store results of adf test
-        adf_test<-adf.test(ts_time_windows)
+        adf_test<-adf.test(data_points)
         
         # Concatenate title
         adf_Dickey_Fuller       <-adf_test[[1]]
@@ -147,33 +146,34 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
       
         # Store also the diagnosis in a single variable
         diagnosis<-paste(unique(simulated_data_sub[which(simulated_data_sub$n %in% data_points),"Diagnosis"]),collapse = ",")
-      
-        # Convert the time series to a data frame
-        # It is altready on a data.frame format
-        # Check what frequency means in the ts means
-        ts_time_windows <- ts(data_points)    
-        
-        # turns best ARIMA model according to either AIC, AICc or BIC value.
-        arima_model_window <- forecast::auto.arima(ts_time_windows)
-        
-        # Ljung-Box test. 
-        residuals <- residuals(arima_model)
-        
-        # Perform Ljung-Box test
-        box.test<-Box.test(residuals, lag = 1, type = "Ljung-Box")
         
         # Concatenate title
-        Ljung_Box_Xsquared      <-round(box.test$statistic,3)
-        Ljung_Box_df            <-round(box.test$parameter,3)
-        Ljung_Box_pvalue        <-round(box.test$p.value,3)
-        Ljung_Box_whitenoise    <-FALSE
-        
-        # If p-value smaller than 0.05 than set 
-        if (Ljung_Box_pvalue > 0.05)
+        Ljung_Box_Xsquared      <-NA
+        Ljung_Box_df            <-NA
+        Ljung_Box_pvalue        <-NA
+        Ljung_Box_whitenoise    <-NA
+          
+        # Perform Ljung-Box test
+        box.test<-Box.test(data_points, lag = 1, type = "Ljung-Box")
+    
+        # If pvalue is not nan
+        if(!is.na(box.test$p.value))
         {
-          # Set stationarity to TRUE
-          Ljung_Box_whitenoise <-TRUE
+            # Concatenate title
+            Ljung_Box_Xsquared      <-round(box.test$statistic,3)
+            Ljung_Box_df            <-round(box.test$parameter,3)
+            Ljung_Box_pvalue        <-round(box.test$p.value,3)
+            Ljung_Box_whitenoise    <-FALSE
+    
+            # If p-value smaller than 0.05 than set 
+            if (Ljung_Box_pvalue > 0.05)
+            {
+                # Set stationarity to TRUE
+                Ljung_Box_whitenoise <-TRUE
+            }
         }
+        
+
     
         # Concatenate title
         adf_Dickey_Fuller       <-NA
@@ -182,10 +182,10 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
         adf_stationarity        <-FALSE
         
         # If at least two data.points
-        if (length(as.vector(ts_time_windows))>1)
+        if (length(data_points)>1)
         {  
             # Store results of adf test
-            adf_test<-adf.test(ts_time_windows)
+            adf_test<-adf.test(data_points)
             
             # Concatenate title
             adf_Dickey_Fuller       <-adf_test[[1]]
