@@ -3,7 +3,7 @@
 time_window_length<-10
 
 # Define data.frame for the results of time-series
-df_results<-data.frame(Window=c(),   mean_n=c(),   sd_n=c(),      operational_state=c(),       diagnosis=c(),      ADF_test=c(),           ADF_pvalue=c(),  stationarity =c(),   Ljung_box=c(),   Ljung_box_pvalue=c(),         white_noise=c())
+df_results_P47_3500RPM_Viscosity_128_Glycerin<-data.frame(Window=c(),   mean_n=c(),   sd_n=c(),      operational_states=c(),       diagnosis=c(), adf_Dickey_Fuller=c(), adf_df=c(), adf_pvalue=c() , adf_stationarity=c(), Ljung_Box_Xsquared=c(), Ljung_Box_df=c(), Ljung_Box_pvalue=c(), Ljung_Box_whitenoise=c())
 
 # First scan the P47, RPM300, Viscosity 128, Glycerin
 # Take the table for Q versus efficiency
@@ -23,16 +23,77 @@ time_windows<-split(merge_water_viscous_sub_Q_n$n, ceiling(seq_along(merge_water
 # Then, for each time-series
 for (time_window in names(time_windows))
 {
-  # Take only the plots of this series
-  data_points<-time_windows[[time_window]]
+    # Take only the plots of this series
+    data_points<-time_windows[[time_window]]
+    
+    # Calculate the mean and sd of Efficiency 
+    mean_n=mean(data_points)
   
-  # Calculate the mean of Efficiency 
-  mean_n=mean(data_points)
+    # Calculate the mean and sd of Efficiency 
+    sd_n=sd(data_points)
+  
+    # Store also the operational states in a single variable
+    operational_states<-paste(unique(merge_water_viscous_sub[which(merge_water_viscous_sub$n %in% data_points),"operational_states"]),collapse = ",")
+  
+    # Store also the diagnosis in a single variable
+    diagnosis<-paste(unique(merge_water_viscous_sub[which(merge_water_viscous_sub$n %in% data_points),"Diagnosis"]),collapse = ",")
+  
+    # Convert the time series to a data frame
+    # It is altready on a data.frame format
+    # Check what frequency means in the ts means
+    ts_time_windows <- ts(data_points)    
+    
+    # turns best ARIMA model according to either AIC, AICc or BIC value.
+    arima_model_window <- forecast::auto.arima(ts_time_windows)
+    
+    # Ljung-Box test. 
+    residuals <- residuals(arima_model)
+    
+    # Perform Ljung-Box test
+    box.test<-Box.test(residuals, lag = 1, type = "Ljung-Box")
+    
+    # Concatenate title
+    Ljung_Box_Xsquared      <-round(box.test$statistic,3)
+    Ljung_Box_df            <-round(box.test$parameter,3)
+    Ljung_Box_pvalue        <-round(box.test$p.value,3)
+    Ljung_Box_whitenoise    <-FALSE
+    
+    # If p-value smaller than 0.05 than set 
+    if (Ljung_Box_pvalue > 0.05)
+    {
+      # Set stationarity to TRUE
+      Ljung_Box_whitenoise <-TRUE
+    }
 
-  # Calculate the mean of Efficiency 
-  sd_n=sd(data_points)
+    # Concatenate title
+    adf_Dickey_Fuller       <-NA
+    adf_df                  <-NA
+    adf_pvalue              <-NA
+    adf_stationarity        <-FALSE
+    
+    # If at least two data.points
+    if (length(as.vector(ts_time_windows))>1)
+    {  
+      # Store results of adf test
+      adf_test<-adf.test(ts_time_windows)
+      
+      # Concatenate title
+      adf_Dickey_Fuller       <-adf_test[[1]]
+      adf_df                  <-adf_test[[2]]
+      adf_pvalue              <-adf_test[[4]]
+    
+      # If p-value smaller than 0.05 than set 
+      if (adf_stationarity <= 0.05)
+      {
+      # Set stationarity to TRUE
+      adf_stationarity <-TRUE
+      }
+    }
+  # df_results
+  df_results<-data.frame(Window=time_window,   mean_n=mean_n,   sd_n=sd_n,      operational_states=operational_states,       diagnosis=diagnosis, adf_Dickey_Fuller=adf_Dickey_Fuller, adf_df=adf_df, adf_pvalue=adf_pvalue , adf_stationarity=adf_stationarity, Ljung_Box_Xsquared=Ljung_Box_Xsquared, Ljung_Box_df=Ljung_Box_df, Ljung_Box_pvalue=Ljung_Box_pvalue, Ljung_Box_whitenoise=Ljung_Box_whitenoise)
 
-  paste(unique(merge_water_viscous_sub[which(merge_water_viscous_sub$n %in% data_points),"operational_states"]),collpase=",")
+  # Add results tables
+  df_results_P47_3500RPM_Viscosity_128_Glycerin<-rbind(df_results_P47_3500RPM_Viscosity_128_Glycerin,df_results)
 }
 
 
