@@ -79,8 +79,14 @@ for (time_window in names(time_windows))
       
       # Concatenate title
       adf_Dickey_Fuller       <-adf_test[[1]]
-      adf_df                  <-adf_test[[2]]
-      adf_pvalue              <-adf_test[[4]]
+      adf_df                  <-adf_test[[2]]      
+
+      # If pvalue is not nan
+      if(!is.nan(adf_pvalue))
+      {
+          # Set variable
+          adf_pvalue              <-adf_test[[4]]
+      }
     
       # If p-value smaller than 0.05 than set 
       if (adf_pvalue <= 0.05)
@@ -180,14 +186,19 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
           adf_Dickey_Fuller       <-adf_test[[1]]
           adf_df                  <-adf_test[[2]]
           adf_pvalue              <-adf_test[[4]]
-        
-          # If p-value smaller than 0.05 than set 
-          if (adf_pvalue <= 0.05)
-          {
-              # Set stationarity to TRUE
-              adf_stationarity <-TRUE
-          }
+
+            # If pvalue is not nan
+            if(!is.nan(adf_pvalue))
+            {
+                # If p-value smaller than 0.05 than set 
+                if (adf_pvalue <= 0.05)
+                {
+                    # Set stationarity to TRUE
+                    adf_stationarity <-TRUE
+                }
+            }
         }
+            
         # df_results
         df_results<-data.frame(Window=time_window,   mean_n=mean_n,   sd_n=sd_n,      operational_states=operational_states,       diagnosis=diagnosis, adf_Dickey_Fuller=adf_Dickey_Fuller, adf_df=adf_df, adf_pvalue=adf_pvalue , adf_stationarity=adf_stationarity, Ljung_Box_Xsquared=Ljung_Box_Xsquared, Ljung_Box_df=Ljung_Box_df, Ljung_Box_pvalue=Ljung_Box_pvalue, Ljung_Box_whitenoise=Ljung_Box_whitenoise,series=series)
         
@@ -195,4 +206,3 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
         df_results_simulated<-rbind(df_results_simulated,df_results)
     }
 }
-
