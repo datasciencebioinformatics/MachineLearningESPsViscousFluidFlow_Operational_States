@@ -21,10 +21,18 @@ merge_water_viscous_sub_Q_n <- merge_water_viscous_sub_Q_n[order(merge_water_vis
 time_windows<-split(merge_water_viscous_sub_Q_n$n, ceiling(seq_along(merge_water_viscous_sub_Q_n$n)/time_window_length))
 
 # Then, for each time-series
-for (time_window in time_windows)
+for (time_window in names(time_windows))
 {
-  # Calculate the mean
-  print(time_window)
+  # Take only the plots of this series
+  data_points<-time_windows[[time_window]]
+  
+  # Calculate the mean of Efficiency 
+  mean_n=mean(data_points)
+
+  # Calculate the mean of Efficiency 
+  sd_n=sd(data_points)
+
+  paste(unique(merge_water_viscous_sub[which(merge_water_viscous_sub$n %in% data_points),"operational_states"]),collpase=",")
 }
 
 
