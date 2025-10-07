@@ -74,19 +74,24 @@ for (time_window in names(time_windows))
     # If at least two data.points
     if (length(as.vector(ts_time_windows))>1)
     {  
-      # Store results of adf test
-      adf_test<-adf.test(ts_time_windows)
-      
-      # Concatenate title
-      adf_Dickey_Fuller       <-adf_test[[1]]
-      adf_df                  <-adf_test[[2]]      
-
-      # If pvalue is not nan
-      if(!is.nan(adf_pvalue))
-      {
-          # Set variable
-          adf_pvalue              <-adf_test[[4]]
-      }
+        # Store results of adf test
+        adf_test<-adf.test(ts_time_windows)
+        
+        # Concatenate title
+        adf_Dickey_Fuller       <-adf_test[[1]]
+        adf_df                  <-adf_test[[2]]      
+        adf_pvalue              <-adf_test[[4]]
+        
+        # If pvalue is not nan
+        if(!is.nan(adf_pvalue))
+        {
+            # If p-value smaller than 0.05 than set 
+            if (adf_pvalue <= 0.05)
+            {
+            # Set stationarity to TRUE
+            adf_stationarity <-TRUE
+            }
+        }
     
       # If p-value smaller than 0.05 than set 
       if (adf_pvalue <= 0.05)
@@ -179,13 +184,13 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
         # If at least two data.points
         if (length(as.vector(ts_time_windows))>1)
         {  
-          # Store results of adf test
-          adf_test<-adf.test(ts_time_windows)
-          
-          # Concatenate title
-          adf_Dickey_Fuller       <-adf_test[[1]]
-          adf_df                  <-adf_test[[2]]
-          adf_pvalue              <-adf_test[[4]]
+            # Store results of adf test
+            adf_test<-adf.test(ts_time_windows)
+            
+            # Concatenate title
+            adf_Dickey_Fuller       <-adf_test[[1]]
+            adf_df                  <-adf_test[[2]]
+            adf_pvalue              <-adf_test[[4]]
 
             # If pvalue is not nan
             if(!is.nan(adf_pvalue))
