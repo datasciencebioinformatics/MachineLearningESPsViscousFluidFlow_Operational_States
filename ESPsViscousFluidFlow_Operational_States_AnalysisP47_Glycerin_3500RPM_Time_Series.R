@@ -108,11 +108,91 @@ df_results_simulated<-data.frame(Window=c(),   mean_n=c(),   sd_n=c(),      oper
 # For each simulated time-series
 for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
 {
-  # Take the table for the corresponding time-series
-  simulated_data_sub<-data.frame(simulated_data_all[simulated_data_all[,c("Series")]==series,])
+    # Take the table for the corresponding time-series
+    simulated_data_sub<-data.frame(simulated_data_all[simulated_data_all[,c("Series")]==series,])
 
-  # Concatenate data.frame
-  df_results<-rbind(df_results,df_results_simulated)
+    simulated_data_sub_Q_n<-data.frame(simulated_data_sub[,c("Q","n")])
+    
+    # If I have X data points, and the window length is l
+    # then I have X/l windows
+    # Perform sliding window analysis
+    # First, split the vector into chuncs
+    time_windows<-split(simulated_data_sub_Q_n$n, ceiling(seq_along(simulated_data_sub_Q_n$n)/time_window_length))
+    
+    # Then, for each time-series
+    for (time_window in names(time_windows))
+    {
+        # Take only the plots of this series
+        data_points<-time_windows[[time_window]]
+        
+        # Calculate the mean and sd of Efficiency 
+        mean_n=mean(data_points)
+      
+        # Calculate the mean and sd of Efficiency 
+        sd_n=sd(data_points)
+      
+        # Store also the operational states in a single variable
+        operational_states<-paste(unique(simulated_data_sub[which(simulated_data_sub$n %in% data_points),"operational_states"]),collapse = ",")
+      
+        # Store also the diagnosis in a single variable
+        diagnosis<-paste(unique(simulated_data_sub[which(simulated_data_sub$n %in% data_points),"Diagnosis"]),collapse = ",")
+      
+        # Convert the time series to a data frame
+        # It is altready on a data.frame format
+        # Check what frequency means in the ts means
+        ts_time_windows <- ts(data_points)    
+        
+        # turns best ARIMA model according to either AIC, AICc or BIC value.
+        arima_model_window <- forecast::auto.arima(ts_time_windows)
+        
+        # Ljung-Box test. 
+        residuals <- residuals(arima_model)
+        
+        # Perform Ljung-Box test
+        box.test<-Box.test(residuals, lag = 1, type = "Ljung-Box")
+        
+        # Concatenate title
+        Ljung_Box_Xsquared      <-round(box.test$statistic,3)
+        Ljung_Box_df            <-round(box.test$parameter,3)
+        Ljung_Box_pvalue        <-round(box.test$p.value,3)
+        Ljung_Box_whitenoise    <-FALSE
+        
+        # If p-value smaller than 0.05 than set 
+        if (Ljung_Box_pvalue > 0.05)
+        {
+          # Set stationarity to TRUE
+          Ljung_Box_whitenoise <-TRUE
+        }
+    
+        # Concatenate title
+        adf_Dickey_Fuller       <-NA
+        adf_df                  <-NA
+        adf_pvalue              <-NA
+        adf_stationarity        <-FALSE
+        
+        # If at least two data.points
+        if (length(as.vector(ts_time_windows))>1)
+        {  
+          # Store results of adf test
+          adf_test<-adf.test(ts_time_windows)
+          
+          # Concatenate title
+          adf_Dickey_Fuller       <-adf_test[[1]]
+          adf_df                  <-adf_test[[2]]
+          adf_pvalue              <-adf_test[[4]]
+        
+          # If p-value smaller than 0.05 than set 
+          if (adf_pvalue <= 0.05)
+          {
+              # Set stationarity to TRUE
+              adf_stationarity <-TRUE
+          }
+        }
+        # df_results
+        df_results<-data.frame(Window=time_window,   mean_n=mean_n,   sd_n=sd_n,      operational_states=operational_states,       diagnosis=diagnosis, adf_Dickey_Fuller=adf_Dickey_Fuller, adf_df=adf_df, adf_pvalue=adf_pvalue , adf_stationarity=adf_stationarity, Ljung_Box_Xsquared=Ljung_Box_Xsquared, Ljung_Box_df=Ljung_Box_df, Ljung_Box_pvalue=Ljung_Box_pvalue, Ljung_Box_whitenoise=Ljung_Box_whitenoise,series=series)
+        
+        # Add results tables
+        df_results_simulated<-rbind(df_results_simulated,df_results)
+    }
 }
-# Replace dataset
-simulated_data_all<-df_results
+
