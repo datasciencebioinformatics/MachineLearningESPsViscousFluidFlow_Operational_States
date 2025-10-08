@@ -298,6 +298,8 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
     simulated_data_sub_Q_n$Series<-series
 
     # Normalization of Q and n
+    simulated_data_sub_Q_n[,"n"]<-normalize(simulated_data_sub_Q_n[,"n"])
+    simulated_data_sub_Q_n[,"Q"]<-normalize(simulated_data_sub_Q_n[,"Q"])
 
     # Add table
     df_simulated_results_datas<-rbind(df_simulated_results_datas,simulated_data_sub_Q_n)
