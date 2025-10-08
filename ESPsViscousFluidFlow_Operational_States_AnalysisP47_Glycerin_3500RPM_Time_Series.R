@@ -306,10 +306,11 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
 }
 #############################################################################################################################
 # Melt the data.frame
-melt_df_simulated_results_datas<-reshape2::melt(df_simulated_results_datas,id.vars=c("Series","Q","n"))
+melt_df_simulated_results_datas<-reshape2::melt(df_simulated_results_datas,id.vars=c("Time","Series","Q","n"))
+
 
 # Plot for the time-series
-p1<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(operational_states))) + geom_point(aes(colour = factor(operational_states))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
+p1<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(operational_states))) + geom_line(aes(colour = factor(operational_states))) + geom_point(aes(colour = factor(operational_states))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5,scale="free")
 p2<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(diagnosis))) + geom_point(aes(colour = factor(diagnosis))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("diagnosis") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
 p3<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(adf_stationarity))) + geom_point(aes(colour = factor(adf_stationarity))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("stationarity") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
 p4<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(Ljung_Box_whitenoise))) + geom_point(aes(colour = factor(Ljung_Box_whitenoise))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("whitenoise") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
