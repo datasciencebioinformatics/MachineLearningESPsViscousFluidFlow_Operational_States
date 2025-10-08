@@ -297,6 +297,8 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
     # Add Series collumn
     simulated_data_sub_Q_n$Series<-series
 
+    # Normalization of Q and n
+
     # Add table
     df_simulated_results_datas<-rbind(df_simulated_results_datas,simulated_data_sub_Q_n)
 }
