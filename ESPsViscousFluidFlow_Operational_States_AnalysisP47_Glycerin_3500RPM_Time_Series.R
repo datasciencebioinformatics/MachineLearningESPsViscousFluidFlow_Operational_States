@@ -256,9 +256,9 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
 # Remove 
 # First plot for the operational states
 p1<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","operational_states")], aes(Q, n, colour = factor(operational_states))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6)) 
-p2<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","diagnosis")], aes(Q, n, colour = factor(diagnosis))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") +scale_fill_viridis_d(option = "plasma") + ggtitle("diagnosis") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6)) 
-p3<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","adf_stationarity")], aes(Q, n, colour = factor(adf_stationarity))) + geom_point() + theme_bw() + theme(legend.position="bottom")  + ggtitle("adf_stationarity") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6)) 
-p4<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","Ljung_Box_whitenoise")], aes(Q, n, colour = factor(Ljung_Box_whitenoise))) + geom_point()  + theme_bw() + theme(legend.position="bottom")+ ggtitle("Ljung_Box_whitenoise") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6)) 
+p2<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","diagnosis")], aes(Q, n, colour = factor(diagnosis))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") +scale_fill_viridis_d(option = "plasma") + ggtitle("diagnosis") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=10)) 
+p3<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","adf_stationarity")], aes(Q, n, colour = factor(adf_stationarity))) + geom_point() + theme_bw() + theme(legend.position="bottom")  + ggtitle("adf_stationarity") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=10)) 
+p4<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","Ljung_Box_whitenoise")], aes(Q, n, colour = factor(Ljung_Box_whitenoise))) + geom_point()  + theme_bw() + theme(legend.position="bottom")+ ggtitle("Ljung_Box_whitenoise") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=10)) 
 
 
 # Melt tabele
