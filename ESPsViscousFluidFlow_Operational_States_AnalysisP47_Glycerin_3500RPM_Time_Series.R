@@ -153,7 +153,7 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
     colnames(simulated_data_sub_Q_n)<-c("Q","n","operational_states_points")
 
     # Rename collumns
-    colnames(simulated_data_sub_Q_n)<-c("Q","n")
+    colnames(simulated_data_sub_Q_n)<-c("Q","n","operational_states_points")
     
     # Add collumn 
     simulated_data_sub_Q_n<-cbind(simulated_data_sub_Q_n,Window=-1)
@@ -266,3 +266,43 @@ p4<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","Ljung_Box_whitenoise")], aes(
 png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis.png",sep=""), width = 30, height = 20, res=600, units = "cm")  
   ggarrange(p1, p2, p3, p4, ncol=2, nrow=2, common.legend = FALSE)
 dev.off()
+#############################################################################################################################
+# Start results data .frame
+df_simulated_results_datas<-data.frame(Q=c(),n=c(), operational_states=c(),diagnosis=c(),adf_stationarity=c(),Ljung_Box_whitenoise=c(),Time=c(),Series=c())
+
+# For each simulated time-series
+for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
+{
+    # Take the simulated data
+    simulated_data_sub_Q_n<-simulated_data_sub_Q_n_list[[series]]
+
+    # Take the corresponding results
+    df_results_simulated_sub<-df_results_simulated[which(df_results_simulated$series == series),]
+    
+    #  First, plot the results for the equipment P47, 3500RPM, Viscosity 128, Glycering
+    # The window ID is added to make the correspondence of each data point table to the results table. 
+    # merge_water_viscous_sub_Q_n
+    # df_results_P47_3500RPM_Viscosity_128_Glycerin
+    simulated_data_sub_Q_n<-unique(merge(simulated_data_sub_Q_n,df_results_simulated_sub,by="Window"))
+    
+    # Subselect collumns for the plot
+    simulated_data_sub_Q_n<-simulated_data_sub_Q_n[,c("Q","n","operational_states_points","diagnosis","adf_stationarity","Ljung_Box_whitenoise")]
+    
+    # Rename collumns
+    colnames(simulated_data_sub_Q_n)<-c("Q","n","operational_states","diagnosis","adf_stationarity","Ljung_Box_whitenoise")
+    
+    # Add Time collumn
+    simulated_data_sub_Q_n$Time<-1:dim(simulated_data_sub_Q_n)[1]
+    
+    # Add Series collumn
+    simulated_data_sub_Q_n$Series<-series
+
+    # Add table
+    df_simulated_results_datas<-rbind(df_simulated_results_datas,simulated_data_sub_Q_n)
+}
+#############################################################################################################################
+# Melt the data.frame
+melt_df_simulated_results_datas<-reshape2::melt(df_simulated_results_datas,id.vars=c("Series","Q","n"))
+
+
+p1<-ggplot(melt_df_simulated_results_datas, aes(Q, n, colour = factor(operational_states))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_grid(rows = vars(Series))
