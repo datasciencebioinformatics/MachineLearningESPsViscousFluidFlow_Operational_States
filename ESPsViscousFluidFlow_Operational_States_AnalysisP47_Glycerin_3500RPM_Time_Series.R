@@ -12,8 +12,6 @@ merge_water_viscous_sub_Q_n<-merge_water_viscous_sub[,c("Q","n")]
 # Sort data.frame by Q
 merge_water_viscous_sub_Q_n <- merge_water_viscous_sub_Q_n[order(merge_water_viscous_sub_Q_n$Q), ]
 
-# Plot the Flow rate versus Eficiency for check 
-
 # If I have X data points, and the window length is l
 # then I have X/l windows
 # Perform sliding window analysis
@@ -211,3 +209,9 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
         df_results_simulated<-rbind(df_results_simulated,df_results)
     }
 }
+#############################################################################################################################3
+#  First, plot the results for the equipment P47, 3500RPM, Viscosity 128, Glycering
+# The window ID is added to make the correspondence of each data point table to the results table. 
+
+
+# Second, plot the results for the simulated data
