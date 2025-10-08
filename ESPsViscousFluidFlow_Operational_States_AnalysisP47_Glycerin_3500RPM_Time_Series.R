@@ -127,6 +127,20 @@ colnames(merge_water_viscous_sub_Q_n)<-c("Q","n","operational_states","diagnosis
 
 # Add Time collumn
 merge_water_viscous_sub_Q_n$Time<-1:dim(merge_water_viscous_sub_Q_n)[1]
+#############################################################################################################################
+# Remove 
+# First plot for the operational states
+p1<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","operational_states")], aes(Q, n, colour = factor(operational_states))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6)) 
+p2<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","diagnosis")], aes(Q, n, colour = factor(diagnosis))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") +scale_fill_viridis_d(option = "plasma") + ggtitle("diagnosis") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=10)) 
+p3<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","adf_stationarity")], aes(Q, n, colour = factor(adf_stationarity))) + geom_point() + theme_bw() + theme(legend.position="bottom")  + ggtitle("adf_stationarity") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=10)) 
+p4<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","Ljung_Box_whitenoise")], aes(Q, n, colour = factor(Ljung_Box_whitenoise))) + geom_point()  + theme_bw() + theme(legend.position="bottom")+ ggtitle("Ljung_Box_whitenoise") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=10)) 
+
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis.png",sep=""), width = 30, height = 20, res=600, units = "cm")  
+  ggarrange(p1, p2, p3, p4, ncol=2, nrow=2, common.legend = FALSE)
+dev.off()
 ######################################################################################################################
 # List to store the simulated_data_sub_Q_n with results data
 simulated_data_sub_Q_n_list<-list()
@@ -135,7 +149,7 @@ simulated_data_sub_Q_n_list<-list()
 simulated_data_all<-data.frame(simulated_data_all)
 
  # Set colnames
-colnames(simulated_data_all)<-c("Q","Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi","mo","n","H","BHP","Time","Series","n_discrete","h_discrete","bhp_discrete","operational_states")
+colnames(simulated_data_all)<-c("Q","Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi","mo","n","H","BHP","Time","Series","n_discrete","h_discrete","bhp_discrete","operational_states","diagnosis")
 
 # Define data.frame for the results of time-series
 df_results_simulated<-data.frame(Window=c(),   mean_n=c(),   sd_n=c(),      operational_states=c(),       diagnosis=c(), adf_Dickey_Fuller=c(), adf_df=c(), adf_pvalue=c() , adf_stationarity=c(), Ljung_Box_Xsquared=c(), Ljung_Box_df=c(), Ljung_Box_pvalue=c(), Ljung_Box_whitenoise=c(),series=c())
@@ -186,7 +200,7 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
         operational_states<-paste(unique(simulated_data_sub[which(simulated_data_sub$n %in% data_points),"operational_states"]),collapse = ",")
       
         # Store also the diagnosis in a single variable
-        diagnosis<-paste(unique(simulated_data_sub[which(simulated_data_sub$n %in% data_points),"Diagnosis"]),collapse = ",")
+        diagnosis<-paste(unique(simulated_data_sub[which(simulated_data_sub$n %in% data_points),"diagnosis"]),collapse = ",")
         
         # Concatenate title
         Ljung_Box_Xsquared      <-NA
@@ -253,20 +267,6 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
     }
 }
 #############################################################################################################################
-# Remove 
-# First plot for the operational states
-p1<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","operational_states")], aes(Q, n, colour = factor(operational_states))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6)) 
-p2<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","diagnosis")], aes(Q, n, colour = factor(diagnosis))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") +scale_fill_viridis_d(option = "plasma") + ggtitle("diagnosis") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=10)) 
-p3<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","adf_stationarity")], aes(Q, n, colour = factor(adf_stationarity))) + geom_point() + theme_bw() + theme(legend.position="bottom")  + ggtitle("adf_stationarity") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=10)) 
-p4<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","Ljung_Box_whitenoise")], aes(Q, n, colour = factor(Ljung_Box_whitenoise))) + geom_point()  + theme_bw() + theme(legend.position="bottom")+ ggtitle("Ljung_Box_whitenoise") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=10)) 
-
-
-# Melt tabele
-# Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis.png",sep=""), width = 30, height = 20, res=600, units = "cm")  
-  ggarrange(p1, p2, p3, p4, ncol=2, nrow=2, common.legend = FALSE)
-dev.off()
-#############################################################################################################################
 # Start results data .frame
 df_simulated_results_datas<-data.frame(Q=c(),n=c(), operational_states=c(),diagnosis=c(),adf_stationarity=c(),Ljung_Box_whitenoise=c(),Time=c(),Series=c())
 
@@ -308,5 +308,32 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
 # Melt the data.frame
 melt_df_simulated_results_datas<-reshape2::melt(df_simulated_results_datas,id.vars=c("Series","Q","n"))
 
+# Plot for the time-series
+p1<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(operational_states))) + geom_point(aes(colour = factor(operational_states))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
+p2<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(diagnosis))) + geom_point(aes(colour = factor(diagnosis))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("diagnosis") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
+p3<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(adf_stationarity))) + geom_point(aes(colour = factor(adf_stationarity))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("stationarity") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
+p4<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(Ljung_Box_whitenoise))) + geom_point(aes(colour = factor(Ljung_Box_whitenoise))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("whitenoise") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
 
-p1<-ggplot(melt_df_simulated_results_datas, aes(Q, n, colour = factor(operational_states))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_grid(rows = vars(Series))
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis_simulated_operational_states.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
+  p1
+dev.off()
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis_simulated_diagnosis.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
+  p2
+dev.off()
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis_simulated_stationarity.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
+  p3
+dev.off()
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis_simulated_whitenoise.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
+  p4
+dev.off()
