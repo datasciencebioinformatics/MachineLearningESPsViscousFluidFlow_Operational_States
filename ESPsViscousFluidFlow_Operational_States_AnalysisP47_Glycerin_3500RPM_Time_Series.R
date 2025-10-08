@@ -158,19 +158,16 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
     simulated_data_sub<-data.frame(simulated_data_all[simulated_data_all[,c("Series")]==series,])
 
     # Subset Q and n from the table    
-    simulated_data_sub_Q_n<-data.frame(simulated_data_sub[,c("Q","n","operational_states")])
+    simulated_data_sub_Q_n<-data.frame(simulated_data_sub[,c("n","operational_states","Time")])
 
     # Rename collumns
-    colnames(simulated_data_sub_Q_n)<-c("Q","n","operational_states_points")
+    colnames(simulated_data_sub_Q_n)<-c("n","operational_states_points","Time")
 
     # Rename collumns
-    colnames(simulated_data_sub_Q_n)<-c("Q","n","operational_states_points")
+    colnames(simulated_data_sub_Q_n)<-c("n","operational_states_points","Time")
     
     # Add collumn 
     simulated_data_sub_Q_n<-cbind(simulated_data_sub_Q_n,Window=-1)
-
-    # Sort data.frame by Q
-    simulated_data_sub_Q_n <- simulated_data_sub_Q_n[order(simulated_data_sub_Q_n$Q), ]
     
     # If I have X data points, and the window length is l
     # then I have X/l windows
@@ -283,10 +280,10 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
     simulated_data_sub_Q_n<-unique(merge(simulated_data_sub_Q_n,df_results_simulated_sub,by="Window"))
     
     # Subselect collumns for the plot
-    simulated_data_sub_Q_n<-simulated_data_sub_Q_n[,c("Q","n","operational_states_points","diagnosis","adf_stationarity","Ljung_Box_whitenoise")]
+    simulated_data_sub_Q_n<-simulated_data_sub_Q_n[,c("Time","n","operational_states_points","diagnosis","adf_stationarity","Ljung_Box_whitenoise")]
     
     # Rename collumns
-    colnames(simulated_data_sub_Q_n)<-c("Q","n","operational_states","diagnosis","adf_stationarity","Ljung_Box_whitenoise")
+    colnames(simulated_data_sub_Q_n)<-c("Time","n","operational_states","diagnosis","adf_stationarity","Ljung_Box_whitenoise")
     
     # Add Time collumn
     simulated_data_sub_Q_n$Time<-1:dim(simulated_data_sub_Q_n)[1]
@@ -294,44 +291,18 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
     # Add Series collumn
     simulated_data_sub_Q_n$Series<-series
 
-    # Normalization of Q and n
-    simulated_data_sub_Q_n[,"n"]<-normalize(simulated_data_sub_Q_n[,"n"])
-    simulated_data_sub_Q_n[,"Q"]<-normalize(simulated_data_sub_Q_n[,"Q"])
-
     # Add table
     df_simulated_results_datas<-rbind(df_simulated_results_datas,simulated_data_sub_Q_n)
 }
 #############################################################################################################################
-# Melt the data.frame
-melt_df_simulated_results_datas<-reshape2::melt(df_simulated_results_datas,id.vars=c("Time","Series","Q","n"))
-
-
 # Plot for the time-series
-p1<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(operational_states))) + geom_line(aes(colour = factor(operational_states))) + geom_point(aes(colour = factor(operational_states))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5,scale="free")
-p2<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(diagnosis))) + geom_point(aes(colour = factor(diagnosis))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("diagnosis") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
-p3<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(adf_stationarity))) + geom_point(aes(colour = factor(adf_stationarity))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("stationarity") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
-p4<-ggplot(df_simulated_results_datas, aes(Q, n, colour = factor(Ljung_Box_whitenoise))) + geom_point(aes(colour = factor(Ljung_Box_whitenoise))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("whitenoise") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 5)
+p1<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(operational_states))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 10, scale="free")
+p2<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(diagnosis))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("diagnosis")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 10, scale="free")
+p3<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(adf_stationarity))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("adf_stationarity")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 10, scale="free")
+p4<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(Ljung_Box_whitenoise))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("Ljung_Box_whitenoise")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 10, scale="free")
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis_simulated_operational_states.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
-  p1
-dev.off()
-
-# Melt tabele
-# Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis_simulated_diagnosis.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
-  p2
-dev.off()
-
-# Melt tabele
-# Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis_simulated_stationarity.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
-  p3
-dev.off()
-
-# Melt tabele
-# Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis_simulated_whitenoise.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
-  p4
+png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis_simulated.png",sep=""), width = 30, height = 40, res=600, units = "cm")  
+  ggarrange(p1, p2, p3, p4, ncol=4, common.legend = FALSE)
 dev.off()
