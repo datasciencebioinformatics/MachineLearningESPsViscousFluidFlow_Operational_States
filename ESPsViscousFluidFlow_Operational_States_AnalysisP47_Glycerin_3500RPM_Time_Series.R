@@ -255,14 +255,14 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
 #############################################################################################################################
 # Remove 
 # First plot for the operational states
-p1<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","operational_states")], aes(Q, n, colour = factor(operational_states))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=7)) 
-p2<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","diagnosis")], aes(Q, n, colour = factor(diagnosis))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") +scale_fill_viridis_d(option = "plasma") + ggtitle("diagnosis") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=7)) 
-p3<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","adf_stationarity")], aes(Q, n, colour = factor(adf_stationarity))) + geom_point() + theme_bw() + theme(legend.position="bottom")  + ggtitle("adf_stationarity") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=7)) 
-p4<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","Ljung_Box_whitenoise")], aes(Q, n, colour = factor(Ljung_Box_whitenoise))) + geom_point()  + theme_bw() + theme(legend.position="bottom")+ ggtitle("Ljung_Box_whitenoise") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=7)) 
+p1<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","operational_states")], aes(Q, n, colour = factor(operational_states))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6)) 
+p2<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","diagnosis")], aes(Q, n, colour = factor(diagnosis))) + geom_point() + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") +scale_fill_viridis_d(option = "plasma") + ggtitle("diagnosis") +  theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6)) 
+p3<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","adf_stationarity")], aes(Q, n, colour = factor(adf_stationarity))) + geom_point() + theme_bw() + theme(legend.position="bottom")  + ggtitle("adf_stationarity") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6)) 
+p4<-ggplot(merge_water_viscous_sub_Q_n[,c("Q","n","Ljung_Box_whitenoise")], aes(Q, n, colour = factor(Ljung_Box_whitenoise))) + geom_point()  + theme_bw() + theme(legend.position="bottom")+ ggtitle("Ljung_Box_whitenoise") + theme(legend.title = element_blank()) +  theme(legend.text=element_text(size=6)) 
 
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+png(filename=paste(project_folder,"Performance_curves_Time_Series_Analysis.png",sep=""), width = 30, height = 20, res=600, units = "cm")  
   ggarrange(p1, p2, p3, p4, ncol=2, nrow=2, common.legend = FALSE)
 dev.off()
