@@ -44,6 +44,9 @@ merge_water_viscous_sub_tertiles<-as.data.frame(lapply(merge_water_viscous_sub[,
 
 # Renames collumns
 colnames(merge_water_viscous_sub_tertiles)<-c("n_discrete","BHP_discrete","H_discrete","Q_discrete")
+
+# Add collumns to data.frame
+merge_water_viscous_sub<-cbind(merge_water_viscous_sub,merge_water_viscous_sub_tertiles)
 ################################################################################################################
 # Fig. 7—ESP P47 performance pumping viscous fluid at 3,500 rev/min.
 ESP_P47_water_plot_Q_H <- ggplot(merge_water_viscous_sub, aes(x = Q, y = H))     + geom_point(aes(color=n_discrete)) + theme_bw()   + ggtitle ("Flow rate Q vs. Head H")    + ylab("Head H [m]")                   + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "bottom")  
