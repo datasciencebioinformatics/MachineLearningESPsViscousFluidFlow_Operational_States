@@ -65,7 +65,19 @@ merged_slidding_window<-merge(df_slidding_position,df_slidding_windows,by="slidd
 
 # Merge also with the time points
 merged_slidding_window<-merge(merged_slidding_window,merge_water_viscous_sub_Q_n,by="datapoint")
+
+# Take the numeric values
+merged_slidding_window$stationairty<-as.numeric(merged_slidding_window$ADF_stationairty)
+merged_slidding_window$Ljung_Box_whitenoise<-as.numeric(merged_slidding_window$Ljung_Box_whitenoise)
+merged_slidding_window$operationalstates<-as.numeric(as.factor(merged_slidding_window$operational_states))
+merged_slidding_window$diagnosis<-as.numeric(as.factor(merged_slidding_window$Diagnosis))
 #####################################################################################################################
+# Select only numeric values
+merged_slidding_window<-merged_slidding_window[,which(!colnames(merged_slidding_window) %in% c("operational_states", "Diagnosis", "Ljung_Box_whitenoise", "ADF_stationairty"))]
+
+# Re-order
+merged_slidding_window<-merged_slidding_window[,c("datapoint","sliddingWindows","mean_n","sd_n","ADF_pvalue","ADF_Dickey_Fuller","ADF_Dickey_DF","Ljung_Box_Xsquared","Ljung_Box_df","Ljung_Box_pvalue","Q","n","stationairty","operationalstates","diagnosis")]
+
 # Generate the melt table
 melt_slidding_window<-reshape2::melt(merged_slidding_window,id.vars=c("sliddingWindows","datapoint"))
 ######################################################################################################################
