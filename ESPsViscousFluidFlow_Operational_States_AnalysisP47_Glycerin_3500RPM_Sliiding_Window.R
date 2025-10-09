@@ -8,16 +8,10 @@ stride        <-5
 ######################################################################################################################
 # First scan the P47, RPM300, Viscosity 128, Glycerin
 # Take the table for Q versus efficiency
-merge_water_viscous_sub_Q_n<-merge_water_viscous_sub[,c("Q","n","operational_states")]
-
-# Rename collumns
-colnames(merge_water_viscous_sub_Q_n)<-c("Q","n","operational_states_points")
-
-# Add collumn 
-merge_water_viscous_sub_Q_n<-cbind(merge_water_viscous_sub_Q_n,Window=-1)
+merge_water_viscous_sub_Q_n<-merge_water_viscous_sub[,c("Q","n","operational_states","Diagnosis")]
 
 # Add time collumns
-merge_water_viscous_sub_Q_n<-cbind(merge_water_viscous_sub_Q_n,Time=1:dim(merge_water_viscous_sub_Q_n)[1])
+merge_water_viscous_sub_Q_n<-cbind(merge_water_viscous_sub_Q_n,datapoint=1:dim(merge_water_viscous_sub_Q_n)[1])
 ######################################################################################################################
 # Take the number of slliding windows
 number_slidding_windows<-length(rollapply(merge_water_viscous_sub_Q_n$n, width = window_length, by = stride, mean))
@@ -46,4 +40,36 @@ slidding_windows<-1:number_slidding_windows
 ######################################################################################################################
 # Compile results table
 df_slidding_windows<-data.frame(sliddingWindows=slidding_windows, mean_n=mean_efficiency_values, sd_n=sd_efficiency_values, ADF_pvalue=ADF_pvalue_efficiency_values, ADF_Dickey_Fuller=ADF_Dickey_Fuller_efficiency_values, ADF_Dickey_DF=ADF_Dickey_DF_values,ADF_stationairty=ADF_stationairty,Ljung_Box_Xsquared=Ljung_Box_Xsquared,Ljung_Box_df=Ljung_Box_df,Ljung_Box_pvalue=Ljung_Box_pvalue,Ljung_Box_whitenoise=Ljung_Box_whitenoise)
+######################################################################################################################
+# Copile table with the slidding_windows of every datapoint position
+starting_positition<- 1
+ending_positition  <- dim(merge_water_viscous_sub_Q_n)[1]-window_length
+
+# Stridfes move
+slidding_window<-1
+
+# Startt data.frame
+df_slidding_position<-data.frame(sliddingWindows=c(),datapoint=c())
+
+# Start starting_positition and move by step of stride
+for (index in seq(starting_positition,ending_positition,by=stride))
+{
+  # Add to the data.frame
+  df_slidding_position<-rbind(df_slidding_position,data.frame(sliddingWindows=slidding_window,datapoint=seq(index,index+window_length,by=1)))
+
+  # Increment the counter
+  slidding_window<-slidding_window+1  
+}
+# Merge the data.frame
+merged_slidding_window<-merge(df_slidding_position,df_slidding_windows,by="sliddingWindows")
+
+# Merge also with the time points
+merged_slidding_window<-merge(merged_slidding_window,merge_water_viscous_sub_Q_n,by="datapoint")
+#####################################################################################################################
+# Generate the melt table
+melt_slidding_window<-reshape2::melt(merged_slidding_window,id.vars=c("sliddingWindows","datapoint"))
+######################################################################################################################
+
+
+
 
