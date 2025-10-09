@@ -5,9 +5,6 @@ time_window_length<-10
 # Define data.frame for the results of time-series
 df_results_P47_3500RPM_Viscosity_128_Glycerin<-data.frame(Window=c(),   mean_n=c(),   sd_n=c(),      operational_states=c(),     diagnosis=c(), adf_Dickey_Fuller=c(), adf_df=c(), adf_pvalue=c() , adf_stationarity=c(), Ljung_Box_Xsquared=c(), Ljung_Box_df=c(), Ljung_Box_pvalue=c(), Ljung_Box_whitenoise=c(),series=c())
 
-# Subset data to be used
-merge_water_viscous_sub <- merge_water_viscous[which(merge_water_viscous$equip=="P47" & merge_water_viscous$fluid=="Glycerin" & merge_water_viscous$Inlet.Viscosity == 128 & merge_water_viscous$RPM=="3500" ),]
-
 # First scan the P47, RPM300, Viscosity 128, Glycerin
 # Take the table for Q versus efficiency
 merge_water_viscous_sub_Q_n<-merge_water_viscous_sub[,c("Q","n","operational_states")]
