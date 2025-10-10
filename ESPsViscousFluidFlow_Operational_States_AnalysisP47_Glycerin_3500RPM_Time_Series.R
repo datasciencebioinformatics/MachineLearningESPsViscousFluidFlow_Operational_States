@@ -277,29 +277,23 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
     # The window ID is added to make the correspondence of each data point table to the results table. 
     # merge_water_viscous_sub_Q_n
     # df_results_P47_3500RPM_Viscosity_128_Glycerin
-    simulated_data_sub_Q_n<-unique(merge(simulated_data_sub_Q_n,df_results_simulated_sub,by="Window"))
+    simulated_data_sub_Q_n<-merge(simulated_data_sub_Q_n,df_results_simulated_sub,by="Window")
     
     # Subselect collumns for the plot
-    simulated_data_sub_Q_n<-simulated_data_sub_Q_n[,c("Time","n","operational_states_points","diagnosis","adf_stationarity","Ljung_Box_whitenoise")]
+    simulated_data_sub_Q_n<-simulated_data_sub_Q_n[,c("Time","n","operational_states_points","diagnosis","adf_stationarity","Ljung_Box_whitenoise","series")]
     
     # Rename collumns
-    colnames(simulated_data_sub_Q_n)<-c("Time","n","operational_states","diagnosis","adf_stationarity","Ljung_Box_whitenoise")
-    
-    # Add Time collumn
-    simulated_data_sub_Q_n$Time<-1:dim(simulated_data_sub_Q_n)[1]
-    
-    # Add Series collumn
-    simulated_data_sub_Q_n$Series<-series
+    colnames(simulated_data_sub_Q_n)<-c("Time","n","operational_states","diagnosis","adf_stationarity","Ljung_Box_whitenoise","series")
 
     # Add table
     df_simulated_results_datas<-rbind(df_simulated_results_datas,simulated_data_sub_Q_n)
 }
 #############################################################################################################################
 # Plot for the time-series
-p1<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(operational_states))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 10, scale="free")
-p2<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(diagnosis))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("diagnosis")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 10, scale="free")
-p3<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(adf_stationarity))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("adf_stationarity")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 10, scale="free")
-p4<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(Ljung_Box_whitenoise))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("Ljung_Box_whitenoise")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(Series), nrow = 10, scale="free")
+p1<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(operational_states))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("operational_states")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(series), nrow = 10, scale="free") +  theme(legend.title = element_blank())
+p2<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(diagnosis))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("diagnosis")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(series), nrow = 10, scale="free")+  theme(legend.title = element_blank())
+p3<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(adf_stationarity))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("adf_stationarity")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(series), nrow = 10, scale="free")+  theme(legend.title = element_blank())
+p4<-ggplot(df_simulated_results_datas, aes(Time, n)) + geom_line() + geom_point(aes(colour = factor(Ljung_Box_whitenoise))) + scale_color_viridis_d() + theme_bw() + theme(legend.position="bottom") + ggtitle("Ljung_Box_whitenoise")  +  theme(legend.text=element_text(size=6))   + facet_wrap(vars(series), nrow = 10, scale="free")+  theme(legend.title = element_blank())
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
