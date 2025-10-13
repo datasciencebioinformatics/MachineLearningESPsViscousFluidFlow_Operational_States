@@ -230,22 +230,22 @@ dev.off()
 melt_adf_results<-reshape2::melt(merged_slidding_window_all[,c("ADF_Dickey_Fuller","ADF_pvalue","ADF_Dickey_DF","stationairty","datapoint","series")],id.vars=c("datapoint","stationairty","series"))
 
 # Plot the stationairy values
-p2<-ggplot(melt_adf_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(stationairty))) + facet_wrap(vars(variable,series),ncol=3) +  theme_bw() + ggtitle("ADF test") + theme(legend.position="bottom") 
+p2<-ggplot(melt_adf_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(stationairty))) + facet_grid(vars(series), vars(variable),scales="free") +  theme_bw() + ggtitle("ADF test") + theme(legend.position="bottom") 
 
 # Process the Ljung-box variables
 melt_ljung_results<-reshape2::melt(merged_slidding_window_all[,c("Ljung_Box_Xsquared", "Ljung_Box_df", "Ljung_Box_pvalue", "Ljung_Box_whitenoise","datapoint","series")],id.vars=c("datapoint","Ljung_Box_whitenoise","series"))
 
 # Plot the stationairy values
-p3<-ggplot(melt_ljung_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(Ljung_Box_whitenoise))) + facet_wrap(vars(variable)) +  theme_bw() + ggtitle("Ljung-box test") + theme(legend.position="bottom")  + facet_wrap(vars(series), nrow = 5,ncol = 2, scales="free")
+p3<-ggplot(melt_ljung_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(Ljung_Box_whitenoise))) + facet_grid(vars(series), vars(variable),scales="free")+  theme_bw() + ggtitle("Ljung-box test") + theme(legend.position="bottom")  
 
 # Process the Ljung-box variables       
-png(filename=paste(output_dir,"Efficiency_rollapply_ADF_simulated.png",sep=""), width = 30, height = 15, res=600, units = "cm")  
+png(filename=paste(output_dir,"Efficiency_rollapply_ADF_simulated.png",sep=""), width = 30, height = 25, res=600, units = "cm")  
   # Plot the bayesian network graph
   p2
 dev.off()
 
 # Process the Ljung-box variables       
-png(filename=paste(output_dir,"Efficiency_rollapply_Ljung_simulated.png",sep=""), width = 30, height = 15, res=600, units = "cm")  
+png(filename=paste(output_dir,"Efficiency_rollapply_Ljung_simulated.png",sep=""), width = 30, height = 25, res=600, units = "cm")  
   # Plot the bayesian network graph
   p3
 dev.off()
