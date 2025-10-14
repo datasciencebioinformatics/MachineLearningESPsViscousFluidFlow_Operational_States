@@ -358,9 +358,6 @@ p3<-ggplot(melt_ljung_results, aes(datapoint, value)) + geom_line() + geom_point
 
 
 #####################################################################################################################
-# Experimental and simulated time-series
-merged_slidding_window_experimental
-merged_slidding_window_series_11
 
 # Plot the stationairy values               
 png(filename=paste(output_dir,"Efficiency_rollapply_mean_sd_simulated_11.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
