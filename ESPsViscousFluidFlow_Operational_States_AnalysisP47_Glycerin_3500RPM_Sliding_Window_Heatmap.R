@@ -8,7 +8,7 @@ stride        <-5
 ######################################################################################################################
 # First scan the P47, RPM300, Viscosity 128, Glycerin
 # Take the table for Q versus efficiency
-merge_water_viscous_sub_Q_n<-merge_water_viscous_sub[,c("Q","n","operational_states","Diagnosis")]
+merge_water_viscous_sub_Q_n<-merge_water_viscous_sub_bck[,c("Q","n","operational_states","Diagnosis")]
 
 # Add time collumns
 merge_water_viscous_sub_Q_n<-cbind(merge_water_viscous_sub_Q_n,datapoint=1:dim(merge_water_viscous_sub_Q_n)[1])
@@ -157,6 +157,6 @@ merged_slidding_window_series_11
 # Merge water viscous sub
 merge_water_viscous_sub<-merge_water_viscous_sub[,c("Flow.rate","Average.Inlet.Temp.Tm.i","Average.Outlet.Temp.Tm.o","Inlet.Pressure.P1","Outlet.Pressure.P2","Inlet.Density.ρi","Inlet.Viscosity.mi","Outlet.Viscosity.mo","operational_states","Diagnosis")]
 
-# Subset collumns
-colnames(merge_water_viscous_sub)<-colnames(simulated_data_sub)
+# Re-set colnames
+# colnames(merge_water_viscous_sub)<-colnames(simulated_data_sub)
 
