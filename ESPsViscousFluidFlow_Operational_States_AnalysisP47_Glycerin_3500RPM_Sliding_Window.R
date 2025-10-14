@@ -357,4 +357,29 @@ melt_ljung_results<-reshape2::melt(merged_slidding_window[,c("n","mean_n","Ljung
 p3<-ggplot(melt_ljung_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(Ljung_Box_whitenoise))) + facet_wrap(vars(variable), ncol=1, scale="free") +  theme_bw() + ggtitle("Ljung-box test") + theme(legend.position="bottom") 
 
 
+#####################################################################################################################
+# Experimental and simulated time-series
+merged_slidding_window_experimental
+merged_slidding_window_series_11
+
+# Plot the stationairy values               
+png(filename=paste(output_dir,"Efficiency_rollapply_mean_sd_simulated_11.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+  # Plot the bayesian network graph
+  p1
+dev.off()
+# Merge water viscous sub
+merge_water_viscous_sub<-merge_water_viscous_sub[,c("Flow.rate","Average.Inlet.Temp.Tm.i","Average.Outlet.Temp.Tm.o","Inlet.Pressure.P1","Outlet.Pressure.P2","Inlet.Density.ρi","Inlet.Viscosity.mi","Outlet.Viscosity.mo","operational_states","Diagnosis")]
+
+# Process the Ljung-box variables       
+png(filename=paste(output_dir,"Efficiency_rollapply_ADF_simulated_11.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
+  # Plot the bayesian network graph
+  p2
+dev.off()
+# Subset collumns
+
+# Process the Ljung-box variables       
+png(filename=paste(output_dir,"Efficiency_rollapply_Ljung_simulated_11.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
+  # Plot the bayesian network graph
+  p3
+dev.off()
 
