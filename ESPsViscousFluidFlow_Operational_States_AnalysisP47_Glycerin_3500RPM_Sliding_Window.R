@@ -70,7 +70,7 @@ merged_slidding_window<-merge(merged_slidding_window,merge_water_viscous_sub_Q_n
 merged_slidding_window$stationairty<-as.numeric(merged_slidding_window$ADF_stationairty)
 merged_slidding_window$Ljung_Box_whitenoise<-as.numeric(merged_slidding_window$Ljung_Box_whitenoise)
 merged_slidding_window$operationalstates<-as.numeric(as.factor(merged_slidding_window$operational_states))
-merged_slidding_window$diagnosis<-as.numeric(as.factor(merged_slidding_window$diagnosis))
+merged_slidding_window$Diagnosis<-as.numeric(as.factor(merged_slidding_window$Diagnosis))
 
 
 #####################################################################################################################
