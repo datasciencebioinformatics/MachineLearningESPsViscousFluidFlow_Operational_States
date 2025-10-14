@@ -229,8 +229,11 @@ dev.off()
 # Process the stationarity variables
 melt_adf_results<-reshape2::melt(merged_slidding_window_all[,c("ADF_Dickey_Fuller","ADF_pvalue","ADF_Dickey_DF","stationairty","datapoint","series")],id.vars=c("datapoint","stationairty","series"))
 
+# Combine series + variable
+melt_adf_results$series_variable<-paste("Simulated time-series ",melt_adf_results$serie,melt_adf_results$variable, sep=" ")
+
 # Plot the stationairy values
-p2<-ggplot(melt_adf_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(stationairty))) + facet_grid(vars(series), vars(variable),scales="free") +  theme_bw() + ggtitle("ADF test") + theme(legend.position="bottom") 
+p2<-ggplot(melt_adf_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(stationairty))) + facet_grid(vars(series), vars(variable),scales=c("free")) +  theme_bw() + ggtitle("ADF test") + theme(legend.position="bottom") 
 
 # Process the Ljung-box variables
 melt_ljung_results<-reshape2::melt(merged_slidding_window_all[,c("Ljung_Box_Xsquared", "Ljung_Box_df", "Ljung_Box_pvalue", "Ljung_Box_whitenoise","datapoint","series")],id.vars=c("datapoint","Ljung_Box_whitenoise","series"))
