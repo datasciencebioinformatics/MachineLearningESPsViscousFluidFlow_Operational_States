@@ -224,7 +224,7 @@ for (series in unique(as.numeric(simulated_data_all[,c("Series")])))
 p1<-ggplot(merged_slidding_window_all, aes(x = datapoint)) +
       geom_line(aes(y = n), color = "black", alpha = 0.6) +
       geom_line(aes(y = mean_n), color = "blue", size = 1) +
-      geom_ribbon(aes(ymin = mean_n - sd_n, ymax = mean_n + sd_n), fill = "red", alpha = 0.2) + theme_bw() + ggtitle ("Rollapply(mean) with=40 stride=10, mean±sd") + facet_wrap(vars(series), nrow = 5,ncol = 2, scales="free")
+      geom_ribbon(aes(ymin = mean_n - sd_n, ymax = mean_n + sd_n), fill = "red", alpha = 0.2) + theme_bw() + ggtitle ("Rollapply(mean) with=10 stride=5, mean±sd") + facet_wrap(vars(series), nrow = 5,ncol = 2, scales="free")
 
 
 # Plot the stationairy values               
@@ -341,7 +341,7 @@ melt_slidding_window<-reshape2::melt(merged_slidding_window,id.vars=c("datapoint
 p1<-ggplot(merged_slidding_window, aes(x = datapoint)) +
       geom_line(aes(y = n), color = "black", alpha = 0.6) +
       geom_line(aes(y = mean_n), color = "blue", size = 1) +
-      geom_ribbon(aes(ymin = mean_n - sd_n, ymax = mean_n + sd_n), fill = "red", alpha = 0.2) + theme_bw() + ggtitle ("Rollapply(mean) with=40 stride=10, mean±sd")
+      geom_ribbon(aes(ymin = mean_n - sd_n, ymax = mean_n + sd_n), fill = "red", alpha = 0.2) + theme_bw() + ggtitle ("Rollapply(mean) with=10 stride=5, mean±sd")
 
 
 # Process the stationarity variables
