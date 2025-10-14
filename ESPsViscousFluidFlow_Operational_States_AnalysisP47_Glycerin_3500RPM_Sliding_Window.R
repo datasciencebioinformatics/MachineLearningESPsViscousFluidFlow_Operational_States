@@ -85,32 +85,32 @@ p1<-ggplot(merged_slidding_window, aes(x = datapoint)) +
 
 
 # Process the stationarity variables
-melt_adf_results<-reshape2::melt(merged_slidding_window[,c("ADF_Dickey_Fuller","ADF_pvalue","ADF_Dickey_DF","stationairty","datapoint")],id.vars=c("datapoint","stationairty"))
+melt_adf_results<-reshape2::melt(merged_slidding_window[,c("n","mean_n","ADF_Dickey_Fuller","ADF_pvalue","ADF_Dickey_DF","stationairty","datapoint")],id.vars=c("datapoint","stationairty"))
 
 # Plot the stationairy values
-p2<-ggplot(melt_adf_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(stationairty))) + facet_wrap(vars(variable),scale="free") +  theme_bw() + ggtitle("ADF test") + theme(legend.position="bottom") 
+p2<-ggplot(melt_adf_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(stationairty))) + facet_wrap(vars(variable),scale="free",ncol=5) +  theme_bw() + ggtitle("ADF test") + theme(legend.position="bottom") 
 
 # Process the Ljung-box variables
-melt_ljung_results<-reshape2::melt(merged_slidding_window[,c("Ljung_Box_Xsquared", "Ljung_Box_df", "Ljung_Box_pvalue", "Ljung_Box_whitenoise","datapoint")],id.vars=c("datapoint","Ljung_Box_whitenoise"))
+melt_ljung_results<-reshape2::melt(merged_slidding_window[,c("n","mean_n","Ljung_Box_Xsquared", "Ljung_Box_df", "Ljung_Box_pvalue", "Ljung_Box_whitenoise","datapoint")],id.vars=c("datapoint","Ljung_Box_whitenoise"))
 
 # Plot the stationairy values
-p3<-ggplot(melt_ljung_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(Ljung_Box_whitenoise))) + facet_wrap(vars(variable), scale="free") +  theme_bw() + ggtitle("Ljung-box test") + theme(legend.position="bottom") 
+p3<-ggplot(melt_ljung_results, aes(datapoint, value)) + geom_line() + geom_point(aes(color=factor(Ljung_Box_whitenoise))) + facet_wrap(vars(variable), scale="free",ncol=5) +  theme_bw() + ggtitle("Ljung-box test") + theme(legend.position="bottom") 
 
 
 # Plot the stationairy values               
-png(filename=paste(output_dir,"Efficiency_rollapply_mean_sd.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+png(filename=paste(output_dir,"Efficiency_rollapply_mean_sd.png",sep=""), width = 25, height = 15, res=600, units = "cm")  
   # Plot the bayesian network graph
   p1
 dev.off()
 
 # Process the Ljung-box variables       
-png(filename=paste(output_dir,"Efficiency_rollapply_ADF.png",sep=""), width = 30, height = 15, res=600, units = "cm")  
+png(filename=paste(output_dir,"Efficiency_rollapply_ADF.png",sep=""), width = 25, height = 15, res=600, units = "cm")  
   # Plot the bayesian network graph
   p2
 dev.off()
 
 # Process the Ljung-box variables       
-png(filename=paste(output_dir,"Efficiency_rollapply_Ljung.png",sep=""), width = 30, height = 15, res=600, units = "cm")  
+png(filename=paste(output_dir,"Efficiency_rollapply_Ljung.png",sep=""), width = 25, height = 15, res=600, units = "cm")  
   # Plot the bayesian network graph
   p3
 dev.off()
