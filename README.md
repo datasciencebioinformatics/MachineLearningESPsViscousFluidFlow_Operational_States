@@ -49,5 +49,5 @@ source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_AnalysisP47
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_AnalysisP47_Glycerin_3500RPM_Time_Series.R",sep=""))
 
 #### 15) ESPsViscousFluidFlow_Operational_States_AnalysisP47_Glycerin_3500RPM_Sliiding_Window
-source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_AnalysisP47_Glycerin_3500RPM_Sliiding_Window.R",sep=""))
+source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_AnalysisP47_Glycerin_3500RPM_Sliding_Window.R",sep=""))
 
