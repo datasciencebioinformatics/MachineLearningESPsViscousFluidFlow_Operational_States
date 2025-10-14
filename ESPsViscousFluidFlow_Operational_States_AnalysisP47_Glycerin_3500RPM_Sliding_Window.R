@@ -8,7 +8,7 @@ stride        <-5
 ######################################################################################################################
 # First scan the P47, RPM300, Viscosity 128, Glycerin
 # Take the table for Q versus efficiency
-merge_water_viscous_sub_Q_n<-merge_water_viscous_sub[,c("Q","n","operational_states","Diagnosis")]
+merge_water_viscous_sub_Q_n<-merge_water_viscous_sub_bck[,c("Q","n","operational_states","Diagnosis")]
 
 # Add time collumns
 merge_water_viscous_sub_Q_n<-cbind(merge_water_viscous_sub_Q_n,datapoint=1:dim(merge_water_viscous_sub_Q_n)[1])
@@ -70,7 +70,7 @@ merged_slidding_window<-merge(merged_slidding_window,merge_water_viscous_sub_Q_n
 merged_slidding_window$stationairty<-as.numeric(merged_slidding_window$ADF_stationairty)
 merged_slidding_window$Ljung_Box_whitenoise<-as.numeric(merged_slidding_window$Ljung_Box_whitenoise)
 merged_slidding_window$operationalstates<-as.numeric(as.factor(merged_slidding_window$operational_states))
-merged_slidding_window$diagnosis<-as.numeric(as.factor(merged_slidding_window$Diagnosis))
+merged_slidding_window$diagnosis<-as.numeric(as.factor(merged_slidding_window$diagnosis))
 
 
 #####################################################################################################################
