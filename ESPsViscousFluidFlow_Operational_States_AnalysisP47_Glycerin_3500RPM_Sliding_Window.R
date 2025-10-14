@@ -129,10 +129,10 @@ dev.off()
 ######################################################################################################################
 # Set the parameters
 # Define the lenght of the time-windnw
-window_length<-40
+window_length<-10
 
 # Define the lenght of the time-windnw
-stride        <-10
+stride        <-5
 ########################################################################################################################################
 # Also the simulated series
 # Start results table
