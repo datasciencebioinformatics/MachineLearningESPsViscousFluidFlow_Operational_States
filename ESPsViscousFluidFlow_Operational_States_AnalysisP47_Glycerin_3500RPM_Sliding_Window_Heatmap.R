@@ -180,6 +180,16 @@ colnames(merge_water_viscous_sub)<-colnames(simulated_data_sub)
 #####################################################################################################################
 # Normalized values for variables
 normalized_merge_water_viscous_sub <- as.data.frame(lapply(merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),], normalize))
+normalized_simulated_data_sub      <- as.data.frame(lapply(simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], normalize))
+
+# Attention, set the variables that do not change to a constant normalized value
+normalized_simulated_data_sub$Tm.i<- 1
+normalized_simulated_data_sub$Tm.o<- 1
+normalized_simulated_data_sub$pi  <- 1
+normalized_simulated_data_sub$mi  <- 1
+normalized_simulated_data_sub$mo  <- 1
+
+cbind(normalized_simulated_data_sub,simulated_data_sub[,c("n","BHP","H"),])
 
 # Normalized values for variables
 normalized_simulated_data_sub      <- simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),]
@@ -230,4 +240,13 @@ png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap.png",sep=""), w
   # Add annotation : bhp, head, efficiency
   pheatmap(df_normalized_merge_exp[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")] , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE)
 dev.off()
+
+######################################################################################################################
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated.png",sep=""), width = 20, height = 40, res=600, units = "cm")  
+  # Add annotation : bhp, head, efficiency
+  pheatmap(df_normalized_merge_sim[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")] , show_rownames = T,annotation_row = annotation_row_sim,annotation_colors=ann_colors,cluster_rows = FALSE)
+dev.off()
+
 
