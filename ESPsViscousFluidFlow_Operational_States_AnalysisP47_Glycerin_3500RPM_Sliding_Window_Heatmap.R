@@ -220,9 +220,9 @@ dev.off()
 ######################################################################################################################
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated.png",sep=""), width = 20, height = 40, res=600, units = "cm")  
+png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated.png",sep=""), width = 20, height = 30, res=600, units = "cm")  
   # Add annotation : bhp, head, efficiency
-  pheatmap(df_normalized_merge_sim[,c("Q","P1","P2","T")] , show_rownames = T,annotation_row = annotation_row_sim,annotation_colors=ann_colors,cluster_rows = FALSE)
+  pheatmap(df_normalized_merge_sim[,c("Q","P1","P2","T")] , show_rownames = F,annotation_row = annotation_row_sim,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("Simulated series ",selected_simulates_series,sep=""))
 dev.off()
 
 
