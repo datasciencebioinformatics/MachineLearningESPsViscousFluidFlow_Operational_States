@@ -155,8 +155,25 @@ merged_slidding_window_experimental
 merged_slidding_window_series_11
 
 # Merge water viscous sub
-merge_water_viscous_sub<-merge_water_viscous_sub[,c("Flow.rate","Average.Inlet.Temp.Tm.i","Average.Outlet.Temp.Tm.o","Inlet.Pressure.P1","Outlet.Pressure.P2","Inlet.Density.ρi","Inlet.Viscosity.mi","Outlet.Viscosity.mo","operational_states","Diagnosis")]
+merge_water_viscous_sub<-merge_water_viscous_sub_bck[,c("Flow.rate","Average.Inlet.Temp.Tm.i","Average.Outlet.Temp.Tm.o","Inlet.Pressure.P1","Outlet.Pressure.P2","Shaft.Torque","Inlet.Density.ρi","Inlet.Viscosity.mi","Outlet.Viscosity.mo","n","BHP","H","operational_states","Diagnosis")]
 
-# Re-set colnames
-# colnames(merge_water_viscous_sub)<-colnames(simulated_data_sub)
+# Subset collumns
+simulated_data_sub<-simulated_data_sub[,c("Q", "Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi", "mo", "n", "H", "BHP", "Time", "Series", "operational_states", "diagnosis")]
+
+
+# https://graysonwhite.com/gglm/reference/gglm.html
+# Provides four standard visual model diagnostic plots with `ggplot2`.
+# Train bayesian network from discrete data 
+colnames(merge_water_viscous_sub)<-c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H","operational_states","Diagnosis")
+colnames(simulated_data_sub)<-c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H","operational_states","Diagnosis")
+
+
+  #####################################################################################################################
+# Normalized values for variables
+normalized_merge_water_viscous_sub <- as.data.frame(lapply(merge_water_viscous_sub, normalize))
+
+# Normalized values for variables
+normalized_simulated_data_sub      <- as.data.frame(lapply(simulated_data_sub, normalize))
+#####################################################################################################################
+
 
