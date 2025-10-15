@@ -180,19 +180,7 @@ colnames(merge_water_viscous_sub)<-colnames(simulated_data_sub)
 #####################################################################################################################
 # Normalized values for variables
 normalized_merge_water_viscous_sub <- as.data.frame(lapply(merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),], normalize))
-normalized_simulated_data_sub      <- as.data.frame(lapply(simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], normalize))
-
-# Attention, set the variables that do not change to a constant normalized value
-normalized_simulated_data_sub$Tm.i<- 1
-normalized_simulated_data_sub$Tm.o<- 1
-normalized_simulated_data_sub$pi  <- 1
-normalized_simulated_data_sub$mi  <- 1
-normalized_simulated_data_sub$mo  <- 1
-
-cbind(normalized_simulated_data_sub,simulated_data_sub[,c("n","BHP","H"),])
-
-# Normalized values for variables
-normalized_simulated_data_sub      <- simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),]
+normalized_simulated_data_sub      <- as.data.frame(lapply(simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),], normalize))
 #####################################################################################################################
 # Add discrete values of n, BHP, H - Experimental data
 normalized_merge_water_viscous_sub$n<-cut(normalized_merge_water_viscous_sub$n, quantile(normalized_merge_water_viscous_sub$n, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
@@ -204,18 +192,6 @@ normalized_simulated_data_sub$n<-cut(normalized_simulated_data_sub$n, quantile(n
 normalized_simulated_data_sub$BHP<-cut(normalized_simulated_data_sub$BHP, quantile(normalized_simulated_data_sub$BHP, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
 normalized_simulated_data_sub$H<-cut(normalized_simulated_data_sub$H, quantile(normalized_simulated_data_sub$H, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
 ####################################################################################################################
-# Specifying clustering from distance matrix - Experimental
-normalized_dist_viscous_exp = dist(normalized_merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")])
-normalized_dcols_viscous_exp = dist(t(normalized_merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")]))
-
-# Specifying clustering from distance matrix - Simulated
-normalized_dist_viscous_sim = dist(normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")])
-normalized_dcols_viscous_sim = dist(t(normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")]))
-######################################################################################################################
-# kmeans
-kmeans_clusters_exp<-c(kmeans(normalized_merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")], centers=6, iter.max = 10, nstart = 1, trace = FALSE)$cluster)
-kmeans_clusters_sim<-c(kmeans(normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")], centers=6, iter.max = 10, nstart = 1, trace = FALSE)$cluster)
-######################################################################################################################
 # Subset the 
 df_normalized_merge_exp<-normalized_merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H")]
 df_normalized_merge_sim<-normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H")]
@@ -246,7 +222,7 @@ dev.off()
 # Plot_raw_vibration_data.png                                                                                                            
 png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated.png",sep=""), width = 20, height = 40, res=600, units = "cm")  
   # Add annotation : bhp, head, efficiency
-  pheatmap(df_normalized_merge_sim[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")] , show_rownames = T,annotation_row = annotation_row_sim,annotation_colors=ann_colors,cluster_rows = FALSE)
+  pheatmap(df_normalized_merge_sim[,c("Q","P1","P2","T")] , show_rownames = T,annotation_row = annotation_row_sim,annotation_colors=ann_colors,cluster_rows = FALSE)
 dev.off()
 
 
