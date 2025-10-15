@@ -214,7 +214,7 @@ ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = 
 # Plot_raw_vibration_data.png                                                                                                            
 png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
   # Add annotation : bhp, head, efficiency
-  pheatmap(df_normalized_merge_exp[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")] , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE)
+  pheatmap(df_normalized_merge_exp[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")] , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE,main=paste("P47 3500RPM Glycerin Viscosity 128"))
 dev.off()
 
 ######################################################################################################################
