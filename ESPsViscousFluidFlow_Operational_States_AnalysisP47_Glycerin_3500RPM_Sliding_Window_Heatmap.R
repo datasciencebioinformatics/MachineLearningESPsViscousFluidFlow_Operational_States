@@ -76,10 +76,12 @@ merged_slidding_window$diagnosis<-as.numeric(as.factor(merged_slidding_window$Di
 # Make copyy
 merged_slidding_window_experimental<-merged_slidding_window
 #######################################################################################################################
+# Take only series 11
+selected_simulates_series<-11
+
 # Take only the time-series 11
 # Take the table for the corresponding time-series
-simulated_data_sub<-simulated_data_all[simulated_data_all[,c("Series")]==10,]
-
+simulated_data_sub<-simulated_data_all[simulated_data_all[,c("Series")]==selected_simulates_series,]
 ######################################################################################################################
 # First scan the P47, RPM300, Viscosity 128, Glycerin
 # Take the table for Q versus efficiency
@@ -152,7 +154,7 @@ merged_slidding_window_series_11<-merged_slidding_window
 #####################################################################################################################
 # Set the colnames from experimental from simulated time series
 vars_A<-c("Q","Average.Inlet.Temp.Tm.i","Average.Outlet.Temp.Tm.o","Inlet.Pressure.P1","Outlet.Pressure.P2","Shaft.Torque","Inlet.Density.ρi","Inlet.Viscosity.mi","Outlet.Viscosity.mo","n","H","BHP","operational_states","Diagnosis","Time","Series")
-vars_B<-c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","H","BHP","operational_states","Diagnosis","Time","Series")
+vars_B<-c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","H","BHP","operational_states","diagnosis","Time","Series")
 #####################################################################################################################
 # Experimental and simulated time-series
 merged_slidding_window_experimental
@@ -175,13 +177,6 @@ simulated_data_sub<-simulated_data_sub[,vars_B]
 
 # Adjust colnames
 colnames(merge_water_viscous_sub)<-colnames(simulated_data_sub)
-
-#####################################################################################################################
-# Take only series 11
-selected_simulates_series<-11
-
-# Subseect series
-simulated_data_sub<-simulated_data_sub[which(simulated_data_sub$Series==selected_simulates_series),]
 #####################################################################################################################
 # Normalized values for variables
 normalized_merge_water_viscous_sub <- as.data.frame(lapply(merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),], normalize))
@@ -219,31 +214,20 @@ df_normalized_merge_sim<-normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1"
 rownames(df_normalized_merge_exp)<-paste0("Time_", seq(nrow(df_normalized_merge_exp)))
 rownames(df_normalized_merge_sim)<-paste0("Time_", seq(nrow(df_normalized_merge_sim)))
 
-# Remove row lines
-# Add k-means
-annotation_row_exp=df_normalized_merge_exp[,c("n","BHP","H")]
-annotation_row_sim=df_normalized_merge_sim[,c("n","BHP","H")]
 
-# Set the k-means clusters
-annotation_row_exp$Kmeans<-as.factor(kmeans_clusters_exp)
-annotation_row_sim$Kmeans<-as.factor(kmeans_clusters_sim)
+
+# Remove row lines
+annotation_row_exp=cbind(df_normalized_merge_exp[,c("n","BHP","H")],merge_water_viscous_sub[,c("operational_states","diagnosis")])
+annotation_row_sim=cbind(df_normalized_merge_sim[,c("n","BHP","H")],simulated_data_sub[,c("operational_states","diagnosis")])
 ######################################################################################################################
 # Specify colors
-ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black"),Kmeans = c("#DF536B","#61D04F","#2297E6", "#28E2E5","#CD0BBC", "#F5C710" ) )
+ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black") )
 
-# Set the name for the k-means
-names(ann_colors$Kmeans)<-c("1","2","3","4","5","6")
-
-order_rows_exp<-rownames(normalized_merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")])[order(kmeans_clusters_exp)]
-order_rows_sim<-rownames(normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")])[order(kmeans_clusters_sim)]
-
-df_normalized_merge_exp<-df_normalized_merge_exp[as.integer(order_rows_exp),]
-df_normalized_merge_sim<-df_normalized_merge_sim[as.integer(order_rows_sim),]
 ######################################################################################################################
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
   # Add annotation : bhp, head, efficiency
-  pheatmap(df_normalized_merge_exp[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")] , clustering_distance_cols = normalized_dist_viscous_exp,show_rownames = F,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE)
+  pheatmap(df_normalized_merge_exp[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")] , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE)
 dev.off()
 
