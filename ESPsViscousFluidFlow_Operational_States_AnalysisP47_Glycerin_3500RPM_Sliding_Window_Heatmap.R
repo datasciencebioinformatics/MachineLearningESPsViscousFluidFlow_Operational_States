@@ -150,30 +150,100 @@ merged_slidding_window$diagnosis<-as.numeric(as.factor(merged_slidding_window$di
 # Make copyy
 merged_slidding_window_series_11<-merged_slidding_window
 #####################################################################################################################
+# Set the colnames from experimental from simulated time series
+vars_A<-c("Q","Average.Inlet.Temp.Tm.i","Average.Outlet.Temp.Tm.o","Inlet.Pressure.P1","Outlet.Pressure.P2","Shaft.Torque","Inlet.Density.ρi","Inlet.Viscosity.mi","Outlet.Viscosity.mo","n","H","BHP","operational_states","Diagnosis","Time","Series")
+vars_B<-c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","H","BHP","operational_states","Diagnosis","Time","Series")
+#####################################################################################################################
 # Experimental and simulated time-series
 merged_slidding_window_experimental
 merged_slidding_window_series_11
 
+# Copy table
+merge_water_viscous_sub<-merge_water_viscous_sub_bck
+
+# Add Time collumns
+merge_water_viscous_sub$Time<-1:dim(merge_water_viscous_sub)[1]
+
+# Add Series collumns
+merge_water_viscous_sub$Series<-0
+
 # Merge water viscous sub
-merge_water_viscous_sub<-merge_water_viscous_sub_bck[,c("Flow.rate","Average.Inlet.Temp.Tm.i","Average.Outlet.Temp.Tm.o","Inlet.Pressure.P1","Outlet.Pressure.P2","Shaft.Torque","Inlet.Density.ρi","Inlet.Viscosity.mi","Outlet.Viscosity.mo","n","BHP","H","operational_states","Diagnosis")]
+merge_water_viscous_sub<-merge_water_viscous_sub[,vars_A]
 
 # Subset collumns
-simulated_data_sub<-simulated_data_sub[,c("Q", "Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi", "mo", "n", "H", "BHP", "Time", "Series", "operational_states", "diagnosis")]
+simulated_data_sub<-simulated_data_sub[,vars_B]
 
+# Adjust colnames
+colnames(merge_water_viscous_sub)<-colnames(simulated_data_sub)
 
-# https://graysonwhite.com/gglm/reference/gglm.html
-# Provides four standard visual model diagnostic plots with `ggplot2`.
-# Train bayesian network from discrete data 
-colnames(merge_water_viscous_sub)<-c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H","operational_states","Diagnosis")
-colnames(simulated_data_sub)<-c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H","operational_states","Diagnosis")
-
-
-  #####################################################################################################################
-# Normalized values for variables
-normalized_merge_water_viscous_sub <- as.data.frame(lapply(merge_water_viscous_sub, normalize))
-
-# Normalized values for variables
-normalized_simulated_data_sub      <- as.data.frame(lapply(simulated_data_sub, normalize))
 #####################################################################################################################
+# Take only series 11
+selected_simulates_series<-11
 
+# Subseect series
+simulated_data_sub<-simulated_data_sub[which(simulated_data_sub$Series==selected_simulates_series),]
+#####################################################################################################################
+# Normalized values for variables
+normalized_merge_water_viscous_sub <- as.data.frame(lapply(merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),], normalize))
+
+# Normalized values for variables
+normalized_simulated_data_sub      <- simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),]
+#####################################################################################################################
+# Add discrete values of n, BHP, H - Experimental data
+normalized_merge_water_viscous_sub$n<-cut(normalized_merge_water_viscous_sub$n, quantile(normalized_merge_water_viscous_sub$n, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
+normalized_merge_water_viscous_sub$BHP<-cut(normalized_merge_water_viscous_sub$BHP, quantile(normalized_merge_water_viscous_sub$BHP, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
+normalized_merge_water_viscous_sub$H<-cut(normalized_merge_water_viscous_sub$H, quantile(normalized_merge_water_viscous_sub$H, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
+#####################################################################################################################
+# Add discrete values of n, BHP, H - Simulated data
+normalized_simulated_data_sub$n<-cut(normalized_simulated_data_sub$n, quantile(normalized_simulated_data_sub$n, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
+normalized_simulated_data_sub$BHP<-cut(normalized_simulated_data_sub$BHP, quantile(normalized_simulated_data_sub$BHP, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
+normalized_simulated_data_sub$H<-cut(normalized_simulated_data_sub$H, quantile(normalized_simulated_data_sub$H, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
+####################################################################################################################
+# Specifying clustering from distance matrix - Experimental
+normalized_dist_viscous_exp = dist(normalized_merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")])
+normalized_dcols_viscous_exp = dist(t(normalized_merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")]))
+
+# Specifying clustering from distance matrix - Simulated
+normalized_dist_viscous_sim = dist(normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")])
+normalized_dcols_viscous_sim = dist(t(normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")]))
+######################################################################################################################
+# kmeans
+kmeans_clusters_exp<-c(kmeans(normalized_merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")], centers=6, iter.max = 10, nstart = 1, trace = FALSE)$cluster)
+kmeans_clusters_sim<-c(kmeans(normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")], centers=6, iter.max = 10, nstart = 1, trace = FALSE)$cluster)
+######################################################################################################################
+# Subset the 
+df_normalized_merge_exp<-normalized_merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H")]
+df_normalized_merge_sim<-normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H")]
+
+# Force rownames
+rownames(df_normalized_merge_exp)<-paste0("Time_", seq(nrow(df_normalized_merge_exp)))
+rownames(df_normalized_merge_sim)<-paste0("Time_", seq(nrow(df_normalized_merge_sim)))
+
+# Remove row lines
+# Add k-means
+annotation_row_exp=df_normalized_merge_exp[,c("n","BHP","H")]
+annotation_row_sim=df_normalized_merge_sim[,c("n","BHP","H")]
+
+# Set the k-means clusters
+annotation_row_exp$Kmeans<-as.factor(kmeans_clusters_exp)
+annotation_row_sim$Kmeans<-as.factor(kmeans_clusters_sim)
+######################################################################################################################
+# Specify colors
+ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black"),Kmeans = c("#DF536B","#61D04F","#2297E6", "#28E2E5","#CD0BBC", "#F5C710" ) )
+
+# Set the name for the k-means
+names(ann_colors$Kmeans)<-c("1","2","3","4","5","6")
+
+order_rows_exp<-rownames(normalized_merge_water_viscous_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")])[order(kmeans_clusters_exp)]
+order_rows_sim<-rownames(normalized_simulated_data_sub[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")])[order(kmeans_clusters_sim)]
+
+df_normalized_merge_exp<-df_normalized_merge_exp[as.integer(order_rows_exp),]
+df_normalized_merge_sim<-df_normalized_merge_sim[as.integer(order_rows_sim),]
+######################################################################################################################
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+  # Add annotation : bhp, head, efficiency
+  pheatmap(df_normalized_merge_exp[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")] , clustering_distance_cols = normalized_dist_viscous_exp,show_rownames = F,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE)
+dev.off()
 
