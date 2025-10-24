@@ -29,6 +29,9 @@ png(filename=paste(project_folder,"Reference_time_series.png",sep=""), width = 1
   p
 dev.off()
 ####################################################################################################################################################################################
+# List to store the models
+trainned_rf_models<-list()
+
 # Split the dataset in training set and testing set
 merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM!=3500,]
 merge_water_viscous_testing<-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500,]
@@ -49,6 +52,9 @@ for (variable in c("Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM"))
     # Set random forest morel
     rf_variable_versus_Q   <- train(Formula_variable_versus_Q, data = merge_water_viscous_trainning, method = "rf" )         # K-Nearest Neighbors (KNN)                     Ok   
 
+    # Store the trained model
+    trainned_rf_models[[variable]]<-rf_variable_versus_Q
+  
     # Calculate predictions
     rf_variable_versus_prediction<-predict(rf_variable_versus_Q , merge_water_viscous_testing)
 
@@ -77,4 +83,3 @@ p2 <- ggplot(merged_predicted_results, aes(x=Time, y=value,group = type, color =
 png(filename=paste(project_folder,"Reference_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
   p2
 dev.off()
-####################################################################################################################################################################################
