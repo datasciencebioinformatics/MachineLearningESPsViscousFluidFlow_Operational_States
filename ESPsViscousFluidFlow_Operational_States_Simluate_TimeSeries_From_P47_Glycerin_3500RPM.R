@@ -24,7 +24,7 @@ p <- ggplot(melt_water_viscous_sub, aes(x=Time, y=value)) +  geom_line() +   fac
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Reference_time_series.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
+png(filename=paste(project_folder,"Reference_time_series.png",sep=""), width = 20, height = 30, res=600, units = "cm")  
   p
 dev.off()
 ####################################################################################################################################################################################
