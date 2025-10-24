@@ -2,9 +2,23 @@
 
 # This script will add a collumn to the metafile with the operational state
 # The operational state will be defined as the n=state-h=state-bhp=state
-merge_water_viscous_sub<-merge_water_viscous[which(merge_water_viscous$equip=="P47" & merge_water_viscous$fluid == "Glycerin" & merge_water_viscous$RPM=="3500" & merge_water_viscous$Inlet.Viscosity == "128"),]
+merge_water_viscous_sub<-merge_water_viscous[which(merge_water_viscous$equip=="P47" & merge_water_viscous$fluid == "Glycerin"),]
 
 # Add Time to the variable
+merge_water_viscous_sub$Time<-1:dim(merge_water_viscous_sub)[1]
+
+# Sub-set collumns
+merge_water_viscous_sub<-merge_water_viscous_sub[,c("Time","Flow.rate", "Average.Inlet.Temp.Tm.i", "Average.Outlet.Temp.Tm.o", "Inlet.Pressure.P1", "Outlet.Pressure.P2", "Shaft.Torque", "Inlet.Density.ρi", "Inlet.Viscosity.mi", "Outlet.Viscosity.mo", "RPM", "n", "H", "BHP", "Inlet.Viscosity")]
+
+# Set colnames
+colnames(merge_water_viscous_sub)<-c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM", "n", "H", "BHP", "Inlet.Viscosity")
+
+# Mett data.frame
+melt_water_viscous_sub<-reshape2::melt(merge_water_viscous_sub,id.vars=c("Time"))
+
+# Most basic bubble plot
+p <- ggplot(melt_water_viscous_sub, aes(x=Time, y=value)) +  geom_line() +  xlab("") + facet_grid(rows = vars(variable))
+
 ####################################################################################################################################################################################
 # The rows are increasing viscosity values and the collumns the increasing time value
 # Convert the P47_viscous_3500_data_sub to time-series for each variable
@@ -12,7 +26,10 @@ merge_water_viscous_sub<-merge_water_viscous[which(merge_water_viscous$equip=="P
 for (variable in c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"))
 {
     # Save data.frame as ts
-    P47_viscous_3500_data_ts<-merge_water_viscous_sub[which(merge_water_viscous_sub$variable==variable),c("Time","value","Viscosity")]
+    P47_viscous_3500_data_ts<-merge_water_viscous_sub[,c("Time",variable)]
+
+    # Set colnames
+    colnames(P47_viscous_3500_data_ts)<-c("Time","value")
 
     # Convert the time series to a data frame
     # It is altready on a data.frame format
@@ -20,10 +37,6 @@ for (variable in c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"))
     P47_viscous_3500_data_ts <- ts(P47_viscous_3500_data_ts$value)
 
     ##########################################################################################
-    # Convert the time series to a data frame
-    # It is altready on a data.frame format
-    # Check what frequency means in the ts means
-    P47_viscous_3500_data_sel <- ts(as.vector(P47_viscous_3500_data_ts))
 
     # turns best ARIMA model according to either AIC, AICc or BIC value.
     arima_model_sub <- forecast::auto.arima(P47_viscous_3500_data_sel)
