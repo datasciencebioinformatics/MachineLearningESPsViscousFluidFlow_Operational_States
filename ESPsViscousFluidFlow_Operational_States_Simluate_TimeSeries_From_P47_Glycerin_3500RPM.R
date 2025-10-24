@@ -1,3 +1,5 @@
+# TO DO : try all with the 5800 points.
+
 # This script will add a collumn to the metafile with the operational state
 # The operational state will be defined as the n=state-h=state-bhp=state
 merge_water_viscous_sub<-merge_water_viscous[which(merge_water_viscous$equip=="P47" & merge_water_viscous$fluid == "Glycerin" & merge_water_viscous$RPM=="3500" & merge_water_viscous$Inlet.Viscosity == "128"),]
