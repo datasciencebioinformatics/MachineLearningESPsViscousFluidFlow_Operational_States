@@ -13,12 +13,14 @@ merge_water_viscous_sub<-merge_water_viscous_sub[,c("Time","Flow.rate", "Average
 # Set colnames
 colnames(merge_water_viscous_sub)<-c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM", "n", "H", "BHP", "Inlet.Viscosity")
 
+# Convert RPM to numeric
+merge_water_viscous_sub$RPM<-as.numeric(merge_water_viscous_sub$RPM)
+
 # Mett data.frame
 melt_water_viscous_sub<-reshape2::melt(merge_water_viscous_sub,id.vars=c("Time"))
 
 # Most basic bubble plot
-p <- ggplot(melt_water_viscous_sub, aes(x=Time, y=value)) +  geom_line() +  xlab("") + facet_grid(rows = vars(variable))
-
+p <- ggplot(melt_water_viscous_sub[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM", "n", "H", "BHP")], aes(x=Time, y=value)) +  geom_line() +   facet_grid(rows = vars(variable))
 ####################################################################################################################################################################################
 # The rows are increasing viscosity values and the collumns the increasing time value
 # Convert the P47_viscous_3500_data_sub to time-series for each variable
