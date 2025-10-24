@@ -18,7 +18,7 @@ merge_water_viscous_sub$RPM<-as.numeric(merge_water_viscous_sub$RPM)
 
 ###############################################################################################################################################################################
 # Mett data.frame
-melt_water_viscous_sub<-reshape2::melt(merge_water_viscous_sub[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM", "n", "H", "BHP")],id.vars=c("Time"))
+melt_water_viscous_sub<-reshape2::melt(merge_water_viscous_sub[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")],id.vars=c("Time"))
 
 # Most basic bubble plot
 p <- ggplot(melt_water_viscous_sub, aes(x=Time, y=value)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Reference time-series")
@@ -56,8 +56,14 @@ for (variable in c("Tm.i","Tm.o","P1","P2","T","pi","mi","mo"))
     df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:length(rf_variable_versus_prediction),value=rf_variable_versus_prediction,variable=variable))
 }
 ####################################################################################################################################################################################
+# Add data type
+melt_water_viscous_sub$type   <-"simulated"
+df_predicted_results$type     <-"experimental"
+
+rbind(df_predicted_results,df_predicted_results)
+
 # Most basic bubble plot
-p2 <- ggplot(df_predicted_results, aes(x=Time, y=Value)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series")
+p2 <- ggplot(df_predicted_results, aes(x=Time, y=value)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series")
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
