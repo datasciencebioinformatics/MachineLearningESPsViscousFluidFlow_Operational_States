@@ -38,8 +38,6 @@ merge_water_viscous_testing<-merge_water_viscous_sub[merge_water_viscous_sub$RPM
 # Start df with the results
 df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c())
 
-#tuneGrid_rf <- expand.grid(mtry = seq(1, 50, by = 5))
-
 # The rows are increasing viscosity values and the collumns the increasing time value
 # Convert the P47_viscous_3500_data_sub to time-series for each variable
 # For each variable 
@@ -49,7 +47,7 @@ for (variable in c("Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM"))
     Formula_variable_versus_Q<-as.formula(paste(variable," ~ Q",sep=""))
 
     # Set random forest morel
-    rf_variable_versus_Q   <- train(Formula_variable_versus_Q, data = merge_water_viscous_trainning, method = "rf" )         # K-Nearest Neighbors (KNN)                     Ok                                                                                     
+    rf_variable_versus_Q   <- train(Formula_variable_versus_Q, data = merge_water_viscous_trainning, method = "knn", tuneGrid =data.frame(k = seq(1,100,by = 5) ) )         # K-Nearest Neighbors (KNN)                     Ok   
 
     # Calculate predictions
     rf_variable_versus_prediction<-predict(rf_variable_versus_Q , merge_water_viscous_testing)
@@ -62,8 +60,8 @@ for (variable in c("Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM"))
 melt_water_viscous_testing<-reshape2::melt(merge_water_viscous_testing[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")],id.vars=c("Time"))
 ####################################################################################################################################################################################
 # Add data type
-melt_water_viscous_testing$type   <-"simulated"
-df_predicted_results$type     <-"experimental"
+melt_water_viscous_testing$type   <-"experimental"
+df_predicted_results$type         <-"simulated"
 
 # Merge datasets
 merged_predicted_results<-rbind(df_predicted_results,melt_water_viscous_testing)
