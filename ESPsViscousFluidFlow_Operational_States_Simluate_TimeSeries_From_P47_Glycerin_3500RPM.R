@@ -28,25 +28,29 @@ png(filename=paste(project_folder,"Reference_time_series.png",sep=""), width = 1
   p
 dev.off()
 ####################################################################################################################################################################################
+# Simulations of Well Sanding (Pump Plugging).
+# First, simulate each variable in function of Q
+# Start df with the results
+df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c())
+
 # The rows are increasing viscosity values and the collumns the increasing time value
 # Convert the P47_viscous_3500_data_sub to time-series for each variable
 # For each variable 
-for (variable in c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"))
+for (variable in c("Tm.i","Tm.o","P1","P2","T","pi","mi","mo"))
 {
     # Save data.frame as ts
-    P47_viscous_3500_data_ts<-merge_water_viscous_sub[,c("Time",variable)]
+    P47_viscous_3500_data_ts<-as.vector(merge_water_viscous_sub[,c(variable)])
 
-    # Set colnames
-    colnames(P47_viscous_3500_data_ts)<-c("Time","value")
+    # Set formula for predicting the variable in function of Q
+    Formula_variable_versus_Q<-as.formula(paste(variable," ~ Q",sep=""))
 
-    # Convert the time series to a data frame
-    # It is altready on a data.frame format
-    # Check what frequency means in the ts means
-    P47_viscous_3500_data_ts <- ts(P47_viscous_3500_data_ts$value)
+    # Set random forest morel
+    rf_variable_versus_Q   <- train(Formula_variable_versus_Q, data = merge_water_viscous_sub, method = "rf" )         # K-Nearest Neighbors (KNN)                     Ok                                                                                     
 
-    ##########################################################################################
+    # Calculate predictions
+    rf_variable_versus_prediction<-predict(rf_variable_versus_Q , merge_water_viscous_sub)
 
-    # turns best ARIMA model according to either AIC, AICc or BIC value.
-    arima_model_sub <- forecast::auto.arima(P47_viscous_3500_data_sel)
-  }
-  ####################################################################################################################################################################################
+    # Add results of the variable
+    df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:length(rf_variable_versus_prediction),Value=rf_variable_versus_prediction,variable=variable))
+    
+}
