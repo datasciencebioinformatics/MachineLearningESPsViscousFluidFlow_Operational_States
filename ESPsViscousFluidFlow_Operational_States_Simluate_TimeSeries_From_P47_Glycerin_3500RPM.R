@@ -83,3 +83,57 @@ p2 <- ggplot(merged_predicted_results, aes(x=Time, y=value,group = type, color =
 png(filename=paste(project_folder,"Reference_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
   p2
 dev.off()
+
+
+
+
+
+
+
+####################################################################################################################################################################################
+# Simulate time-series for Simulations of Well Sanding (Pump Plugging)
+####################################################################################################################################################################################
+# Set a seed for reproducibility
+set.seed(42)
+
+# --- Define the simulation parameters ---
+# Number of data points
+n_points <- length(unique(merge_water_viscous_testing$Time))
+
+# Exponential decay parameters
+initial_value <- 50
+decay_rate <- 0.01
+
+# Noise parameters (normally distributed)
+noise_mean <- 0
+noise_sd   <- 2 # Standard deviation of the noise
+
+# --- Simulate the data ---
+# 1. Create a time vector
+time <- 1:n_points
+
+# 2. Generate the ideal (noiseless) exponential decay curve
+ideal_decay <- initial_value * exp(-decay_rate * time)
+
+# 3. Generate random noise
+noise <- rnorm(n_points, mean = noise_mean, sd = noise_sd)
+
+# 4. Create the final noisy data by adding the noise to the ideal curve
+noisy_data <- ideal_decay + noise
+
+# 5. Combine the data into a data frame for easy plotting
+sim_data <- data.frame(Time = time, Noisy_Value = noisy_data, Ideal_Value = ideal_decay)
+
+# --- Visualize the results with ggplot2 ---
+ggplot(sim_data, aes(x = Time)) +
+  # Plot the noisy data as points
+  geom_point(aes(y = Noisy_Value), color = "blue", alpha = 0.6) +
+  # Plot the ideal, noiseless curve as a line
+  geom_line(aes(y = Ideal_Value), color = "red", linetype = "dashed", size = 1) +
+  # Add labels and a title
+  labs(
+    title = "Simulated Declining Flow Rate Q with Noise",
+    x = "Time",
+    y = "Value"
+  ) +
+  theme_minimal()
