@@ -2,7 +2,7 @@
 
 # This script will add a collumn to the metafile with the operational state
 # The operational state will be defined as the n=state-h=state-bhp=state
-merge_water_viscous_sub<-merge_water_viscous[which(merge_water_viscous$equip=="P47" & merge_water_viscous$fluid == "Glycerin"),]
+merge_water_viscous_sub<-merge_water_viscous[which(merge_water_viscous$equip=="P47" & merge_water_viscous$fluid == "Glycerin" & merge_water_viscous$Inlet.Viscosity == 128 & merge_water_viscous$RPM == "3500"),]
 
 # Add Time to the variable
 merge_water_viscous_sub$Time<-1:dim(merge_water_viscous_sub)[1]
@@ -32,9 +32,13 @@ dev.off()
 # List to store the models
 trainned_rf_models<-list()
 
+# Split into trainning and testing
+trainning<- sample(rownames(merge_water_viscous_sub),round(length(as.vector(rownames(merge_water_viscous_sub)))*0.75))
+testing <- rownames(merge_water_viscous_sub)[which(!rownames(merge_water_viscous_sub) %in% trainning)]
+
 # Split the dataset in training set and testing set
-merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM!=3500,]
-merge_water_viscous_testing<-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500,]
+merge_water_viscous_trainning<-merge_water_viscous_sub[trainning,]
+merge_water_viscous_testing<-merge_water_viscous_sub[testing,]
 
 # Simulations of Well Sanding (Pump Plugging).
 # First, simulate each variable in function of Q
