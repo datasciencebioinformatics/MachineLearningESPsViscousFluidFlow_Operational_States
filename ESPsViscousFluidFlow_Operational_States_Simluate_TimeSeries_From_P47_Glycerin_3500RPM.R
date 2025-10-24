@@ -17,10 +17,16 @@ colnames(merge_water_viscous_sub)<-c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T"
 merge_water_viscous_sub$RPM<-as.numeric(merge_water_viscous_sub$RPM)
 
 # Mett data.frame
-melt_water_viscous_sub<-reshape2::melt(merge_water_viscous_sub,id.vars=c("Time"))
+melt_water_viscous_sub<-reshape2::melt(merge_water_viscous_sub[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM", "n", "H", "BHP")],id.vars=c("Time"))
 
 # Most basic bubble plot
-p <- ggplot(melt_water_viscous_sub[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM", "n", "H", "BHP")], aes(x=Time, y=value)) +  geom_line() +   facet_grid(rows = vars(variable))
+p <- ggplot(melt_water_viscous_sub, aes(x=Time, y=value)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Reference time-series")
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Reference_time_series.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
+  p
+dev.off()
 ####################################################################################################################################################################################
 # The rows are increasing viscosity values and the collumns the increasing time value
 # Convert the P47_viscous_3500_data_sub to time-series for each variable
