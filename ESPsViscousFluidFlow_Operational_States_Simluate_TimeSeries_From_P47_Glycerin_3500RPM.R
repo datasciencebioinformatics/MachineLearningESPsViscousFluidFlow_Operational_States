@@ -43,9 +43,6 @@ df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c())
 # For each variable 
 for (variable in c("Tm.i","Tm.o","P1","P2","T","pi","mi","mo"))
 {
-    # Save data.frame as ts
-    P47_viscous_3500_data_ts<-as.vector(merge_water_viscous_sub[,c(variable)])
-
     # Set formula for predicting the variable in function of Q
     Formula_variable_versus_Q<-as.formula(paste(variable," ~ Q",sep=""))
 
@@ -56,7 +53,7 @@ for (variable in c("Tm.i","Tm.o","P1","P2","T","pi","mi","mo"))
     rf_variable_versus_prediction<-predict(rf_variable_versus_Q , merge_water_viscous_testing)
 
     # Add results of the variable
-    df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:length(rf_variable_versus_prediction),Value=rf_variable_versus_prediction,variable=variable))
+    df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:length(rf_variable_versus_prediction),value=rf_variable_versus_prediction,variable=variable))
 }
 ####################################################################################################################################################################################
 # Most basic bubble plot
