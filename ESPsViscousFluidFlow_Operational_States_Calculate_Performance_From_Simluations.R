@@ -160,3 +160,54 @@ p3 <- ggplot(melt_simulated_input_variables[melt_simulated_input_variables$varia
 png(filename=paste(project_folder,"Simulated_performance_variables_ranfom_forest.png",sep=""), width = 15, height = 10, res=600, units = "cm")  
   p3
 dev.off()
+#######################################################################################################
+for (decay in df_simulated_input_variables$decay)
+{
+    # Take dec
+    decay_data<-df_simulated_input_variables[which(df_simulated_input_variables$decay==decay),]
+
+    # Take only performance variables
+    decay_data_performance<-decay_data[,c("n","H","BHP")]
+
+    # Take the tertiles
+    decay_data_performance<-as.data.frame(lapply(decay_data_performance[,c("n","BHP","H")], tertile))  
+
+    # Renames collumns
+    colnames(decay_data_performance)<-c("n_discrete","BHP_discrete","H_discrete")
+
+    # Take time data
+    decay_data$Time<-paste("Time_",decay_data$Time,sep="")
+    
+    # Merge tables
+    decay_data<-cbind(decay_data[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")],decay_data_performance)
+
+    # add operational states
+    decay_data$operational_states<-paste(paste("n=",decay_data$n_discrete,sep=""),paste("BHP=",decay_data$BHP_discrete,sep=""),paste("H=",decay_data$H_discrete,sep=""),sep="|")
+
+    # Assert diagnosis and classification equal to normal 
+    decay_data<-cbind(decay_data,Diagnosis="normal")
+    
+    # If efficiency not stationary, then Diagnosis is fault
+    decay_data[which(decay_data$n_discrete!="High"),"Diagnosis"]<-"fault"
+
+    # Set rownames
+    rownames(decay_data)<-decay_data$Time
+
+    # Remove row lines
+    annotation_row_exp=decay_data[,c("n_discrete","BHP_discrete","H_discrete","operational_states","Diagnosis")]
+
+    # Re-set colnmaes
+    colnames(annotation_row_exp)<-c("n","BHP","H","operational_states","Diagnosis")
+
+    # Specify colors
+    ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black") )
+
+  
+    # Melt tabele
+    # Plot_raw_vibration_data.png                                                                                                            
+    png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
+      # Add annotation : bhp, head, efficiency
+      pheatmap(decay_data[,c("Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")] , show_rownames = F,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("Simulated series ",sep=""),scale ="column")
+    dev.off()
+}
+
