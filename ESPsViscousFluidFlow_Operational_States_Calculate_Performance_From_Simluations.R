@@ -94,9 +94,60 @@ df_simulated_input_variables$Q<-0
 # Compute the delta pressure
 df_simulated_input_variables$Delta.Pressure<-df_simulated_input_variables$P2-df_simulated_input_variables$P1
 
+# First, Calculate the velocity
+for (measure in rownames(df_simulated_input_variables))
+{ 
+  # Model
+  model=df_simulated_input_variables[measure,"equip"]
 
+  # Impeller Diameter mm
+  # Unit checked mm
+  D=unique(metada_data[which(metada_data$model == "P47"),2]) * 1000 # m converted to mm
+    
+  # Store inlet and outlet pressure
+  # P = pressure, mL–1t–2, Pa
+  # Unit checked pa
+  P1  <-as.numeric(df_simulated_input_variables[measure,"P1"])  * 100000 # Bar converted to pa
+  P2  <-as.numeric(df_simulated_input_variables[measure,"P2"]) * 100000 # Bar converted to pa
+  
+  # Density
+  # p = density, mL–3, kg/m3
+  # Unit checked kg/m3
+  p  <-as.numeric(df_simulated_input_variables[measure,"pi"])
 
+  # The Flow Rate, Q 
+  # Q = volumetric flow rate, L3, t–1, m3/s
+  # Unit checked m3/h
+  #df_simulated_input_variables[measure,"Q"]<-as.numeric(df_simulated_input_variables[measure,"Q"])/(p) # kg/h converted to m3/s
 
+  # Head pump
+  # H = head, L, m
+  df_simulated_input_variables[measure,"H"]<-((P2-P1)/(p*g))*(1/N) 
 
+  # The rotational speed w in rads/s
+  # unit checked RPM
+  w=as.numeric(df_simulated_input_variables[measure,"RPM"])*0.10472
+  
+  # Net.Shaft.Torque
+  # T = shaft torque, mL2,t–2, N·m
+  # unit checked N·m
+  T=as.numeric(df_simulated_input_variables[measure,"T"])
 
-ESPsViscousFluidFlow_Operational_States_Calculate_Performance_From_Simluations
+  # ESP is the BHP
+  # BHP = mL^2t^–3, watts
+  df_simulated_input_variables[measure,"BHP"]=(1/N)*(w*T)
+
+  #P_{h}: The power in kilowatts (kW) 
+  # Q    : The flow capacity in cubic meters per hour (m3/h) 
+  # p    : The density of the fluid in kilograms per cubic meter (kg/m3) 
+  # g    : The acceleration due to gravity (9.81m/s2) 
+  # H    : The differential head in meters (m)
+  
+  # useful power Ph 
+  # Flow rate in m3/s
+  df_simulated_input_variables[measure,"P_h"]<- (p*g*df_simulated_input_variables[measure,"H"]*(df_simulated_input_variables[measure,"Q"]*(1/3600)))
+
+  # The pump efficiency (n) is defined as:
+  # n = efficiency, dimensionless [%]
+  df_simulated_input_variables[measure,"n"] <- df_simulated_input_variables[measure,"P_h"]/df_simulated_input_variables[measure,"BHP"]
+}
