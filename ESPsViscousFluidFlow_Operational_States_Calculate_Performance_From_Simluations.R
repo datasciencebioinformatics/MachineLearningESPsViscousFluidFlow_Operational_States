@@ -1,5 +1,3 @@
-sim_data
-
 ####################################################################################################################################################################################
 # List to store the models
 trainned_rf_models<-list()
@@ -11,7 +9,7 @@ merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$R
 # Simulations of Well Sanding (Pump Plugging).
 # First, simulate each variable in function of Q
 # Start df with the results
-df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c())
+df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c(),decay=c())
 
 # The rows are increasing viscosity values and the collumns the increasing time value
 # Convert the P47_viscous_3500_data_sub to time-series for each variable
@@ -27,10 +25,10 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
       rf_variable_versus_Q<-trainned_rf_models[[variable]]
     
       # Calculate predictions
-      rf_variable_versus_prediction<-predict(rf_variable_versus_Q , sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"])
+      rf_variable_versus_prediction<-predict(rf_variable_versus_Q , data.frame(Q=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"]))
   
       # Add results of the variable
-      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=rf_variable_versus_prediction,variable=variable))
+      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
   }
 }
 ####################################################################################################################################################################################
