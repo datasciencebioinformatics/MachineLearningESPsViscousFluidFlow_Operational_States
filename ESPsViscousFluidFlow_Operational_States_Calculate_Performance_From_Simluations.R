@@ -23,9 +23,9 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
       # Add results of the variable
       df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
 
-      # Add results of the variable
-      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"],variable="Q",decay=decay_rate))
   }
+  # Add results of the variable
+  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"],variable="Q",decay=decay_rate))
 }
 ####################################################################################################################################################################################
 # Add also simulated data
@@ -51,17 +51,19 @@ dev.off()
 ####################################################################################################################################################################################
 Q    <- df_predicted_results[which(df_predicted_results$variable=="Q"),"value"]
 Tm.i <- df_predicted_results[which(df_predicted_results$variable=="Tm.i"),"value"]
-Tm.i <- df_predicted_results[which(df_predicted_results$variable=="Tm.o"),"value"]
+Tm.o <- df_predicted_results[which(df_predicted_results$variable=="Tm.o"),"value"]
 P1   <-df_predicted_results[which(df_predicted_results$variable=="P1"),"value"]
 P2   <-df_predicted_results[which(df_predicted_results$variable=="P2"),"value"]
 T    <-df_predicted_results[which(df_predicted_results$variable=="T"),"value"]
 pi   <- df_predicted_results[which(df_predicted_results$variable=="pi"),"value"]
 mi   <-  df_predicted_results[which(df_predicted_results$variable=="mi"),"value"]
 mo   <- df_predicted_results[which(df_predicted_results$variable=="mo"),"value"]
-RPM  <- df_predicted_results[which(df_predicted_results$variable=="mo"),"RPM"]
-Time <- unique(df_predicted_results$Time)
+RPM  <- df_predicted_results[which(df_predicted_results$variable=="RPM"),"value"]
+Time <- df_predicted_results[which(df_predicted_results$variable=="RPM"),"Time"]
+decay<- df_predicted_results[which(df_predicted_results$variable=="RPM"),"decay"]
 
-data.frame(Time=Time=)
+# Compile input variables
+df_simulated_input_variables<-data.frame(Time=Time, Tm.i=Tm.i, Tm.o=Tm.o, P1=P1, P2=P2, T=T, pi=pi, mi=mi, mo=mo, RPM=RPM, decay=decay )
 
 # set  the gravitational constant
 # 9.81 meters per second squared (m/s2) is the approximate value of the acceleration due to gravity on Earth's surface. This value is represented by the letter g. 
@@ -71,26 +73,26 @@ g=9.81
 N   <-3 
 
 # Store the useful power Ph
-df_predicted_results$P_h<-0
+df_simulated_input_variables$P_h<-0
 
 # The pump efficiency (n) is defined as:
 # n = efficiency, dimensionless [%]
-df_predicted_results$n<-0
+df_simulated_input_variables$n<-0
 
 # Store the pump head
 # H = head, L, m
-df_predicted_results$H<-0
+df_simulated_input_variables$H<-0
 
 # Store the shaft torque is the mechanical parameter used to calculate the driving power or brake horsepower (BHP)
 # BHP = mL^2t^–3, watts
-df_predicted_results$BHP<-0
+df_simulated_input_variables$BHP<-0
 
 # Store the flow rate in m3s1
 # Q = volumetric flow rate, L3 t–1 , m3/h
-df_predicted_results$Q<-0
+df_simulated_input_variables$Q<-0
 
 # Compute the delta pressure
-df_predicted_results$Delta.Pressure<-df_predicted_results$P2-df_predicted_results$Inlet.Pressure.P1
+df_simulated_input_variables$Delta.Pressure<-df_simulated_input_variables$P2-df_simulated_input_variables$P1
 
 
 
