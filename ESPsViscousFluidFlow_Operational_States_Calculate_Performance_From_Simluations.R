@@ -63,7 +63,7 @@ Time <- df_predicted_results[which(df_predicted_results$variable=="RPM"),"Time"]
 decay<- df_predicted_results[which(df_predicted_results$variable=="RPM"),"decay"]
 
 # Compile input variables
-df_simulated_input_variables<-data.frame(Time=Time, Tm.i=Tm.i, Tm.o=Tm.o, P1=P1, P2=P2, T=T, pi=pi, mi=mi, mo=mo, RPM=RPM, decay=decay )
+df_simulated_input_variables<-data.frame(Time=Time, Q=Q, Tm.i=Tm.i, Tm.o=Tm.o, P1=P1, P2=P2, T=T, pi=pi, mi=mi, mo=mo, RPM=RPM, decay=decay )
 
 # set  the gravitational constant
 # 9.81 meters per second squared (m/s2) is the approximate value of the acceleration due to gravity on Earth's surface. This value is represented by the letter g. 
@@ -86,10 +86,6 @@ df_simulated_input_variables$H<-0
 # Store the shaft torque is the mechanical parameter used to calculate the driving power or brake horsepower (BHP)
 # BHP = mL^2t^–3, watts
 df_simulated_input_variables$BHP<-0
-
-# Store the flow rate in m3s1
-# Q = volumetric flow rate, L3 t–1 , m3/h
-df_simulated_input_variables$Q<-0
 
 # Compute the delta pressure
 df_simulated_input_variables$Delta.Pressure<-df_simulated_input_variables$P2-df_simulated_input_variables$P1
@@ -151,3 +147,16 @@ for (measure in rownames(df_simulated_input_variables))
   # n = efficiency, dimensionless [%]
   df_simulated_input_variables[measure,"n"] <- df_simulated_input_variables[measure,"P_h"]/df_simulated_input_variables[measure,"BHP"]
 }
+
+#######################################################################################################
+# add plot
+melt_simulated_input_variables<-reshape2::melt(df_simulated_input_variables,id.vars=c("Time","decay")) 
+
+# Most basic bubble plot
+p3 <- ggplot(melt_simulated_input_variables[melt_simulated_input_variables$variable %in% c("n","H","BHP"),], aes(x=Time, y=value,group = decay, color = decay)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series - performance variables") + scale_colour_brewer(palette = "Set1")
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Simulated_performance_variables_ranfom_forest.png",sep=""), width = 15, height = 10, res=600, units = "cm")  
+  p3
+dev.off()
