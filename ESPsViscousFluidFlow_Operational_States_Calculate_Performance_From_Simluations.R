@@ -1,11 +1,4 @@
 ####################################################################################################################################################################################
-# List to store the models
-trainned_rf_models<-list()
-
-# Split the dataset in training set and testing set
-merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM!=3500,]
-merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500,]
-
 # Simulations of Well Sanding (Pump Plugging).
 # First, simulate each variable in function of Q
 # Start df with the results
@@ -32,21 +25,13 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
   }
 }
 ####################################################################################################################################################################################
-# Mett data.frame
-melt_water_viscous_testing<-reshape2::melt(merge_water_viscous_testing[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")],id.vars=c("Time"))
+# Adicionar também os dados simulated
 ####################################################################################################################################################################################
-# Add data type
-melt_water_viscous_testing$type   <-"experimental"
-df_predicted_results$type         <-"simulated"
-
-# Merge datasets
-merged_predicted_results<-rbind(df_predicted_results,melt_water_viscous_testing)
-
 # Relevel factors
-merged_predicted_results$variable<-factor(merged_predicted_results$variable,levels=c(c("Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
+df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c(c("Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
 
 # Most basic bubble plot
-p2 <- ggplot(merged_predicted_results, aes(x=Time, y=value,group = type, color = type)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series") + scale_colour_brewer(palette = "Set1")
+p2 <- ggplot(merged_predicted_results, aes(x=Time, y=value,group = decay_rate, color = decay_rate)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series") + scale_colour_brewer(palette = "Set1")
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
