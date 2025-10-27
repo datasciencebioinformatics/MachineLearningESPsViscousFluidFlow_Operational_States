@@ -104,7 +104,7 @@ n_points <- length(unique(merge_water_viscous_testing$Time))
 initial_value <- 50
 decay_rate_1 <- 0.01
 decay_rate_2 <- 0.1
-decay_rate_2 <- 0.25
+decay_rate_3 <- 0.25
 
 # Noise parameters (normally distributed)
 noise_mean_1 <- 0
@@ -135,9 +135,9 @@ noisy_data_2 <- ideal_decay_2 + noise_2
 noisy_data_3 <- ideal_decay_3 + noise_3
 
 # 5. Combine the data into a data frame for easy plotting
-sim_data_1 <- data.frame(Time = time, Noisy_Value = noisy_data_1, Ideal_Value = ideal_decay_1,decay_rate="0.01")
-sim_data_2 <- data.frame(Time = time, Noisy_Value = noisy_data_2, Ideal_Value = ideal_decay_2,decay_rate="0.1")
-sim_data_3 <- data.frame(Time = time, Noisy_Value = noisy_data_3, Ideal_Value = ideal_decay_3,decay_rate="0.25")
+sim_data_1 <- data.frame(Time = unique(merge_water_viscous_testing$Time), Noisy_Value = noisy_data_1, Ideal_Value = ideal_decay_1,decay_rate="0.01")
+sim_data_2 <- data.frame(Time = unique(merge_water_viscous_testing$Time), Noisy_Value = noisy_data_2, Ideal_Value = ideal_decay_2,decay_rate="0.1")
+sim_data_3 <- data.frame(Time = unique(merge_water_viscous_testing$Time), Noisy_Value = noisy_data_3, Ideal_Value = ideal_decay_3,decay_rate="0.25")
 
 # Set data
 sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3)
@@ -160,3 +160,5 @@ png(filename=paste(project_folder,"Simulated_Declining_Flow_Rate_Q with_Noise.pn
     ) +
     theme_minimal()
 dev.off()
+
+
