@@ -22,6 +22,9 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
   
       # Add results of the variable
       df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
+
+      # Add results of the variable
+      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"],variable="Q",decay=decay_rate))
   }
 }
 ####################################################################################################################################################################################
@@ -30,8 +33,11 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
 # Relevel factors
 df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c(c("Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
 
+# Relevel factors
+df_predicted_results$decay<-factor(df_predicted_results$decay)
+
 # Most basic bubble plot
-p2 <- ggplot(merged_predicted_results, aes(x=Time, y=value,group = decay_rate, color = decay_rate)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series") + scale_colour_brewer(palette = "Set1")
+p2 <- ggplot(df_predicted_results, aes(x=Time, y=value,group = decay, color = decay)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series") + scale_colour_brewer(palette = "Set1")
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
