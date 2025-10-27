@@ -34,7 +34,7 @@ trainned_rf_models<-list()
 
 # Split the dataset in training set and testing set
 merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM!=3500,]
-merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500,]
+merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500 & ,]
 
 # Simulations of Well Sanding (Pump Plugging).
 # First, simulate each variable in function of Q
@@ -98,18 +98,18 @@ set.seed(42)
 
 # --- Define the simulation parameters ---
 # Number of data points
-n_points <- 100 # length(unique(merge_water_viscous_testing$Time))
+n_points <- 29 # length(unique(merge_water_viscous_testing$Time))
 
 # Exponential decay parameters
-initial_value <- 50
+initial_value <- 25
 decay_rate_1 <- 0.01
 decay_rate_2 <- 0.1
 decay_rate_3 <- 0.25
 
 # Noise parameters (normally distributed)
 noise_mean_1 <- 0
-noise_mean_2 <- 5
-noise_mean_3 <- 10
+noise_mean_2 <- 0
+noise_mean_3 <- 0
 noise_sd_1   <- 2 # Standard deviation of the noise
 noise_sd_2   <- 2 # Standard deviation of the noise
 noise_sd_3   <- 2 # Standard deviation of the noise
@@ -143,9 +143,10 @@ noisy_data_3 <- ideal_decay_3 + noise_3
 sim_data_1 <- data.frame(Time = 1:n_points, Noisy_Value = noisy_data_1, Ideal_Value = ideal_decay_1,decay_rate="0.01")
 sim_data_2 <- data.frame(Time = 1:n_points, Noisy_Value = noisy_data_2, Ideal_Value = ideal_decay_2,decay_rate="0.1")
 sim_data_3 <- data.frame(Time = 1:n_points, Noisy_Value = noisy_data_3, Ideal_Value = ideal_decay_3,decay_rate="0.25")
+sim_data_4 <- data.frame(Time = 1:n_points, Noisy_Value =  merge_water_viscous_testing[1:n_points,"Q"], Ideal_Value =  merge_water_viscous_testing[1:n_points,"Q"],decay_rate="reference")
 
 # Set data
-sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3)
+sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
 
 
 # Melt tabele
