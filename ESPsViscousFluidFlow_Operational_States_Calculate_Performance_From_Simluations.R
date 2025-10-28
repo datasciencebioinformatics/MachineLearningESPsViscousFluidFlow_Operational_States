@@ -180,15 +180,15 @@ dev.off()
 # Start df with the results
 df_results<-data.frame(Time=c(), Q=c(), Tm.i=c(), Tm.o=c(), P1=c(), P2=c(), T=c(), pi=c(), mi=c(), mo=c(), RPM=c(), decay=c(), P_h=c(), n=c(), H=c(), BHP=c(), Delta.Pressure=c())
 
-for (decay in df_simulated_input_variables$decay)
+for (decay in unique(df_simulated_input_variables$decay))
 {
   # Take dec
   decay_data<-df_simulated_input_variables[which(df_simulated_input_variables$decay==decay),]
 
   # Take the tertiles
   decay_data_tertiles<-as.data.frame(lapply(decay_data[,c("n","BHP","H")], tertile))
-  
-  # Renames collumns
+
+  # 
   colnames(decay_data_tertiles)<-c("n_discrete","BHP_discrete","H_discrete")
   
   # Merge tables
@@ -208,39 +208,33 @@ for (decay in df_simulated_input_variables$decay)
 }
 ##############################################################################################################################################################################################
 # Plot the heatmap - only the reference
+normalized_merge_water_viscous<-df_results[which(df_results$decay=="reference"),]
+
+
 # Subset the 
-df_normalized_merge<-normalized_merge_water_viscous[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H")]
+normalized_merge_water_viscous<-normalized_merge_water_viscous[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n_discrete","BHP_discrete","H_discrete","operational_states", "Diagnosis")]
 
 # Force rownames
-rownames(df_normalized_merge)<-paste0("Signal_", seq(nrow(df_normalized_merge)))
+rownames(normalized_merge_water_viscous)<-paste0("Signal_", seq(nrow(normalized_merge_water_viscous)))
 
 # Remove row lines
-# Add k-means
-annotation_row=df_normalized_merge[,c("n","BHP","H")]
+annotation_row_exp=cbind(normalized_merge_water_viscous[,c("n_discrete","BHP_discrete","H_discrete")],normalized_merge_water_viscous[,c("operational_states","Diagnosis")])
 
-# Set the k-means clusters
-annotation_row$Kmeans<-as.factor(kmeans_clusters)
-###########################################################################################################
+# Set colnames
+colnames(annotation_row_exp)<-c("n_discrete","BHP_discrete","H_discrete","operational_states","Diagnosis")
+######################################################################################################################
 # Specify colors
-ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black"),Kmeans = c("#DF536B","#61D04F","#2297E6", "#28E2E5","#CD0BBC", "#F5C710" ) )
+ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black") )
 
-# Set the name for the k-means
-names(ann_colors$Kmeans)<-c("1","2","3","4","5","6")
-
-order_rows<-rownames(normalized_merge_water_viscous[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")])[order(kmeans_clusters)]
-
-df_normalized_merge<-df_normalized_merge[as.integer(order_rows),]
-#########################################################################################################
+# Normalized values for variables
+normalized_merge_water_viscous<-cbind(as.data.frame(lapply(normalized_merge_water_viscous[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")], normalize)),normalized_merge_water_viscous[,c("n_discrete","BHP_discrete","H_discrete","operational_states", "Diagnosis")])
+######################################################################################################################
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
   # Add annotation : bhp, head, efficiency
-  pheatmap(df_normalized_merge[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")] , clustering_distance_cols = normalized_dcols_viscous,show_rownames = F,annotation_row = annotation_row,annotation_colors=ann_colors,cluster_rows = FALSE)
+  pheatmap(normalized_merge_water_viscous , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, cluster_cows = FALSE.,main=paste("P47 3500RPM Glycerin Viscosity 128"))
 dev.off()
-  
-
-
-
 #######################################################################################################
 # Plot the heatmap - all
 for (decay in df_simulated_input_variables$decay)
