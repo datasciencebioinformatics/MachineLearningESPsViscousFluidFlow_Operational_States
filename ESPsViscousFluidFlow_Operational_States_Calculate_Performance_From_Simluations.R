@@ -161,6 +161,22 @@ png(filename=paste(project_folder,"Simulated_performance_variables_ranfom_forest
   p3
 dev.off()
 #######################################################################################################
+
+
+################################################################################################################
+# Fig. 7—ESP P47 performance pumping viscous fluid at 3,500 rev/min.
+ESP_P47_water_plot_Q_H <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","decay")], aes(x = Q, y = H,colour=decay))     + geom_point() + geom_line()  + theme_bw()   + ggtitle ("Flow rate Q vs. Head H")    + ylab("Head H [m]")                   + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "bottom")  
+ESP_P47_water_plot_BHP <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","decay")], aes(x = Q, y = BHP,colour=decay))   + geom_point() + geom_line() + theme_bw()   + ggtitle ("Flow rate Q vs. Power BHP") + ylab("Power BHP [W]")                + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "none")    
+ESP_P47_water_plot_n   <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","decay")], aes(x = Q, y = n*100,colour=decay)) + geom_point() + geom_line() + theme_bw()   + ggtitle ("Flow rate Q vs. Efficiency n") + ylab("Efficiency n [%]")          + labs(x = expression("Flow rate Q [" * m^3/h * "]"))   + theme(legend.position = "bottom")      
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
+  ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
+dev.off()
+
+
+#######################################################################################################
 for (decay in df_simulated_input_variables$decay)
 {
     # Take dec
