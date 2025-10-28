@@ -21,11 +21,11 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
       rf_variable_versus_prediction<-predict(rf_variable_versus_Q , data.frame(Q=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"]))
   
       # Add results of the variable
-      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
+      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:n_points,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
 
   }
   # Add results of the variable
-  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"],variable="Q",decay=decay_rate))
+  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:n_points,value=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"],variable="Q",decay=decay_rate))
 }
 ####################################################################################################################################################################################
 # Add also simulated data
