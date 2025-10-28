@@ -174,9 +174,75 @@ ESP_P47_water_plot_n   <- ggplot(df_simulated_input_variables[,c("Q","n","H","BH
 png(filename=paste(project_folder,"ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
   ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
 dev.off()
+#######################################################################################################
+# Simulations of Well Sanding (Pump Plugging).
+# First, simulate each variable in function of Q
+# Start df with the results
+df_results<-data.frame(Time=c(), Q=c(), Tm.i=c(), Tm.o=c(), P1=c(), P2=c(), T=c(), pi=c(), mi=c(), mo=c(), RPM=c(), decay=c(), P_h=c(), n=c(), H=c(), BHP=c(), Delta.Pressure=c())
+
+for (decay in df_simulated_input_variables$decay)
+{
+  # Take dec
+  decay_data<-df_simulated_input_variables[which(df_simulated_input_variables$decay==decay),]
+
+  # Take the tertiles
+  decay_data_tertiles<-as.data.frame(lapply(decay_data[,c("n","BHP","H")], tertile))
+  
+  # Renames collumns
+  colnames(decay_data_tertiles)<-c("n_discrete","BHP_discrete","H_discrete")
+  
+  # Merge tables
+  decay_data<-cbind(decay_data,decay_data_tertiles)  
+   
+  # add operational states
+  decay_data$operational_states<-paste(paste("n=",decay_data$n_discrete,sep=""),paste("BHP=",decay_data$BHP_discrete,sep=""),paste("H=",decay_data$H_discrete,sep=""),sep="|")
+
+  # Assert diagnosis and classification equal to normal 
+  decay_data<-cbind(decay_data,Diagnosis="Normal")
+  
+  # If efficiency not stationary, then Diagnosis is fault
+  decay_data[which(decay_data$n_discrete!="High"),"Diagnosis"]<-"Fault"
+
+  # bind results
+  df_results<-rbind(df_results,decay_data)
+}
+##############################################################################################################################################################################################
+# Plot the heatmap - only the reference
+# Subset the 
+df_normalized_merge<-normalized_merge_water_viscous[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H")]
+
+# Force rownames
+rownames(df_normalized_merge)<-paste0("Signal_", seq(nrow(df_normalized_merge)))
+
+# Remove row lines
+# Add k-means
+annotation_row=df_normalized_merge[,c("n","BHP","H")]
+
+# Set the k-means clusters
+annotation_row$Kmeans<-as.factor(kmeans_clusters)
+###########################################################################################################
+# Specify colors
+ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black"),Kmeans = c("#DF536B","#61D04F","#2297E6", "#28E2E5","#CD0BBC", "#F5C710" ) )
+
+# Set the name for the k-means
+names(ann_colors$Kmeans)<-c("1","2","3","4","5","6")
+
+order_rows<-rownames(normalized_merge_water_viscous[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")])[order(kmeans_clusters)]
+
+df_normalized_merge<-df_normalized_merge[as.integer(order_rows),]
+#########################################################################################################
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+  # Add annotation : bhp, head, efficiency
+  pheatmap(df_normalized_merge[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")] , clustering_distance_cols = normalized_dcols_viscous,show_rownames = F,annotation_row = annotation_row,annotation_colors=ann_colors,cluster_rows = FALSE)
+dev.off()
+  
+
 
 
 #######################################################################################################
+# Plot the heatmap - all
 for (decay in df_simulated_input_variables$decay)
 {
     # Take dec
