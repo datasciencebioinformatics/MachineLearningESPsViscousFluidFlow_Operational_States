@@ -212,7 +212,7 @@ normalized_merge_water_viscous<-df_results[which(df_results$decay=="reference"),
 
 
 # Subset the 
-normalized_merge_water_viscous<-normalized_merge_water_viscous[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n_discrete","BHP_discrete","H_discrete","operational_states", "Diagnosis")]
+normalized_merge_water_viscous<-normalized_merge_water_viscous[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM","n_discrete","BHP_discrete","H_discrete","operational_states", "Diagnosis")]
 
 # Force rownames
 rownames(normalized_merge_water_viscous)<-paste0("Signal_", seq(nrow(normalized_merge_water_viscous)))
@@ -221,19 +221,19 @@ rownames(normalized_merge_water_viscous)<-paste0("Signal_", seq(nrow(normalized_
 annotation_row_exp=cbind(normalized_merge_water_viscous[,c("n_discrete","BHP_discrete","H_discrete")],normalized_merge_water_viscous[,c("operational_states","Diagnosis")])
 
 # Set colnames
-colnames(annotation_row_exp)<-c("n_discrete","BHP_discrete","H_discrete","operational_states","Diagnosis")
+colnames(annotation_row_exp)<-c("n","BHP","H","operational_states","Diagnosis")
 ######################################################################################################################
 # Specify colors
 ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black") )
 
 # Normalized values for variables
-normalized_merge_water_viscous<-cbind(as.data.frame(lapply(normalized_merge_water_viscous[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo")], normalize)),normalized_merge_water_viscous[,c("n_discrete","BHP_discrete","H_discrete","operational_states", "Diagnosis")])
+normalized_merge_water_viscous<-cbind(as.data.frame(lapply(normalized_merge_water_viscous[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM")], normalize)),normalized_merge_water_viscous[,c("n_discrete","BHP_discrete","H_discrete","operational_states", "Diagnosis")])
 ######################################################################################################################
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
+png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_reference.png",sep=""), width = 20, height = 20, res=600, units = "cm")  
   # Add annotation : bhp, head, efficiency
-  pheatmap(normalized_merge_water_viscous , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, cluster_cows = FALSE.,main=paste("P47 3500RPM Glycerin Viscosity 128"))
+  pheatmap(normalized_merge_water_viscous[,c("Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo","RPM")], show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, cluster_cows = FALSE,main=paste("P47 3500RPM Glycerin Viscosity 128"))
 dev.off()
 #######################################################################################################
 # Plot the heatmap - all
