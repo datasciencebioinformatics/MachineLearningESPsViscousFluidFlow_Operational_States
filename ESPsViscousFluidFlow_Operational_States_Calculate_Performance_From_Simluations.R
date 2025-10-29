@@ -250,14 +250,16 @@ for (decay in df_simulated_input_variables$decay)
     ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black") )
 
     # Normalized values for variables
-    decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),] <- as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),], normalize))
+    decay_data_normlized <- as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], normalize))
 
-    paste("decay",decay,sep="")
+    # Set rownames
+    rownames(decay_data_normlized)<-rownames(decay_data)
+  
     # Melt tabele
     # Plot_raw_vibration_data.png                                                                                                            
     png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
       # Add annotation : bhp, head, efficiency
-      pheatmap(decay_data[,c("Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")] , show_rownames = F,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
+      pheatmap(decay_data_normlized , show_rownames = F,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
     dev.off()
 }
 
