@@ -249,6 +249,9 @@ for (decay in df_simulated_input_variables$decay)
     # Specify colors
     ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black") )
 
+    # Normalized values for variables
+    decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),] <- as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","n","BHP","H"),], normalize))
+
     paste("decay",decay,sep="")
     # Melt tabele
     # Plot_raw_vibration_data.png                                                                                                            
