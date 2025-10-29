@@ -34,7 +34,7 @@ trainned_rf_models<-list()
 
 # Split the dataset in training set and testing set
 merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM!=3500,]
-merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500 & ,]
+merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500,]
 
 # Simulations of Well Sanding (Pump Plugging).
 # First, simulate each variable in function of Q
