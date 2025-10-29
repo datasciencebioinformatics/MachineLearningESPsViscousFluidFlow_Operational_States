@@ -238,7 +238,7 @@ for (decay in df_results$decay)
     # Plot_raw_vibration_data.png                                                                                                            
     png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
       # Add annotation : bhp, head, efficiency
-      pheatmap(decay_data_normlized , show_rownames = F,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
+      pheatmap(decay_data_normlized , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
     dev.off()
 }
 
