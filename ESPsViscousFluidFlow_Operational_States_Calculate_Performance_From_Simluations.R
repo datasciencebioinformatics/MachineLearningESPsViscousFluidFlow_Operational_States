@@ -208,35 +208,14 @@ for (decay in unique(df_simulated_input_variables$decay))
 }
 #######################################################################################################
 # Plot the heatmap - all
-for (decay in df_simulated_input_variables$decay)
+for (decay in df_results$decay)
 {
     # Take dec
-    decay_data<-df_simulated_input_variables[which(df_simulated_input_variables$decay==decay),]
-
-    # Take only performance variables
-    decay_data_performance<-decay_data[,c("n","H","BHP")]
-
-    # Take the tertiles
-    decay_data_performance<-as.data.frame(lapply(decay_data_performance[,c("n","BHP","H")], tertile))  
-
-    # Renames collumns
-    colnames(decay_data_performance)<-c("n_discrete","BHP_discrete","H_discrete")
+    decay_data<-df_results[which(df_simulated_input_variables$decay==decay),]
 
     # Take time data
     decay_data$Time<-paste("Time_",decay_data$Time,sep="")
     
-    # Merge tables
-    decay_data<-cbind(decay_data[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")],decay_data_performance)
-
-    # add operational states
-    decay_data$operational_states<-paste(paste("n=",decay_data$n_discrete,sep=""),paste("BHP=",decay_data$BHP_discrete,sep=""),paste("H=",decay_data$H_discrete,sep=""),sep="|")
-
-    # Assert diagnosis and classification equal to normal 
-    decay_data<-cbind(decay_data,Diagnosis="normal")
-    
-    # If efficiency not stationary, then Diagnosis is fault
-    decay_data[which(decay_data$n_discrete!="High"),"Diagnosis"]<-"fault"
-
     # Set rownames
     rownames(decay_data)<-decay_data$Time
 
