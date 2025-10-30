@@ -1,4 +1,6 @@
 #######################################################################################################
+# The decision tree can be fitted using alll viscosity groups.
+#######################################################################################################
 # Plot the heatmap - all
 for (decay in df_results$decay)
 {
@@ -25,15 +27,20 @@ for (decay in df_results$decay)
 
     # Add decay_data_discrete
     decay_data_discrete<-cbind(decay_data_discrete,annotation_row_exp)
-
-    Diagnosis_rpart<-rpart(formula=operational_states ~ Q + Tm.i + Tm.o + P1 + P2 + T + pi + mi + mo, data=decay_data_discrete,method = "class")
-
-    # Set rownames
-    rownames(decay_data_normlized)<-rownames(decay_data)
   
+    # Calculate tree
+    Diagnosis_rpart_operational_states<-rpart(formula=operational_states ~ Q + Tm.i + Tm.o + P1 + P2 + T + pi + mi + mo, data=decay_data_discrete,method = "class")
+    Diagnosis_rpart_Diagnosis         <-rpart(formula=Diagnosis ~ Q + Tm.i + Tm.o + P1 + P2 + T + pi + mi + mo, data=decay_data_discrete,method = "class")
+   
     # bwplot               
     png(filename=paste(output_dir,paste("rpart_Operational_state_decay_",decay,".png",sep="")), width = 15, height = 15, res=600, units = "cm")  
       # Plot the bayesian network graph
-      fancyRpartPlot(Diagnosis_rpart, caption = NULL, sub=NULL)  
+      fancyRpartPlot(Diagnosis_rpart_operational_states, caption = NULL, sub=NULL)  
+    dev.off()
+ 
+    # bwplot               
+    png(filename=paste(output_dir,paste("rpart_Diagnosis_decay_",decay,".png",sep="")), width = 15, height = 15, res=600, units = "cm")  
+      # Plot the bayesian network graph
+      fancyRpartPlot(Diagnosis_rpart_Diagnosis, caption = NULL, sub=NULL)  
     dev.off()
 }
