@@ -180,6 +180,9 @@ dev.off()
 # Start df with the results
 df_results<-data.frame(Time=c(), Q=c(), Tm.i=c(), Tm.o=c(), P1=c(), P2=c(), T=c(), pi=c(), mi=c(), mo=c(), RPM=c(), decay=c(), P_h=c(), n=c(), H=c(), BHP=c(), Delta.Pressure=c())
 
+# Start data.frame with operational states
+df_results_pheatmaps=data.frame(Q=c(),Tm.i=c(),Tm.o=c(),P1=c(),P2=c(),T=c(),pi=c(),mi=c(),mo=c(),decay=c(),n=c(),BHP=c(),H=c(),operational_states=c(),Diagnosis=c())
+
 for (decay in unique(df_simulated_input_variables$decay))
 {
   # Take dec
@@ -205,9 +208,15 @@ for (decay in unique(df_simulated_input_variables$decay))
 
   # bind results
   df_results<-rbind(df_results,decay_data)
+
+  # Add to table
+  decay_data_tertile<-cbind(as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], tertile)),decay=decay,annotation_row_exp)
+
+  # add pheatmaps
+  df_results_pheatmaps<-rbind(df_results_pheatmaps,decay_data_tertile)
 }
 #######################################################################################################
-# Plot the heatmap - all
+ # Plot the heatmap - all
 for (decay in df_results$decay)
 {
     # Take dec
@@ -239,6 +248,15 @@ for (decay in df_results$decay)
     png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
       # Add annotation : bhp, head, efficiency
       pheatmap(decay_data_normlized , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
-    dev.off()
+    dev.off() 
+
+    # Take the tertiles
+    decay_data_tertile<-cbind(as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], tertile)),decay=decay,annotation_row_exp)
 }
+# df_results_pheatmaps_fault
+df_results_pheatmaps_fault<-df_results_pheatmaps[which(df_results_pheatmaps$Diagnosis == "Fault"),]
+
+table(df_results_pheatmaps_fault$operational_states,df_results_pheatmaps_fault$decay,df_results_pheatmaps_fault$P2)
+
+
 
