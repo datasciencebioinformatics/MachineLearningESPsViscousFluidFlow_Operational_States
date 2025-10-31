@@ -377,6 +377,8 @@ for (decay in unique(df_simulated_input_variables$decay))
 ################################################################
 # The decision tree can be fitted using alll viscosity groups. #
 ################################################################
+rpart_list<-list()
+
 # Plot the heatmap - all
 for (decay in unique(df_simulated_input_variables$decay))
 {
@@ -419,4 +421,8 @@ for (decay in unique(df_simulated_input_variables$decay))
       # Plot the bayesian network graph
       fancyRpartPlot(Diagnosis_rpart_Diagnosis, caption = NULL, sub=NULL)  
     dev.off()
+
+    # Add rpart list
+    rpart_list[[decay]]<-Diagnosis_rpart_Diagnosis
 }
+rpart_list[unique(df_simulated_input_variables$decay)]
