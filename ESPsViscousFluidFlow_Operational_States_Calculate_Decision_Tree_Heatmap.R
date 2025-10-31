@@ -380,7 +380,7 @@ for (decay in unique(df_simulated_input_variables$decay))
 rpart_list<-list()
 
 # Plot the heatmap - all
-for (decay in unique(df_simulated_input_variables$decay))
+for (decay in unique(df_simulated_input_variables_bck$decay))
 {
     # Take dec
     decay_data<-df_simulated_input_variables_bck[which(df_simulated_input_variables_bck$decay==decay),]
@@ -425,4 +425,42 @@ for (decay in unique(df_simulated_input_variables$decay))
     # Add rpart list
     rpart_list[[decay]]<-Diagnosis_rpart_Diagnosis
 }
+# Show the rule 
 rpart_list[unique(df_simulated_input_variables$decay)]
+
+
+#######################################################################################################
+# Plot the heatmap - all
+for (decay in unique(df_simulated_input_variables_bck[which(df_simulated_input_variables_bck$decay==decay),]$decay))
+{
+    # Take dec
+    decay_data<-df_simulated_input_variables_bck[which(df_simulated_input_variables_bck$decay==decay),]
+
+    # Take time data
+    decay_data$Time<-paste("Time_",decay_data$Time,sep="")
+    
+    # Set rownames
+    rownames(decay_data)<-decay_data$Time
+
+    # Remove row lines
+    annotation_row_exp=decay_data[,c("n_discrete","BHP_discrete","H_discrete","operational_states","Diagnosis")]
+
+    # Re-set colnmaes
+    colnames(annotation_row_exp)<-c("n","BHP","H","operational_states","Diagnosis")
+
+    # Specify colors
+    ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black") )
+
+    # Normalized values for variables
+    decay_data_normlized <- as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], normalize))
+
+    # Set rownames
+    rownames(decay_data_normlized)<-rownames(decay_data)
+  
+    # Melt tabele
+    # Plot_raw_vibration_data.png                                                                                                            
+    png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
+      # Add annotation : bhp, head, efficiency
+      pheatmap(decay_data_normlized , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
+    dev.off() 
+}
