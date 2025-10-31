@@ -59,12 +59,6 @@ source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_AnalysisP47
 #### 17) Simulate time series
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Simluate_TimeSeries_From_P47_Glycerin_3500RPM.R",sep=""))
 
-#### 18) Predict input variables
-source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Calculate_Performance_From_Simluations.R",sep=""))
-
-#### 19) Calculate decision trees
-source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Calculate_Decision_Tree.R",sep=""))
-
 #### 20) Calculate decision trees
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Calculate_Decision_Tree_Heatmap.R",sep=""))
 ##############################################################################################################################
