@@ -65,10 +65,10 @@ set.seed(42)
 
 # --- Define the simulation parameters ---
 # Number of data points
-n_points <- 29 # length(unique(merge_water_viscous_testing$Time))
+n_points <- 100 # length(unique(merge_water_viscous_testing$Time))
 
 # Exponential decay parameters
-initial_value <- 25
+initial_value <- 50
 decay_rate_1 <- 0.01
 decay_rate_2 <- 0.1
 decay_rate_3 <- 0.25
@@ -114,6 +114,16 @@ sim_data_4 <- data.frame(Time = 1:n_points, Noisy_Value =  merge_water_viscous_t
 
 # Set data
 sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
+
+# Repeat each simulated time-series for different inlet viscosity valkues
+# 29 points are used for trainning decision tree.
+
+# First, simulated values of Q are generate by simulation.
+# Second the values of input variables are predicted from the simulated Q.
+# Thirds, the values were used to generate decision  trees.
+# Only 29 points are used to generate the decision tree.
+# More points can be used.
+# One way is to increase the range and skip the reference data.
 ####################################################################################################################################################################################
 # Simulations of Well Sanding (Pump Plugging).
 # First, simulate each variable in function of Q
@@ -252,7 +262,49 @@ for (measure in rownames(df_simulated_input_variables))
   # n = efficiency, dimensionless [%]
   df_simulated_input_variables[measure,"n"] <- df_simulated_input_variables[measure,"P_h"]/df_simulated_input_variables[measure,"BHP"]
 }
+################################################################
+# Start a data.frame
+df_simulated_input_variables_bck<- data.frame(c(Time=c(), Q=c(),Tm.i=c(), Tm.o=c(), P1=c(), P2=c(),T=c(),pi=c(),mi=c(),mo=c(), RPM=c(),decay=c(), P_h=c(), n=c(), H=c(), BHP=c(), Delta.Pressure=c()))
 
+
+# Plot the heatmap - all
+for (decay in unique(df_simulated_input_variables$decay))
+{
+    # Take dec
+    decay_data<-df_simulated_input_variables[which(df_simulated_input_variables$decay==decay),]
+    
+    # Take time data
+    decay_data$Time<-paste("Time_",decay_data$Time,sep="")
+    
+    # Set rownames
+    rownames(decay_data)<-decay_data$Time
+
+    # Take the tertiles
+    decay_data_tertiles<-as.data.frame(lapply(decay_data[,c("n","BHP","H")], tertile))
+    
+    # Renames collumns
+    colnames(decay_data_tertiles)<-c("n_discrete","BHP_discrete","H_discrete")
+    
+    # Merge tables
+    decay_data<-cbind(decay_data,decay_data_tertiles)    
+
+    # add operational states
+    decay_data$operational_states<-paste(paste("n=",decay_data$n_discrete,sep=""),paste("BHP=",decay_data$BHP_discrete,sep=""),paste("H=",decay_data$H_discrete,sep=""),sep="|")
+
+    # Set Diagnosis
+    decay_data$Diagnosis <-"Normal"
+
+    # If efficiency not stationary, then Diagnosis is fault
+    decay_data[which(decay_data$n_discrete!="High"),"Diagnosis"]<-"Fault"
+
+    # add data.frame with operational states and diagnosis
+    df_simulated_input_variables_bck<-rbind(df_simulated_input_variables_bck,decay_data)
+}
+
+
+# Add operational states
+# Add doiagnosis
+# Add tertiles
 ################################################################
 # The decision tree can be fitted using alll viscosity groups. #
 ################################################################
@@ -260,7 +312,7 @@ for (measure in rownames(df_simulated_input_variables))
 for (decay in unique(df_simulated_input_variables$decay))
 {
     # Take dec
-    decay_data<-df_results[which(df_simulated_input_variables$decay==decay),]
+    decay_data<-df_simulated_input_variables[which(df_simulated_input_variables$decay==decay),]
 
     # Take time data
     decay_data$Time<-paste("Time_",decay_data$Time,sep="")
@@ -269,7 +321,7 @@ for (decay in unique(df_simulated_input_variables$decay))
     rownames(decay_data)<-decay_data$Time
 
     # Remove row lines
-    annotation_row_exp=decay_data[,c("n_discrete","BHP_discrete","H_discrete","operational_states","Diagnosis")]
+    annotation_row_exp=decay_data[,c("n","BHP","H","operational_states","Diagnosis")]
 
     # Re-set colnmaes
     colnames(annotation_row_exp)<-c("n","BHP","H","operational_states","Diagnosis")
