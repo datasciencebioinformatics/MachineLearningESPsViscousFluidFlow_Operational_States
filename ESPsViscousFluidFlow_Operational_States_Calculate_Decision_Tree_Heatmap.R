@@ -15,6 +15,18 @@ colnames(merge_water_viscous_sub)<-c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T"
 # Convert RPM to numeric
 merge_water_viscous_sub$RPM<-as.numeric(merge_water_viscous_sub$RPM)
 ###############################################################################################################################################################################
+# Mett data.frame
+melt_water_viscous_sub<-reshape2::melt(merge_water_viscous_sub[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")],id.vars=c("Time"))
+
+# Most basic bubble plot
+p <- ggplot(melt_water_viscous_sub, aes(x=Time, y=value)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Reference time-series")
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Reference_time_series.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
+  p
+dev.off()
+###############################################################################################################################################################################
 # List to store the models
 trainned_rf_models<-list()
 
@@ -48,6 +60,29 @@ for (variable in c("Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM"))
     df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=rf_variable_versus_prediction,variable=variable))
 }
 ####################################################################################################################################################################################
+# Mett data.frame
+melt_water_viscous_testing<-reshape2::melt(merge_water_viscous_testing[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")],id.vars=c("Time"))
+####################################################################################################################################################################################
+# Add data type
+melt_water_viscous_testing$type   <-"experimental"
+df_predicted_results$type         <-"simulated"
+
+# Merge datasets
+merged_predicted_results<-rbind(df_predicted_results,melt_water_viscous_testing)
+
+# Relevel factors
+merged_predicted_results$variable<-factor(merged_predicted_results$variable,levels=c(c("Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
+
+# Most basic bubble plot
+p2 <- ggplot(merged_predicted_results, aes(x=Time, y=value,group = type, color = type)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series") + scale_colour_brewer(palette = "Set1")
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Reference_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
+  p2
+dev.off()
+
+####################################################################################################################################################################################
 # Add data type
 df_predicted_results$type     <-"experimental"
 df_predicted_results$type     <-"simulated"
@@ -69,14 +104,14 @@ n_points <- 100 # length(unique(merge_water_viscous_testing$Time))
 
 # Exponential decay parameters
 initial_value <- 50
-decay_rate_1 <- 0.01
+decay_rate_1 <- 0.05
 decay_rate_2 <- 0.1
 decay_rate_3 <- 0.25
 
 # Noise parameters (normally distributed)
-noise_mean_1 <- 0
-noise_mean_2 <- 0
-noise_mean_3 <- 0
+noise_mean_1 <- 6
+noise_mean_2 <- 6
+noise_mean_3 <- 6
 noise_sd_1   <- 2 # Standard deviation of the noise
 noise_sd_2   <- 2 # Standard deviation of the noise
 noise_sd_3   <- 2 # Standard deviation of the noise
@@ -117,6 +152,23 @@ sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
 
 # Repeat each simulated time-series for different inlet viscosity valkues
 # 29 points are used for trainning decision tree.
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Simulated_Declining_Flow_Rate_Q with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+  # --- Visualize the results with ggplot2 ---
+  ggplot(sim_data, aes(x = Time, group=decay_rate)) +
+    # Plot the noisy data as points
+    geom_point(aes(y = Noisy_Value, group=decay_rate, colour=decay_rate),alpha = 0.6) +
+    # Plot the ideal, noiseless curve as a line
+    geom_line(aes(y = Noisy_Value, group=decay_rate, colour=decay_rate), color = "blue", alpha = 0.6) +
+    # Add labels and a title
+    labs(
+      title = "Simulated Declining Flow Rate Q with Noise",
+      x = "Time",
+      y = "Value"
+    ) +
+    theme_minimal()
+dev.off()
 
 # First, simulated values of Q are generate by simulation.
 # Second the values of input variables are predicted from the simulated Q.
@@ -266,7 +318,6 @@ for (measure in rownames(df_simulated_input_variables))
 # Start a data.frame
 df_simulated_input_variables_bck<- data.frame(c(Time=c(), Q=c(),Tm.i=c(), Tm.o=c(), P1=c(), P2=c(),T=c(),pi=c(),mi=c(),mo=c(), RPM=c(),decay=c(), P_h=c(), n=c(), H=c(), BHP=c(), Delta.Pressure=c()))
 
-
 # Plot the heatmap - all
 for (decay in unique(df_simulated_input_variables$decay))
 {
@@ -300,11 +351,6 @@ for (decay in unique(df_simulated_input_variables$decay))
     # add data.frame with operational states and diagnosis
     df_simulated_input_variables_bck<-rbind(df_simulated_input_variables_bck,decay_data)
 }
-
-
-# Add operational states
-# Add doiagnosis
-# Add tertiles
 ################################################################
 # The decision tree can be fitted using alll viscosity groups. #
 ################################################################
@@ -312,7 +358,7 @@ for (decay in unique(df_simulated_input_variables$decay))
 for (decay in unique(df_simulated_input_variables$decay))
 {
     # Take dec
-    decay_data<-df_simulated_input_variables[which(df_simulated_input_variables$decay==decay),]
+    decay_data<-df_simulated_input_variables_bck[which(df_simulated_input_variables_bck$decay==decay),]
 
     # Take time data
     decay_data$Time<-paste("Time_",decay_data$Time,sep="")
