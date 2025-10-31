@@ -15,18 +15,6 @@ colnames(merge_water_viscous_sub)<-c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T"
 # Convert RPM to numeric
 merge_water_viscous_sub$RPM<-as.numeric(merge_water_viscous_sub$RPM)
 ###############################################################################################################################################################################
-# Mett data.frame
-melt_water_viscous_sub<-reshape2::melt(merge_water_viscous_sub[,c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")],id.vars=c("Time"))
-
-# Most basic bubble plot
-p <- ggplot(melt_water_viscous_sub, aes(x=Time, y=value)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Reference time-series")
-
-# Melt tabele
-# Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Reference_time_series.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
-  p
-dev.off()
-###############################################################################################################################################################################
 # List to store the models
 trainned_rf_models<-list()
 
@@ -72,16 +60,6 @@ merged_predicted_results<-rbind(df_predicted_results,melt_water_viscous_testing)
 
 # Relevel factors
 merged_predicted_results$variable<-factor(merged_predicted_results$variable,levels=c(c("Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
-
-# Most basic bubble plot
-p2 <- ggplot(merged_predicted_results, aes(x=Time, y=value,group = type, color = type)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series") + scale_colour_brewer(palette = "Set1")
-
-# Melt tabele
-# Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Reference_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
-  p2
-dev.off()
-
 ####################################################################################################################################################################################
 # Add data type
 df_predicted_results$type     <-"experimental"
@@ -142,7 +120,7 @@ noisy_data_3 <- ideal_decay_3 + noise_3
 #sim_data_3 <- data.frame(Time = unique(merge_water_viscous_testing$Time), Noisy_Value = noisy_data_3, Ideal_Value = ideal_decay_3,decay_rate="0.25")
 
 # 5. Combine the data into a data frame for easy plotting
-sim_data_1 <- data.frame(Time = 1:n_points, Noisy_Value = noisy_data_1, Ideal_Value = ideal_decay_1,decay_rate="0.01")
+sim_data_1 <- data.frame(Time = 1:n_points, Noisy_Value = noisy_data_1, Ideal_Value = ideal_decay_1,decay_rate="0.05")
 sim_data_2 <- data.frame(Time = 1:n_points, Noisy_Value = noisy_data_2, Ideal_Value = ideal_decay_2,decay_rate="0.1")
 sim_data_3 <- data.frame(Time = 1:n_points, Noisy_Value = noisy_data_3, Ideal_Value = ideal_decay_3,decay_rate="0.25")
 sim_data_4 <- data.frame(Time = 1:n_points, Noisy_Value =  merge_water_viscous_testing[1:n_points,"Q"], Ideal_Value =  merge_water_viscous_testing[1:n_points,"Q"],decay_rate="reference")
@@ -154,7 +132,7 @@ sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
 # 29 points are used for trainning decision tree.
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Simulated_Declining_Flow_Rate_Q with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+png(filename=paste(project_folder,"Simulated_Declining_Flow_Rate_Q_with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
   # --- Visualize the results with ggplot2 ---
   ggplot(sim_data, aes(x = Time, group=decay_rate)) +
     # Plot the noisy data as points
@@ -314,6 +292,33 @@ for (measure in rownames(df_simulated_input_variables))
   # n = efficiency, dimensionless [%]
   df_simulated_input_variables[measure,"n"] <- df_simulated_input_variables[measure,"P_h"]/df_simulated_input_variables[measure,"BHP"]
 }
+#######################################################################################################
+# add plot
+melt_simulated_input_variables<-reshape2::melt(df_simulated_input_variables,id.vars=c("Time","decay")) 
+
+# Most basic bubble plot
+p3 <- ggplot(melt_simulated_input_variables[melt_simulated_input_variables$variable %in% c("n","H","BHP"),], aes(x=Time, y=value,group = decay, color = decay)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series - performance variables") + scale_colour_brewer(palette = "Set1")
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Simulated_performance_variables_ranfom_forest.png",sep=""), width = 15, height = 10, res=600, units = "cm")  
+  p3
+dev.off()
+#######################################################################################################
+
+
+################################################################################################################
+# Fig. 7—ESP P47 performance pumping viscous fluid at 3,500 rev/min.
+ESP_P47_water_plot_Q_H <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","decay")], aes(x = Q, y = H,colour=decay))     + geom_point() + geom_line()  + theme_bw()   + ggtitle ("Flow rate Q vs. Head H")    + ylab("Head H [m]")                   + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "bottom")  
+ESP_P47_water_plot_BHP <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","decay")], aes(x = Q, y = BHP,colour=decay))   + geom_point() + geom_line() + theme_bw()   + ggtitle ("Flow rate Q vs. Power BHP") + ylab("Power BHP [W]")                + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "none")    
+ESP_P47_water_plot_n   <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","decay")], aes(x = Q, y = n*100,colour=decay)) + geom_point() + geom_line() + theme_bw()   + ggtitle ("Flow rate Q vs. Efficiency n") + ylab("Efficiency n [%]")          + labs(x = expression("Flow rate Q [" * m^3/h * "]"))   + theme(legend.position = "bottom")      
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
+  ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
+dev.off()
+
 ################################################################
 # Start a data.frame
 df_simulated_input_variables_bck<- data.frame(c(Time=c(), Q=c(),Tm.i=c(), Tm.o=c(), P1=c(), P2=c(),T=c(),pi=c(),mi=c(),mo=c(), RPM=c(),decay=c(), P_h=c(), n=c(), H=c(), BHP=c(), Delta.Pressure=c()))
