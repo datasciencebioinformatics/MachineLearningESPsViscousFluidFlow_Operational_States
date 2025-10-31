@@ -427,9 +427,10 @@ for (decay in unique(df_simulated_input_variables_bck$decay))
 }
 # Show the rule 
 rpart_list[unique(df_simulated_input_variables$decay)]
-
-
 #######################################################################################################
+# Start data.frame with operational states
+df_results_pheatmaps=data.frame(Q=c(),Tm.i=c(),Tm.o=c(),P1=c(),P2=c(),T=c(),pi=c(),mi=c(),mo=c(),decay=c(),n=c(),BHP=c(),H=c(),operational_states=c(),Diagnosis=c())
+
 # Plot the heatmap - all
 for (decay in  unique(df_simulated_input_variables_bck$decay))
 {
@@ -463,4 +464,10 @@ for (decay in  unique(df_simulated_input_variables_bck$decay))
       # Add annotation : bhp, head, efficiency
       pheatmap(decay_data_normlized , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
     dev.off() 
+
+    # add pheatmaps
+    df_results_pheatmaps<-rbind(df_results_pheatmaps,decay_data_tertile)
 }
+##########################################################################################################################################
+# Count tabçes
+table(df_results_pheatmaps$Diagnosis,df_results_pheatmaps$decay,df_results_pheatmaps$P2)
