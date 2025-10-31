@@ -431,7 +431,7 @@ rpart_list[unique(df_simulated_input_variables$decay)]
 
 #######################################################################################################
 # Plot the heatmap - all
-for (decay in unique(df_simulated_input_variables_bck[which(df_simulated_input_variables_bck$decay==decay),]$decay))
+for (decay in  unique(df_simulated_input_variables_bck$decay))
 {
     # Take dec
     decay_data<-df_simulated_input_variables_bck[which(df_simulated_input_variables_bck$decay==decay),]
