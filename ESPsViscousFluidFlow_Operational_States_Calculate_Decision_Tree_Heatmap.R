@@ -191,6 +191,24 @@ df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c(c("
 
 # Relevel factors
 df_predicted_results$decay<-factor(df_predicted_results$decay)
+
+####################################################################################################################################################################################
+# Add also simulated data
+####################################################################################################################################################################################
+# Relevel factors
+df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c(c("Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
+
+# Relevel factors
+df_predicted_results$decay<-factor(df_predicted_results$decay)
+
+# Most basic bubble plot
+p2 <- ggplot(df_predicted_results, aes(x=Time, y=value,group = decay, color = decay)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series") + scale_colour_brewer(palette = "Set1")
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Simulated_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
+  p2
+dev.off()
 ####################################################################################################################################################################################
 # Calculate performance, head and BHP for each configurations.
 ####################################################################################################################################################################################
