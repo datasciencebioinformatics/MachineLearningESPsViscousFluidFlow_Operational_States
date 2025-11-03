@@ -83,88 +83,10 @@ p2 <- ggplot(merged_predicted_results, aes(x=Time, y=value,group = type, color =
 png(filename=paste(project_folder,"Reference_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
   p2
 dev.off()
-
-
-
-
-
-
-
 ####################################################################################################################################################################################
-# Simulate time-series for Simulations of Well Sanding (Pump Plugging)
-####################################################################################################################################################################################
-# Set a seed for reproducibility
-set.seed(42)
-
-# --- Define the simulation parameters ---
-# Number of data points
-n_points <- 29 # length(unique(merge_water_viscous_testing$Time))
-
-# Exponential decay parameters
-initial_value <- 25
-decay_rate_1 <- 0.01
-decay_rate_2 <- 0.1
-decay_rate_3 <- 0.25
-
-# Noise parameters (normally distributed)
-noise_mean_1 <- 0
-noise_mean_2 <- 0
-noise_mean_3 <- 0
-noise_sd_1   <- 2 # Standard deviation of the noise
-noise_sd_2   <- 2 # Standard deviation of the noise
-noise_sd_3   <- 2 # Standard deviation of the noise
-
-# --- Simulate the data ---
-# 1. Create a time vector
-time <- 1:n_points
-
-# 2. Generate the ideal (noiseless) exponential decay curve
-ideal_decay_1 <- initial_value * exp(-decay_rate_1 * time)
-ideal_decay_2 <- initial_value * exp(-decay_rate_2 * time)
-ideal_decay_3 <- initial_value * exp(-decay_rate_3 * time)
 
 
-# 3. Generate random noise
-noise_1 <- rnorm(n_points, mean = noise_mean_1, sd = noise_sd_1)
-noise_2 <- rnorm(n_points, mean = noise_mean_2, sd = noise_sd_2)
-noise_3 <- rnorm(n_points, mean = noise_mean_3, sd = noise_sd_3)
-
-# 4. Create the final noisy data by adding the noise to the ideal curve
-noisy_data_1 <- ideal_decay_1 + noise_1
-noisy_data_2 <- ideal_decay_2 + noise_2
-noisy_data_3 <- ideal_decay_3 + noise_3
-
-# 5. Combine the data into a data frame for easy plotting
-#sim_data_1 <- data.frame(Time = unique(merge_water_viscous_testing$Time), Noisy_Value = noisy_data_1, Ideal_Value = ideal_decay_1,decay_rate="0.01")
-#sim_data_2 <- data.frame(Time = unique(merge_water_viscous_testing$Time), Noisy_Value = noisy_data_2, Ideal_Value = ideal_decay_2,decay_rate="0.1")
-#sim_data_3 <- data.frame(Time = unique(merge_water_viscous_testing$Time), Noisy_Value = noisy_data_3, Ideal_Value = ideal_decay_3,decay_rate="0.25")
-
-# 5. Combine the data into a data frame for easy plotting
-sim_data_1 <- data.frame(Time = 1:n_points, Noisy_Value = noisy_data_1, Ideal_Value = ideal_decay_1,decay_rate="0.01")
-sim_data_2 <- data.frame(Time = 1:n_points, Noisy_Value = noisy_data_2, Ideal_Value = ideal_decay_2,decay_rate="0.1")
-sim_data_3 <- data.frame(Time = 1:n_points, Noisy_Value = noisy_data_3, Ideal_Value = ideal_decay_3,decay_rate="0.25")
-sim_data_4 <- data.frame(Time = 1:n_points, Noisy_Value =  merge_water_viscous_testing[1:n_points,"Q"], Ideal_Value =  merge_water_viscous_testing[1:n_points,"Q"],decay_rate="reference")
-
-# Set data
-sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
 
 
-# Melt tabele
-# Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Simulated_Declining_Flow_Rate_Q with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
-  # --- Visualize the results with ggplot2 ---
-  ggplot(sim_data, aes(x = Time, group=decay_rate)) +
-    # Plot the noisy data as points
-    geom_point(aes(y = Noisy_Value, group=decay_rate, colour=decay_rate),alpha = 0.6) +
-    # Plot the ideal, noiseless curve as a line
-    geom_line(aes(y = Noisy_Value, group=decay_rate, colour=decay_rate), color = "blue", alpha = 0.6) +
-    # Add labels and a title
-    labs(
-      title = "Simulated Declining Flow Rate Q with Noise",
-      x = "Time",
-      y = "Value"
-    ) +
-    theme_minimal()
-dev.off()
 
 
