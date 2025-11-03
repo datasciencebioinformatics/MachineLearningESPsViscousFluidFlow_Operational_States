@@ -81,8 +81,8 @@ set.seed(42)
 time_points <- 1:100 # Number of time points
 
 # Exponential decay parameters
-initial_value <- 25
-decay_rate_1 <- 0.2 # This determines how quickly the value decays
+initial_value <- 50
+decay_rate_1 <- 0.52 # This determines how quickly the value decays
 decay_rate_2 <- 0.15 # This determines how quickly the value decays
 decay_rate_3 <- 0.1 # This determines how quickly the value decays
 
@@ -96,15 +96,15 @@ decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points)
 decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points)
 
 # Calculate decayed values
-decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points) + rnorm(length(decayed_series_1), mean = 0, sd = 0.5)
-decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points) + rnorm(length(decayed_series_2), mean = 0, sd = 0.5)
-decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points) + rnorm(length(decayed_series_3), mean = 0, sd = 0.5)
+decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points) + rnorm(length(decayed_series_1), mean = 0, sd = 0.5) + 1
+decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points) + rnorm(length(decayed_series_2), mean = 0, sd = 0.5) + 1
+decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points) + rnorm(length(decayed_series_3), mean = 0, sd = 0.5) + 1
 
 # 5. Combine the data into a data frame for easy plotting
-sim_data_1 <- data.frame(Time = 1:n_points, Noisy_Value = decayed_series_1,decay_rate="0.001")
-sim_data_2 <- data.frame(Time = 1:n_points, Noisy_Value = decayed_series_2,decay_rate="0.01")
-sim_data_3 <- data.frame(Time = 1:n_points, Noisy_Value = decayed_series_3,decay_rate="0.1")
-sim_data_4 <- data.frame(Time = 1:n_points, Noisy_Value =  merge_water_viscous_testing[1:n_points,"Q"],decay_rate="reference")
+sim_data_1 <- data.frame(Time = time_points , Noisy_Value = decayed_series_1,decay_rate="0.25")
+sim_data_2 <- data.frame(Time = time_points , Noisy_Value = decayed_series_2,decay_rate="0.15")
+sim_data_3 <- data.frame(Time = time_points , Noisy_Value = decayed_series_3,decay_rate="0.1")
+sim_data_4 <- data.frame(Time = time_points , Noisy_Value =  merge_water_viscous_testing[time_points,"Q"],decay_rate="reference")
 
 # Set data
 sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
@@ -158,11 +158,11 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
       rf_variable_versus_prediction<-predict(rf_variable_versus_Q , data.frame(Q=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"]))
   
       # Add results of the variable
-      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:n_points,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
+      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
 
   }
   # Add results of the variable
-  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:n_points,value=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"],variable="Q",decay=decay_rate))
+  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"],variable="Q",decay=decay_rate))
 }
 ####################################################################################################################################################################################
 # Add also simulated data
@@ -370,7 +370,7 @@ for (decay in unique(df_simulated_input_variables_bck$decay))
     decay_data$Time<-paste("Time_",decay_data$Time,sep="")
     
     # Set rownames
-    rownames(decay_data)<-decay_data$Time
+    #rownames(decay_data)<-decay_data$Time
 
     # Remove row lines
     annotation_row_exp=decay_data[,c("n","BHP","H","operational_states","Diagnosis")]
@@ -436,6 +436,9 @@ for (decay in  unique(df_simulated_input_variables_bck$decay))
     # Normalized values for variables
     decay_data_normlized <- as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], normalize))
 
+    # Normalized values for variables
+    decay_data_tertile <- as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], tertile))
+
     # Set rownames
     rownames(decay_data_normlized)<-rownames(decay_data)
   
@@ -447,7 +450,7 @@ for (decay in  unique(df_simulated_input_variables_bck$decay))
     dev.off() 
 
     # add pheatmaps
-    df_results_pheatmaps<-rbind(df_results_pheatmaps,decay_data_tertile)
+    df_results_pheatmaps<-rbind(df_results_pheatmaps,cbind(decay_data_tertile,annotation_row_exp,decay=decay))
 }
 ##########################################################################################################################################
 # Count tabçes
