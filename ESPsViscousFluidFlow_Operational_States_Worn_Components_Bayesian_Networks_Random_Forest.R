@@ -19,7 +19,7 @@ merge_water_viscous_sub$RPM<-as.numeric(merge_water_viscous_sub$RPM)
 trainned_rf_models<-list()
 
 # Split the dataset in training set and testing set
-merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM!=3500 ,]
+merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3000 ,]
 merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500 ,]
 
 # Simulations of Well Sanding (Pump Plugging).
@@ -60,7 +60,7 @@ merged_predicted_results<-rbind(df_predicted_results,melt_water_viscous_testing)
 
 # Relevel factors
 merged_predicted_results$variable<-factor(merged_predicted_results$variable,levels=c(c("n","Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
-##########################################################################################################################################################
+####################################################################################################################################################################################
 # Add data type
 df_predicted_results$type     <-"experimental"
 df_predicted_results$type     <-"simulated"
@@ -70,7 +70,7 @@ merged_predicted_results<-rbind(df_predicted_results,melt_water_viscous_testing)
 
 # Relevel factors
 merged_predicted_results$variable<-factor(merged_predicted_results$variable,levels=c(c("n","Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
-##########################################################################################################################################################
+####################################################################################################################################################################################
 # Simulate time-series for Simulations of Well Sanding (Pump Plugging)
 ####################################################################################################################################################################################
 # Set a seed for reproducibility
@@ -81,8 +81,8 @@ set.seed(42)
 time_points <- 1:100 # Number of time points
 
 # Exponential decay parameters
-initial_value <- 0.4
-decay_rate_1 <- 0.2 # This determines how quickly the value decays
+initial_value <- 1
+decay_rate_1 <- 0.25 # This determines how quickly the value decays
 decay_rate_2 <- 0.15 # This determines how quickly the value decays
 decay_rate_3 <- 0.1 # This determines how quickly the value decays
 
@@ -96,9 +96,9 @@ decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points)
 decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points)
 
 # Calculate decayed values
-decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points) + rnorm(length(decayed_series_1), mean = 0, sd = 0.01) + 0.025
-decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points) + rnorm(length(decayed_series_2), mean = 0, sd = 0.01) + 0.025
-decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points) + rnorm(length(decayed_series_3), mean = 0, sd = 0.01) + 0.025
+decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points) + rnorm(length(decayed_series_1), mean = 0, sd = 0.1) + 0.1
+decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points) + rnorm(length(decayed_series_2), mean = 0, sd = 0.1) + 0.1
+decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points) + rnorm(length(decayed_series_3), mean = 0, sd = 0.1) + 0.1
 
 # 5. Combine the data into a data frame for easy plotting
 sim_data_1 <- data.frame(Time = 1:n_points, Noisy_Value = decayed_series_1,decay_rate="0.001")
@@ -122,7 +122,7 @@ png(filename=paste(project_folder,"Simulated_Declining_Flow_Rate_Q_with_Noise.pn
     geom_line(aes(y = Noisy_Value, group=decay_rate, colour=decay_rate), color = "blue", alpha = 0.6) +
     # Add labels and a title
     labs(
-      title = "Simulated Declining Flow Rate Q with Noise",
+      title = "Simulated Declining Efficiency n with Noise",
       x = "Time",
       y = "Value"
     ) +
@@ -149,13 +149,13 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
   # The rows are increasing viscosity values and the collumns the increasing time value
   # Convert the P47_viscous_3500_data_sub to time-series for each variable
   # For each variable 
-  for (variable in c("n","Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM"))
+  for (variable in c("Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM"))
   {  
       # Store the trained model
       rf_variable_versus_n<-trainned_rf_models[[variable]]
     
       # Calculate predictions
-      rf_variable_versus_prediction<-predict(rf_variable_versus_n , data.frame(Q=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"]))
+      rf_variable_versus_prediction<-predict(rf_variable_versus_n , data.frame(n=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"]))
   
       # Add results of the variable
       df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:n_points,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
@@ -187,7 +187,7 @@ p2 <- ggplot(df_predicted_results, aes(x=Time, y=value,group = decay, color = de
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Simulated_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
+png(filename=paste(project_folder,"Worn_Components_Simulated_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
   p2
 dev.off()
 ####################################################################################################################################################################################
@@ -301,33 +301,10 @@ p3 <- ggplot(melt_simulated_input_variables[melt_simulated_input_variables$varia
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Simulated_performance_variables_ranfom_forest.png",sep=""), width = 15, height = 10, res=600, units = "cm")  
+png(filename=paste(project_folder,"Worn_Components_Simulated_performance_variables_ranfom_forest.png",sep=""), width = 15, height = 10, res=600, units = "cm")  
   p3
 dev.off()
 #######################################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ################################################################################################################
@@ -338,141 +315,6 @@ ESP_P47_water_plot_n   <- ggplot(df_simulated_input_variables[,c("Q","n","H","BH
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
+png(filename=paste(project_folder,"Worn_Components_ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
   ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
 dev.off()
-
-################################################################
-# Start a data.frame
-df_simulated_input_variables_bck<- data.frame(c(Time=c(), Q=c(),Tm.i=c(), Tm.o=c(), P1=c(), P2=c(),T=c(),pi=c(),mi=c(),mo=c(), RPM=c(),decay=c(), P_h=c(), n=c(), H=c(), BHP=c(), Delta.Pressure=c()))
-
-# Plot the heatmap - all
-for (decay in unique(df_simulated_input_variables$decay))
-{
-    # Take dec
-    decay_data<-df_simulated_input_variables[which(df_simulated_input_variables$decay==decay),]
-    
-    # Take time data
-    decay_data$Time<-paste("Time_",decay_data$Time,sep="")
-    
-    # Set rownames
-    rownames(decay_data)<-decay_data$Time
-
-    # Take the tertiles
-    decay_data_tertiles<-as.data.frame(lapply(decay_data[,c("n","BHP","H")], tertile))
-    
-    # Renames collumns
-    colnames(decay_data_tertiles)<-c("n_discrete","BHP_discrete","H_discrete")
-    
-    # Merge tables
-    decay_data<-cbind(decay_data,decay_data_tertiles)    
-
-    # add operational states
-    decay_data$operational_states<-paste(paste("n=",decay_data$n_discrete,sep=""),paste("BHP=",decay_data$BHP_discrete,sep=""),paste("H=",decay_data$H_discrete,sep=""),sep="|")
-
-    # Set Diagnosis
-    decay_data$Diagnosis <-"Normal"
-
-    # If efficiency not stationary, then Diagnosis is fault
-    decay_data[which(decay_data$n_discrete!="High"),"Diagnosis"]<-"Fault"
-
-    # add data.frame with operational states and diagnosis
-    df_simulated_input_variables_bck<-rbind(df_simulated_input_variables_bck,decay_data)
-}
-################################################################
-# The decision tree can be fitted using alll viscosity groups. #
-################################################################
-rpart_list<-list()
-
-# Plot the heatmap - all
-for (decay in unique(df_simulated_input_variables_bck$decay))
-{
-    # Take dec
-    decay_data<-df_simulated_input_variables_bck[which(df_simulated_input_variables_bck$decay==decay),]
-
-    # Take time data
-    decay_data$Time<-paste("Time_",decay_data$Time,sep="")
-    
-    # Set rownames
-    rownames(decay_data)<-decay_data$Time
-
-    # Remove row lines
-    annotation_row_exp=decay_data[,c("n","BHP","H","operational_states","Diagnosis")]
-
-    # Re-set colnmaes
-    colnames(annotation_row_exp)<-c("n","BHP","H","operational_states","Diagnosis")
-
-    # Specify colors
-    ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black") )
-
-    # Normalized values for variables
-    decay_data_discrete <- as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], tertile))
-
-    # Add decay_data_discrete
-    decay_data_discrete<-cbind(decay_data_discrete,annotation_row_exp)
-  
-    # Calculate tree
-    Diagnosis_rpart_operational_states<-rpart(formula=operational_states ~ Q + Tm.i + Tm.o + P1 + P2 + T + pi + mi + mo, data=decay_data_discrete,method = "class")
-    Diagnosis_rpart_Diagnosis         <-rpart(formula=Diagnosis ~ Q + Tm.i + Tm.o + P1 + P2 + T + pi + mi + mo, data=decay_data_discrete,method = "class")
-   
-    # bwplot               
-    png(filename=paste(output_dir,paste("rpart_Operational_state_decay_",decay,".png",sep="")), width = 15, height = 15, res=600, units = "cm")  
-      # Plot the bayesian network graph
-      fancyRpartPlot(Diagnosis_rpart_operational_states, caption = NULL, sub=NULL)  
-    dev.off()
- 
-    # bwplot               
-    png(filename=paste(output_dir,paste("rpart_Diagnosis_decay_",decay,".png",sep="")), width = 15, height = 15, res=600, units = "cm")  
-      # Plot the bayesian network graph
-      fancyRpartPlot(Diagnosis_rpart_Diagnosis, caption = NULL, sub=NULL)  
-    dev.off()
-
-    # Add rpart list
-    rpart_list[[decay]]<-Diagnosis_rpart_Diagnosis
-}
-# Show the rule 
-rpart_list[unique(df_simulated_input_variables$decay)]
-#######################################################################################################
-# Start data.frame with operational states
-df_results_pheatmaps=data.frame(Q=c(),Tm.i=c(),Tm.o=c(),P1=c(),P2=c(),T=c(),pi=c(),mi=c(),mo=c(),decay=c(),n=c(),BHP=c(),H=c(),operational_states=c(),Diagnosis=c())
-
-# Plot the heatmap - all
-for (decay in  unique(df_simulated_input_variables_bck$decay))
-{
-    # Take dec
-    decay_data<-df_simulated_input_variables_bck[which(df_simulated_input_variables_bck$decay==decay),]
-
-    # Take time data
-    decay_data$Time<-paste("Time_",decay_data$Time,sep="")
-    
-    # Set rownames
-    rownames(decay_data)<-decay_data$Time
-
-    # Remove row lines
-    annotation_row_exp=decay_data[,c("n_discrete","BHP_discrete","H_discrete","operational_states","Diagnosis")]
-
-    # Re-set colnmaes
-    colnames(annotation_row_exp)<-c("n","BHP","H","operational_states","Diagnosis")
-
-    # Specify colors
-    ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), BHP = c(Low="lightgrey", Medium="darkgrey",High="black"), H = c(Low="lightgrey", Medium="darkgrey",High="black") )
-
-    # Normalized values for variables
-    decay_data_normlized <- as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], normalize))
-
-    # Set rownames
-    rownames(decay_data_normlized)<-rownames(decay_data)
-  
-    # Melt tabele
-    # Plot_raw_vibration_data.png                                                                                                            
-    png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
-      # Add annotation : bhp, head, efficiency
-      pheatmap(decay_data_normlized , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
-    dev.off() 
-
-    # add pheatmaps
-    df_results_pheatmaps<-rbind(df_results_pheatmaps,decay_data_tertile)
-}
-##########################################################################################################################################
-# Count tabçes
-table(df_results_pheatmaps$Diagnosis,df_results_pheatmaps$decay,df_results_pheatmaps$P2)
