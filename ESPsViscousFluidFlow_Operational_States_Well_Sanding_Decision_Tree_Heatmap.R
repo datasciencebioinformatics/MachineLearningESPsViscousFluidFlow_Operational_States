@@ -113,7 +113,7 @@ sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
 # 29 points are used for trainning decision tree.
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Simulated_Declining_Flow_Rate_Q_with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+png(filename=paste(project_folder,"Well_Sanding_Simulated_Declining_Flow_Rate_Q_with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
   # --- Visualize the results with ggplot2 ---
   ggplot(sim_data, aes(x = Time, group=decay_rate)) +
     # Plot the noisy data as points
@@ -187,7 +187,7 @@ p2 <- ggplot(df_predicted_results, aes(x=Time, y=value,group = decay, color = de
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Simulated_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
+png(filename=paste(project_folder,"Well_Sanding_Simulated_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
   p2
 dev.off()
 ####################################################################################################################################################################################
@@ -300,7 +300,7 @@ p3 <- ggplot(melt_simulated_input_variables[melt_simulated_input_variables$varia
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Simulated_performance_variables_ranfom_forest.png",sep=""), width = 15, height = 10, res=600, units = "cm")  
+png(filename=paste(project_folder,"Well_Sanding_Simulated_performance_variables_ranfom_forest.png",sep=""), width = 15, height = 10, res=600, units = "cm")  
   p3
 dev.off()
 #######################################################################################################
@@ -314,7 +314,7 @@ ESP_P47_water_plot_n   <- ggplot(df_simulated_input_variables[,c("Q","n","H","BH
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
+png(filename=paste(project_folder,"Well_Sanding_ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
   ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
 dev.off()
 
@@ -392,13 +392,13 @@ for (decay in unique(df_simulated_input_variables_bck$decay))
     Diagnosis_rpart_Diagnosis         <-rpart(formula=Diagnosis ~ Q + Tm.i + Tm.o + P1 + P2 + T + pi + mi + mo, data=decay_data_discrete,method = "class")
    
     # bwplot               
-    png(filename=paste(output_dir,paste("rpart_Operational_state_decay_",decay,".png",sep="")), width = 15, height = 15, res=600, units = "cm")  
+    png(filename=paste(output_dir,paste("Well_Sanding_rpart_Operational_state_decay_",decay,".png",sep="")), width = 15, height = 15, res=600, units = "cm")  
       # Plot the bayesian network graph
       fancyRpartPlot(Diagnosis_rpart_operational_states, caption = NULL, sub=NULL)  
     dev.off()
  
     # bwplot               
-    png(filename=paste(output_dir,paste("rpart_Diagnosis_decay_",decay,".png",sep="")), width = 15, height = 15, res=600, units = "cm")  
+    png(filename=paste(output_dir,paste("Well_Sanding_rpart_Diagnosis_decay_",decay,".png",sep="")), width = 15, height = 15, res=600, units = "cm")  
       # Plot the bayesian network graph
       fancyRpartPlot(Diagnosis_rpart_Diagnosis, caption = NULL, sub=NULL)  
     dev.off()
@@ -441,7 +441,7 @@ for (decay in  unique(df_simulated_input_variables_bck$decay))
   
     # Melt tabele
     # Plot_raw_vibration_data.png                                                                                                            
-    png(filename=paste(project_folder,"ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
+    png(filename=paste(project_folder,"Well_Sanding_ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
       # Add annotation : bhp, head, efficiency
       pheatmap(decay_data_normlized , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
     dev.off() 
