@@ -96,15 +96,15 @@ decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points)
 decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points)
 
 # Calculate decayed values
-decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points) + rnorm(length(decayed_series_1), mean = 0, sd = 0.1) + 0.1
-decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points) + rnorm(length(decayed_series_2), mean = 0, sd = 0.1) + 0.1
-decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points) + rnorm(length(decayed_series_3), mean = 0, sd = 0.1) + 0.1
+decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points) + rnorm(length(decayed_series_1), mean = 0, sd = 0.1) + 0.15
+decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points) + rnorm(length(decayed_series_2), mean = 0, sd = 0.1) + 0.15
+decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points) + rnorm(length(decayed_series_3), mean = 0, sd = 0.1) + 0.15
 
 # 5. Combine the data into a data frame for easy plotting
-sim_data_1 <- data.frame(Time = 1:n_points, Noisy_Value = decayed_series_1,decay_rate="0.001")
-sim_data_2 <- data.frame(Time = 1:n_points, Noisy_Value = decayed_series_2,decay_rate="0.01")
-sim_data_3 <- data.frame(Time = 1:n_points, Noisy_Value = decayed_series_3,decay_rate="0.1")
-sim_data_4 <- data.frame(Time = 1:n_points, Noisy_Value =  merge_water_viscous_testing[1:n_points,"n"],decay_rate="reference")
+sim_data_1 <- data.frame(Time = time_points, Noisy_Value = decayed_series_1,decay_rate="0.25")
+sim_data_2 <- data.frame(Time = time_points, Noisy_Value = decayed_series_2,decay_rate="0.15")
+sim_data_3 <- data.frame(Time = time_points, Noisy_Value = decayed_series_3,decay_rate="0.1")
+sim_data_4 <- data.frame(Time = time_points, Noisy_Value =  merge_water_viscous_testing[time_points,"n"],decay_rate="reference")
 
 # Set data
 sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
@@ -149,7 +149,7 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
   # The rows are increasing viscosity values and the collumns the increasing time value
   # Convert the P47_viscous_3500_data_sub to time-series for each variable
   # For each variable 
-  for (variable in c("Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM"))
+  for (variable in c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM"))
   {  
       # Store the trained model
       rf_variable_versus_n<-trainned_rf_models[[variable]]
@@ -158,11 +158,11 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
       rf_variable_versus_prediction<-predict(rf_variable_versus_n , data.frame(n=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"]))
   
       # Add results of the variable
-      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:n_points,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
+      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
 
   }
   # Add results of the variable
-  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:n_points,value=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"],variable="n",decay=decay_rate))
+  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"],variable="n",decay=decay_rate))
 }
 ####################################################################################################################################################################################
 # Add also simulated data
