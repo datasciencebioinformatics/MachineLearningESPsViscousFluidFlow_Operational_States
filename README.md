@@ -69,4 +69,11 @@ source(paste(project_folder,"ESPsViscousFluidFlow_Operational_Worn_Components_Ti
 #### 22) Calculate decision trees - what explain reduction in Efficiency? a) Bayesian networks, b) random forest.
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Worn_Components_Bayesian_Networks_Random_Forest.R",sep=""))
 ####################################################################################
+#### 23) Simulate time series
+source(paste(project_folder,"ESPsViscousFluidFlow_Operational_Broken_Shaft_Time_Series_Simulations.R",sep=""))
+
+#### 24) Calculate decision trees - what explain reduction in Efficiency? a) Bayesian networks, b) random forest.
+source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Broken_Shaft_Bayesian_Networks_Random_Forest.R",sep=""))
+####################################################################################
+
 
