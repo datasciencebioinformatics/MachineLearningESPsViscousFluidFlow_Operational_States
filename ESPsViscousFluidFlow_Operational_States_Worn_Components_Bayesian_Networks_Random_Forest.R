@@ -352,3 +352,24 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
     df_importance_results_all<-cbind(df_importance_results_all,df_importance_results)
 }
 
+# If you need to flip the order (because you've flipped the orientation)
+# call position_stack() explicitly:
+melt_importance_results_all<-melt(df_importance_results_all,id.vars="variables")
+
+# Set colnames
+colnames(melt_importance_results_all)<-c("variables","decay","value")
+
+# Graph
+p2<-ggplot(melt_importance_results_all, aes(fill=decay, y=value, x=variables)) + 
+    geom_bar(position="dodge", stat="identity") +
+    scale_fill_viridis(discrete = T, option = "F") +
+    theme(legend.position="bottom") + theme_bw() 
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Worn_Components_Variable_importance_decay.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+  p2
+dev.off()
+
+# Worn_Components_Variable_importance_decay.tsv
+write.table(df_importance_results_all, file=paste(project_folder,"Worn_Components_Variable_importance_decay.tsv",sep=""), quote=FALSE, sep='\t',row.names = FALSE)
