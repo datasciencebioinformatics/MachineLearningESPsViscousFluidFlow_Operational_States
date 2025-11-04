@@ -86,10 +86,6 @@ decay_rate_1 <- 0.25 # This determines how quickly the value decays
 decay_rate_2 <- 0.15 # This determines how quickly the value decays
 decay_rate_3 <- 0.1 # This determines how quickly the value decays
 
-# --- Simulate the data ---
-# 1. Create a time vector
-time <- 1:n_points
-
 # Calculate decayed values
 decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points)
 decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points)
@@ -318,3 +314,41 @@ ESP_P47_water_plot_n   <- ggplot(df_simulated_input_variables[,c("Q","n","H","BH
 png(filename=paste(project_folder,"Worn_Components_ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
   ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
 dev.off()
+
+
+
+
+
+####################################################################################################################################################################################
+# Simulations of Well Sanding (Pump Plugging).
+# First, simulate each variable in function of Q
+# Start df with the results
+df_importance_results_all<-data.frame(variables=c("Q","Tm.i","Tm.o","P1","P2","RPM","T","pi", "mi","mo"))
+
+# The rows are increasing viscosity values and the collumns the increasing time value
+# Convert the P47_viscous_3500_data_sub to time-series for each variable
+# For each variable 
+for (decay_rate in levels(factor(sim_data$decay_rate)))
+{   
+    # Calculate varImp
+    df_simulated_input_variables_varIMP<-unique(df_simulated_input_variables[which(df_simulated_input_variables$decay == decay_rate),c("Q","Tm.i","Tm.o","P1","P2","RPM","T","pi","mi","mo","n","BHP","H")])
+    
+    # Basic Parameter Tuning
+    fitControl <- trainControl(number = 3)
+    
+    # Train regression-like models
+    rf_viscous            <- train(n ~ Q + Tm.i + Tm.o + P1 + P2 + RPM + T + pi + mi + mo, data = df_simulated_input_variables_varIMP, method = "rf", trControl = fitControl) # randomForest    
+
+    # df_importance_results
+    df_importance_results<-data.frame(varImp(rf_viscous)$importance) 
+
+    # df_importance_results
+    df_importance_results<-data.frame(df_importance_results[df_importance_results_all$variables,])
+
+    # Set colnames
+    colnames(df_importance_results)<-decay_rate
+
+    # Add collukmn
+    df_importance_results_all<-cbind(df_importance_results_all,df_importance_results)
+}
+
