@@ -305,3 +305,8 @@ png(filename=paste(project_folder,"Broken_Shaft_ESP_P47_dilluted_glucerin_Operat
   ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
 dev.off()
 #######################################################################################################
+
+#########################################################################################################
+Efficiency_lm<-lm(formula=n ~ Q + Tm.i + Tm.o + P1 + P2 + RPM + T + pi + mi + mo, data=df_simulated_input_variables)
+#########################################################################################################
+summary(Efficiency_lm)
