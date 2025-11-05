@@ -319,14 +319,8 @@ colnames(Efficiency_lm_all_results)<-"variables"
 # set colnames
 colnames(df_correlation_results_all)<-"variables"
 
-# Take the variables
-variables<-c("Q", "Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi", "mo")
-
-# Set colnames
-rownames(df_correlation_results_all)<-df_correlation_results_all$variables
-
 # Take df_correlation_results_all
-df_correlation_results_all<-cbind(df_correlation_results_all,cor=0,b=0)
+df_correlation_results_all<-data.frame(var=c(),cor=c(),b=c())
 
 # The rows are increasing viscosity values and the collumns the increasing time value
 # Convert the P47_viscous_3500_data_sub to time-series for each variable
@@ -348,22 +342,17 @@ for (b in levels(factor(sim_data$b)))
     # Add data.frame
     Efficiency_lm_all_results<-cbind(Efficiency_lm_all_results,Efficiency_lm_b_results[Efficiency_lm_all_results$variables,])
 
-    # Calculation results
-    df_correlation_results<-data.frame(cor=c(),b=c())
-
     # For each variables
     for (var in variables)
     {
         # Calculate correlation
         cor<-cor(df_predicted_results_b[,c("n")],df_predicted_results_b[,c(var)],method = "pearson")
 
-        # Take correlation results
-        df_correlation_results<-data.frame(cor=cor,b=b)
-
-        df_correlation_results_all[var,"cor"]<-cor
-        df_correlation_results_all[var,"b"]<-b
+        # Set colnames
+        df_correlation_results_all<-rbind(df_correlation_results_all,data.frame(var=var,cor=cor,b=b))
     }    
 }
+########################################################################################
 # Re-order variables
 Efficiency_lm_all_results<-Efficiency_lm_all_results[,c(c(paste("Estimate ",0.1,sep=""),paste("Estimate ",0.15,sep=""),paste("Estimate ",0.25,sep=""),paste("Estimate ","reference",sep="")),
 c(paste("Std.Error ",0.1,sep=""),paste("Std.Error ",0.15,sep=""),paste("Std.Error ",0.25,sep=""),paste("Std.Error ","reference",sep="")),
@@ -378,4 +367,12 @@ write.table(
   row.names = TRUE,   # Do not include row names in the output file
   quote = FALSE        # Do not enclose character strings in quotes
 )
-
+########################################################################################
+# Save the data frame as a TSV file
+write.table(
+  x = df_correlation_results_all,
+  file = paste(project_folder,"Broken_Shaft_Correlation_Efficiency.tsv",sep=""),
+  sep = "\t",          # Specify tab as the separator
+  row.names = TRUE,   # Do not include row names in the output file
+  quote = FALSE        # Do not enclose character strings in quotes
+)
