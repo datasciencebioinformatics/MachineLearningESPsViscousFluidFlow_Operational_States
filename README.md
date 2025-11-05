@@ -54,10 +54,6 @@ source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_AnalysisP47
 #### 16) ESPsViscousFluidFlow_Operational_States_AnalysisP47_Glycerin_3500RPM_Sliiding_Window
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_AnalysisP47_Glycerin_3500RPM_Sliding_Window_Heatmap.R",sep=""))
 ####################################################################################
-## Simulate time series analysis
-#### 17) Simulate time series
-source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Time_Series_Simulations.R",sep=""))
-####################################################################################
 ### Fault simulations
 #### 18) Well_Sanding
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Well_Sanding_Decision_Tree_Heatmap.R",sep=""))
