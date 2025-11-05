@@ -376,3 +376,12 @@ write.table(
   row.names = TRUE,   # Do not include row names in the output file
   quote = FALSE        # Do not enclose character strings in quotes
 )
+########################################################################################
+# Grouped
+p3<-ggplot(df_correlation_results_all, aes(fill=b, y=cor, x=var)) +  geom_bar(position="dodge", stat="identity") + theme_bw() 
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Broken_Shaft_df_correlation_results_all.png",sep=""), width = 15, height = 10, res=600, units = "cm")  
+  p3
+dev.off()
