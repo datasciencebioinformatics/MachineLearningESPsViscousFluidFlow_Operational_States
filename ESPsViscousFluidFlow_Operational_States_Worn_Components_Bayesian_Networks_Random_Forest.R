@@ -358,7 +358,7 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
     bn_viscous <- hc(merge_water_viscous_sub_tertiles)
 
     # bwplot               
-    png(filename=paste(output_dir,paste("Worn_Components_Bayesian_Network_structure_",decay_rate,".png",sep=""), width = 17, height = 17, res=600, units = "cm")) 
+    png(filename=paste(output_dir,paste("Worn_Components_Bayesian_Network_structure_",decay_rate,".png",sep="")), width = 17, height = 17, res=600, units = "cm")
         # Add plot
         plot(igraph::graph_from_data_frame(bn_viscous$arcs), vertex.color="black",vertex.size=25,vertex.label.color="orange",layout=layout_with_kk, main=decay_rate)
     dev.off()    
