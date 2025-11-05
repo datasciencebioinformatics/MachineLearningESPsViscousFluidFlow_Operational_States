@@ -320,6 +320,9 @@ dev.off()
 
 
 ####################################################################################################################################################################################
+# List to store the models
+trainned_bn<-list()
+
 # Simulations of Worn Components.
 # First, simulate each variable in function of Q
 # Start df with the results
@@ -357,12 +360,25 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
     # Create bayesian networks
     bn_viscous <- hc(merge_water_viscous_sub_tertiles)
 
+    # Save igraph
+    trainned_bn[[decay_rate]]<-igraph::graph_from_data_frame(bn_viscous$arcs)
+
     # bwplot               
     png(filename=paste(output_dir,paste("Worn_Components_Bayesian_Network_structure_",decay_rate,".png",sep="")), width = 17, height = 17, res=600, units = "cm")
         # Add plot
         plot(igraph::graph_from_data_frame(bn_viscous$arcs), vertex.color="black",vertex.size=25,vertex.label.color="orange",layout=layout_with_kk, main=decay_rate)
     dev.off()    
 }
+
+difference(trainned_bn[["reference"]],trainned_bn[["0.25"]])
+
+
+# bwplot               
+png(filename=paste(output_dir,paste("Worn_Components_Bayesian_Network_structure_","difference_0.5",".png",sep="")), width = 17, height = 17, res=600, units = "cm")
+    # Add plot
+    plot(difference(trainned_bn[["reference"]],trainned_bn[["0.25"]]), vertex.color="black",vertex.size=25,vertex.label.color="orange",layout=layout_with_kk, main="difference 0.25")
+dev.off()    
+
 
 # If you need to flip the order (because you've flipped the orientation)
 # call position_stack() explicitly:
