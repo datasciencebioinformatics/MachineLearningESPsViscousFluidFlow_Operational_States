@@ -320,7 +320,7 @@ dev.off()
 
 
 ####################################################################################################################################################################################
-# Simulations of Well Sanding (Pump Plugging).
+# Simulations of Worn Components.
 # First, simulate each variable in function of Q
 # Start df with the results
 df_importance_results_all<-data.frame(variables=c("Q","Tm.i","Tm.o","P1","P2","RPM","T","pi", "mi","mo"))
@@ -356,10 +356,12 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
 
     # Create bayesian networks
     bn_viscous <- hc(merge_water_viscous_sub_tertiles)
-    tb_viscous <- tabu(merge_water_viscous_sub_tertiles)
-    
-    
-    
+
+    # bwplot               
+    png(filename=paste(output_dir,paste("Worn_Components_Bayesian_Network_structure_",decay_rate,".png",sep=""), width = 17, height = 17, res=600, units = "cm")) 
+        # Add plot
+        plot(igraph::graph_from_data_frame(bn_viscous$arcs), vertex.color="black",vertex.size=25,vertex.label.color="orange",layout=layout_with_kk, main=decay_rate)
+    dev.off()    
 }
 
 # If you need to flip the order (because you've flipped the orientation)
