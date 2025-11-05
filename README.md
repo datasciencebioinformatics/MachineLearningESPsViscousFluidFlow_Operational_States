@@ -62,6 +62,6 @@ source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Well_Sandin
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Worn_Components_Bayesian_Networks_Random_Forest.R",sep=""))
 
 #### 20) Broken_Shaft
-source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Broken_Shaft_Interaction_Study_Correlation.R",sep=""))
+source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Broken_Shaft_Association_Study_Correlation.R",sep=""))
 ###################################################################################
 
