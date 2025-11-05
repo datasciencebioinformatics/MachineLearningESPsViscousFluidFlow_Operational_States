@@ -53,26 +53,19 @@ source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_AnalysisP47
 
 #### 16) ESPsViscousFluidFlow_Operational_States_AnalysisP47_Glycerin_3500RPM_Sliiding_Window
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_AnalysisP47_Glycerin_3500RPM_Sliding_Window_Heatmap.R",sep=""))
-
-## Fault simulations
 ####################################################################################
-### Well Sanding (Pump Plugging)
+## Simulate time series analysis
 #### 17) Simulate time series
-source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Well_Sanding_Time_Series_Simulations.R",sep=""))
-
-#### 20) Calculate decision trees
+source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Time_Series_Simulations.R",sep=""))
+####################################################################################
+### Fault simulations
+#### 18) Well_Sanding
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Well_Sanding_Decision_Tree_Heatmap.R",sep=""))
-####################################################################################
-#### 21) Simulate time series
-source(paste(project_folder,"ESPsViscousFluidFlow_Operational_Worn_Components_Time_Series_Simulations.R",sep=""))
 
-#### 22) Calculate decision trees - what explain reduction in Efficiency? a) Bayesian networks, b) random forest.
+#### 19) Worn_Components
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Worn_Components_Bayesian_Networks_Random_Forest.R",sep=""))
-####################################################################################
-#### 23) Simulate time series
-source(paste(project_folder,"ESPsViscousFluidFlow_Operational_Broken_Shaft_Time_Series_Simulations.R",sep=""))
 
-#### 24) Calculate decision trees - what explain reduction in Efficiency? a) Bayesian networks, b) random forest.
+#### 20) Broken_Shaft
 source(paste(project_folder,"ESPsViscousFluidFlow_Operational_States_Broken_Shaft_Bayesian_Networks_Random_Forest.R",sep=""))
 ####################################################################################
 
