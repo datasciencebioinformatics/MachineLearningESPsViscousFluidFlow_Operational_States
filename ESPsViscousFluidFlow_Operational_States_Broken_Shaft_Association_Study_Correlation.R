@@ -305,8 +305,77 @@ png(filename=paste(project_folder,"Broken_Shaft_ESP_P47_dilluted_glucerin_Operat
   ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
 dev.off()
 #######################################################################################################
+# Simulations of Well Sanding (Pump Plugging).
+# First, simulate each variable in function of Q
+# Start df with the results
+Efficiency_lm_all_results<-data.frame(c("(Intercept)","Q", "Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi", "mo"))
 
-#########################################################################################################
-Efficiency_lm<-lm(formula=n ~ Q + Tm.i + Tm.o + P1 + P2 + RPM + T + pi + mi + mo, data=df_simulated_input_variables)
-#########################################################################################################
-summary(Efficiency_lm)
+# Calculation results
+df_correlation_results_all<-data.frame(c("Q", "Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi", "mo"))
+
+# set colnames
+colnames(Efficiency_lm_all_results)<-"variables"
+
+# set colnames
+colnames(df_correlation_results_all)<-"variables"
+
+# Take the variables
+variables<-c("Q", "Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi", "mo")
+
+# Set colnames
+rownames(df_correlation_results_all)<-df_correlation_results_all$variables
+
+# Take df_correlation_results_all
+df_correlation_results_all<-cbind(df_correlation_results_all,cor=0,b=0)
+
+# The rows are increasing viscosity values and the collumns the increasing time value
+# Convert the P47_viscous_3500_data_sub to time-series for each variable
+# For each variable 
+for (b in levels(factor(sim_data$b)))
+{ 
+    # Take only data for that b
+    df_predicted_results_b<-unique(df_simulated_input_variables[which(df_simulated_input_variables$b == b),])
+
+    #########################################################################################################
+    Efficiency_lm_b<-lm(formula=n ~ Q + Tm.i + Tm.o + P1 + P2 + RPM + T + pi + mi + mo, data=df_predicted_results_b)    
+
+    # Summary data.frame
+    Efficiency_lm_b_results<-data.frame(summary(Efficiency_lm_b)$coefficients)
+
+    # Set colnames
+    colnames(Efficiency_lm_b_results)<-c(paste("Estimate ",b,sep=""),paste(" ",b,sep=""),paste("t.value ",b,sep=""),paste("Pr.t ",b,sep=""))
+
+    # Add data.frame
+    Efficiency_lm_all_results<-cbind(Efficiency_lm_all_results,Efficiency_lm_b_results[Efficiency_lm_all_results$variables,])
+
+    # Calculation results
+    df_correlation_results<-data.frame(cor=c(),b=c())
+
+    # For each variables
+    for (var in variables)
+    {
+        # Calculate correlation
+        cor<-cor(df_predicted_results_b[,c("n")],df_predicted_results_b[,c(var)],method = "pearson")
+
+        # Take correlation results
+        df_correlation_results<-data.frame(cor=cor,b=b)
+
+        df_correlation_results_all[var,"cor"]<-cor
+        df_correlation_results_all[var,"b"]<-b
+    }    
+}
+# Re-order variables
+Efficiency_lm_all_results<-Efficiency_lm_all_results[,c(c(paste("Estimate ",0.1,sep=""),paste("Estimate ",0.15,sep=""),paste("Estimate ",0.25,sep=""),paste("Estimate ","reference",sep="")),
+c(paste("Std.Error ",0.1,sep=""),paste("Std.Error ",0.15,sep=""),paste("Std.Error ",0.25,sep=""),paste("Std.Error ","reference",sep="")),
+c(paste("t.value ",0.1,sep=""),paste("t.value ",0.15,sep=""),paste("t.value ",0.25,sep=""),paste("t.value ","reference",sep="")),
+c(paste("Pr.t ",0.1,sep=""),paste("Pr.t ",0.15,sep=""),paste("Pr.t ",0.25,sep=""),paste("Pr.t ","reference",sep="")))]
+
+# Save the data frame as a TSV file
+write.table(
+  x = Efficiency_lm_all_results,
+  file = paste(project_folder,"Broken_Shaft_Efficiency_lm_all_results.tsv",sep=""),
+  sep = "\t",          # Specify tab as the separator
+  row.names = TRUE,   # Do not include row names in the output file
+  quote = FALSE        # Do not enclose character strings in quotes
+)
+
