@@ -352,7 +352,7 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
     df_importance_results_all<-cbind(df_importance_results_all,df_importance_results)
 
     # Take the tertiles
-    merge_water_viscous_sub_tertiles<-s.data.frame(lapply(df_simulated_input_variables_varIMP[,c("n", "Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")], tertile))
+    merge_water_viscous_sub_tertiles<-as.data.frame(lapply(df_simulated_input_variables_varIMP[,c("n", "Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")], tertile))
 
     # Create bayesian networks
     bn_viscous <- hc(merge_water_viscous_sub_tertiles)
