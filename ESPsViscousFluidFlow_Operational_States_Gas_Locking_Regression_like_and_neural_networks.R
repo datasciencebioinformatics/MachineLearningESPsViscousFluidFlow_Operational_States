@@ -126,7 +126,7 @@ for (oscilation in levels(factor(sim_data$oscilation)))
       rf_variable_versus_P1<-trainned_rf_models[[variable]]
     
       # Calculate predictions
-      rf_variable_versus_prediction<-predict(rf_variable_versus_P1 , data.frame(n=sim_data[sim_data$oscilation==oscilation,"Noisy_Value"]))
+      rf_variable_versus_prediction<-predict(rf_variable_versus_P1 , data.frame(P1=sim_data[sim_data$oscilation==oscilation,"Noisy_Value"]))
   
       # Add results of the variable
       df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=rf_variable_versus_prediction,variable=variable,oscilation=oscilation))
@@ -139,7 +139,7 @@ for (oscilation in levels(factor(sim_data$oscilation)))
 # Add also simulated data
 ####################################################################################################################################################################################
 # Relevel factors
-df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c(c("P1","Q","RPM", "Tm.i", "Tm.o", "P2", "T", "pi", "mi", "mo")))
+df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c(c("P1","Q", "Tm.i", "Tm.o", "P2", "T", "pi", "mi", "mo","RPM")))
 
 # Relevel factors
 df_predicted_results$oscilation<-factor(df_predicted_results$oscilation)
@@ -147,7 +147,7 @@ df_predicted_results$oscilation<-factor(df_predicted_results$oscilation)
 # Add also simulated data
 ####################################################################################################################################################################################
 # Relevel factors
-df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c("P1","Q","RPM", "Tm.i", "Tm.o", "P2", "T", "pi", "mi", "mo"))
+df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c("P1","Q","Tm.i", "Tm.o", "P2", "T", "pi", "mi", "mo","RPM" ))
 
 # Relevel factors
 df_predicted_results$oscilation<-factor(df_predicted_results$oscilation)
