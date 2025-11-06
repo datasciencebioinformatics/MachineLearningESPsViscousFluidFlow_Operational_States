@@ -71,5 +71,54 @@ merged_predicted_results<-rbind(df_predicted_results,melt_water_viscous_testing)
 # Relevel factors
 merged_predicted_results$variable<-factor(merged_predicted_results$variable,levels=c(c("Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
 ####################################################################################################################################################################################
-# Simulate time-series for Broken Shaft
+# Simulate time-series for Gas Locking
 ####################################################################################################################################################################################
+# Set a seed for reproducibility
+set.seed(42)
+
+# Time variable
+time <- seq(5, 10 * 3.141593, length.out = 100)
+
+# Generate an oscillating component (sine wave)
+oscillation <- sin(time) * 2.5  # 5 is the amplitude
+
+# Add a trend and some random noise
+trend <- seq_along(time) * 0.1
+noise <- rnorm(100, mean = 5, sd = 0.5)
+
+# Combine components to create the final time series
+oscillating_ts <- ts(oscillation + trend + noise, start = 1, frequency = 1)
+
+# Plot the result
+plot(oscillating_ts, main = "Time Series with Oscillation, Trend, and Noise")
+
+# Combine components to create the final time series
+oscillation_series_1 <- ts(oscillation + 0 + noise, start = 1, frequency = 1)
+
+# 5. Combine the data into a data frame for easy plotting
+sim_data_1 <- data.frame(Time = time_points, Noisy_Value = decayed_series_1,oscilation="sin1")
+sim_data_2 <- data.frame(Time = time_points, Noisy_Value =  merge_water_viscous_testing[1:100,"P1"],oscilation="reference")
+
+# Set data
+sim_data<-rbind(sim_data_1,sim_data_2)
+
+# Repeat each simulated time-series for different inlet viscosity valkues
+# 29 points are used for trainning decision tree.
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Worn_Components_Simulated_Declining_Flow_Rate_n_with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+  # --- Visualize the results with ggplot2 ---
+  ggplot(sim_data, aes(x = Time, group=oscilation)) +
+    # Plot the noisy data as points
+    geom_point(aes(y = Noisy_Value, group=oscilation, colour=oscilation),alpha = 0.6) +
+    # Plot the ideal, noiseless curve as a line
+    geom_line(aes(y = Noisy_Value, group=oscilation, colour=oscilation), color = "blue", alpha = 0.6) +
+    # Add labels and a title
+    labs(
+      title = "Simulated oscilation of P1 with Noise",
+      x = "Time",
+      y = "Value"
+    ) +
+    theme_minimal()
+dev.off()
+
