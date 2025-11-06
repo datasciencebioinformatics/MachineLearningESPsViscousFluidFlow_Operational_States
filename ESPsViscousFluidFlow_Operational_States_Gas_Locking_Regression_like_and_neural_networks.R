@@ -30,10 +30,10 @@ df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c())
 # The rows are increasing viscosity values and the collumns the increasing time value
 # Convert the P47_viscous_3500_data_sub to time-series for each variable
 # For each variable 
-for (variable in c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo","RPM"))
+for (variable in c("Q","Tm.i","Tm.o","P2","T","pi","mi","mo","RPM"))
 {
     # Set formula for predicting the variable in function of Q
-    Formula_variable_versus_n<-as.formula(paste(variable," ~ P1",sep=""))
+    Formula_variable_versus_P1<-as.formula(paste(variable," ~ P1",sep=""))
 
     # Set random forest morel
     rf_variable_versus_P1   <- train(Formula_variable_versus_P1, data = merge_water_viscous_trainning, method = "rf" )         # K-Nearest Neighbors (KNN)                     Ok   
