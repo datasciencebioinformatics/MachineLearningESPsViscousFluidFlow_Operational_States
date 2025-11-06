@@ -69,7 +69,7 @@ df_predicted_results$type     <-"simulated"
 merged_predicted_results<-rbind(df_predicted_results,melt_water_viscous_testing)
 
 # Relevel factors
-merged_predicted_results$variable<-factor(merged_predicted_results$variable,levels=c(c("n","Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
+merged_predicted_results$variable<-factor(merged_predicted_results$variable,levels=c(c("Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
 ####################################################################################################################################################################################
 # Simulate time-series for Broken Shaft
 ####################################################################################################################################################################################
