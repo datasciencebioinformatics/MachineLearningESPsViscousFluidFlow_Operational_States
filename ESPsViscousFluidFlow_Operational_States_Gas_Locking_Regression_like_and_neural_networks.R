@@ -80,9 +80,10 @@ set.seed(42)
 time <- seq(0, 10 * 3.141593, length.out = 100)
 
 # Generate an oscillating component (sine wave)
-oscillation_1 <- sin(time) * 5.0  # 5 is the amplitude
-oscillation_2 <- sin(time) * 2.0  # 5 is the amplitude
-oscillation_3 <- sin(time) * 0.5  # 5 is the amplitude
+oscillation_1 <- sin(time) * 2.0  # 5 is the amplitude
+oscillation_2 <- sin(time) * 1.5  # 5 is the amplitude
+oscillation_3 <- cos(time) * 2.5  # 5 is the amplitude
+oscillation_4 <- cos(time) * 1.5  # 5 is the amplitude
 
 # Add a trend and some random noise
 trend <- 2 # seq_along(time) * 0.1
@@ -92,21 +93,29 @@ noise <- rnorm(100, mean = 1, sd = 0.5)
 oscillating_ts_1 <- ts(oscillation_1 + trend + noise, start = 1, frequency = 1)
 oscillating_ts_2 <- ts(oscillation_2 + trend + noise, start = 1, frequency = 1)
 oscillating_ts_3 <- ts(oscillation_3 + trend + noise, start = 1, frequency = 1)
+oscillating_ts_4 <- ts(oscillation_4 + trend + noise, start = 1, frequency = 1)
 
 # 5. Combine the data into a data frame for easy plotting
 sim_data_1 <- data.frame(Time = 1:100, Noisy_Value = oscillating_ts_1,oscilation="osc1")
 sim_data_2 <- data.frame(Time = 1:100, Noisy_Value = oscillating_ts_2,oscilation="osc2")
-sim_data_3 <- data.frame(Time = 1:100, Noisy_Value = oscillating_ts_3,oscilation="osc3")
-sim_data_4 <- data.frame(Time = 1:100, Noisy_Value =  merge_water_viscous_testing[1:100,"P1"],oscilation="reference")
+sim_data_3 <- data.frame(Time = 1:100, Noisy_Value = oscillating_ts_3,oscilation="cos1")
+sim_data_4 <- data.frame(Time = 1:100, Noisy_Value = oscillating_ts_3,oscilation="cos2")
+sim_data_5 <- data.frame(Time = 1:100, Noisy_Value =  merge_water_viscous_testing[1:100,"P1"],oscilation="reference")
 
 # Set data
-sim_data<-data.frame(data.matrix(rbind(as.matrix(sim_data_1),as.matrix(sim_data_2),as.matrix(sim_data_3),as.matrix(sim_data_4))))
+sim_data<-data.frame(data.matrix(rbind(as.matrix(sim_data_1),as.matrix(sim_data_2),as.matrix(sim_data_3),as.matrix(sim_data_4),as.matrix(sim_data_5))))
+
+# Convert to numeric
+sim_data$Time<-as.numeric(sim_data$Time)
+sim_data$Noisy_Value<-as.numeric(sim_data$Noisy_Value)
+
+
 
 # Repeat each simulated time-series for different inlet viscosity valkues
 # 29 points are used for trainning decision tree.
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Worn_Components_Simulated_Declining_Flow_Rate_n_with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+png(filename=paste(project_folder,"Gas_Locking_Simulated_Oscilation_P1_with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
   # --- Visualize the results with ggplot2 ---
   ggplot(sim_data, aes(x = Time, group=oscilation)) +
     # Plot the noisy data as points
