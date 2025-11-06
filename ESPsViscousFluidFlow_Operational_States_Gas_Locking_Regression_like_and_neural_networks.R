@@ -15,62 +15,6 @@ colnames(merge_water_viscous_sub)<-c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T"
 # Convert RPM to numeric
 merge_water_viscous_sub$RPM<-as.numeric(merge_water_viscous_sub$RPM)
 ###############################################################################################################################################################################
-# List to store the models
-trainned_rf_models<-list()
-
-# Split the dataset in training set and testing set
-merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3000 ,]
-merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500 ,]
-
-# Simulations of Gas Locking.
-# First, simulate each variable in function of P1
-# Start df with the results
-df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c())
-
-# The rows are increasing viscosity values and the collumns the increasing time value
-# Convert the P47_viscous_3500_data_sub to time-series for each variable
-# For each variable 
-for (variable in c("Q","Tm.i","Tm.o","P2","T","pi","mi","mo","RPM"))
-{
-    # Set formula for predicting the variable in function of Q
-    Formula_variable_versus_P1<-as.formula(paste(variable," ~ P1",sep=""))
-
-    # Set random forest morel
-    rf_variable_versus_P1   <- train(Formula_variable_versus_P1, data = merge_water_viscous_trainning, method = "rf" )         # K-Nearest Neighbors (KNN)                     Ok   
-
-    # Store the trained model
-    trainned_rf_models[[variable]]<-rf_variable_versus_P1
-  
-    # Calculate predictions
-    rf_variable_versus_prediction<-predict(rf_variable_versus_P1 , merge_water_viscous_testing)
-
-    # Add results of the variable
-    df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=rf_variable_versus_prediction,variable=variable))
-}
-####################################################################################################################################################################################
-# Mett data.frame
-melt_water_viscous_testing<-reshape2::melt(merge_water_viscous_testing[,c("Time","n","Q", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo", "RPM")],id.vars=c("Time"))
-####################################################################################################################################################################################
-# Add data type
-melt_water_viscous_testing$type   <-"experimental"
-df_predicted_results$type         <-"simulated"
-
-# Merge datasets
-merged_predicted_results<-rbind(df_predicted_results,melt_water_viscous_testing)
-
-# Relevel factors
-merged_predicted_results$variable<-factor(merged_predicted_results$variable,levels=c(c("n","Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
-####################################################################################################################################################################################
-# Add data type
-df_predicted_results$type     <-"experimental"
-df_predicted_results$type     <-"simulated"
-
-# Merge datasets
-merged_predicted_results<-rbind(df_predicted_results,melt_water_viscous_testing)
-
-# Relevel factors
-merged_predicted_results$variable<-factor(merged_predicted_results$variable,levels=c(c("Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
-####################################################################################################################################################################################
 # Simulate time-series for Gas Locking
 ####################################################################################################################################################################################
 # Set a seed for reproducibility
@@ -109,8 +53,6 @@ sim_data<-data.frame(data.matrix(rbind(as.matrix(sim_data_1),as.matrix(sim_data_
 sim_data$Time<-as.numeric(sim_data$Time)
 sim_data$Noisy_Value<-as.numeric(sim_data$Noisy_Value)
 
-
-
 # Repeat each simulated time-series for different inlet viscosity valkues
 # 29 points are used for trainning decision tree.
 # Melt tabele
@@ -130,5 +72,23 @@ png(filename=paste(project_folder,"Gas_Locking_Simulated_Oscilation_P1_with_Nois
     ) +
     theme_minimal()
 dev.off()
+
+# First, simulated values of Q are generate by simulation.
+# Second the values of input variables are predicted from the simulated Q.
+# Thirds, the values were used to generate decision  trees.
+# Only 29 points are used to generate the decision tree.
+# More points can be used.
+# One way is to increase the range and skip the reference data.
+####################################################################################################################################################################################
+# Simulations of Gas Locking
+# First, simulate each variable in function of P1
+# Split the dataset in training set and testing set
+merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3000 ,]
+merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500 ,]
+
+
+# Create a scatter plot and add Pearson correlation
+p1<-ggplot(sim_data, aes(x = Time, y = Noisy_Value,oscilation)) +  geom_point() +  geom_line() +  stat_cor(method = "pearson", label.x = 0, label.y = 10) + facet_grid(rows = vars(oscilation),scale="free") + theme_bw() + xlab("Time") + ylab("P1")
+
 
 
