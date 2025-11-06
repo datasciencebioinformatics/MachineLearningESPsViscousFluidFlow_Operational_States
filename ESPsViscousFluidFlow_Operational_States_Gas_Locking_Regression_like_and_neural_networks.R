@@ -15,7 +15,40 @@ colnames(merge_water_viscous_sub)<-c("Time","Q", "Tm.i", "Tm.o", "P1", "P2", "T"
 # Convert RPM to numeric
 merge_water_viscous_sub$RPM<-as.numeric(merge_water_viscous_sub$RPM)
 ###############################################################################################################################################################################
-# Simulate time-series for Gas Locking
+# List to store the models
+trainned_rf_models<-list()
+
+# Split the dataset in training set and testing set
+merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3000 ,]
+merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500 ,]
+
+# Simulations of Well Sanding (Pump Plugging).
+# First, simulate each variable in function of P1
+# Start df with the results
+df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c())
+
+# The rows are increasing viscosity values and the collumns the increasing time value
+# Convert the P47_viscous_3500_data_sub to time-series for each variable
+# For each variable 
+for (variable in c("Q","Tm.i","Tm.o","P2","T","pi","mi","mo","RPM"))
+{
+    # Set formula for predicting the variable in function of Q
+    Formula_variable_versus_P1<-as.formula(paste(variable," ~ P1",sep=""))
+
+    # Set random forest morel
+    rf_variable_versus_P1   <- train(Formula_variable_versus_P1, data = merge_water_viscous_trainning, method = "rf" )         # K-Nearest Neighbors (KNN)                     Ok   
+
+    # Store the trained model
+    trainned_rf_models[[variable]]<-rf_variable_versus_P1
+  
+    # Calculate predictions
+    rf_variable_versus_prediction<-predict(rf_variable_versus_P1 , merge_water_viscous_testing)
+
+    # Add results of the variable
+    df_predicted_results<-rbind(df_predicted_results,data.frame(Time=merge_water_viscous_testing$Time,value=rf_variable_versus_prediction,variable=variable))
+}
+####################################################################################################################################################################################
+# Simulate time-series for Broken Shaft
 ####################################################################################################################################################################################
 # Set a seed for reproducibility
 set.seed(42)
@@ -73,22 +106,57 @@ png(filename=paste(project_folder,"Gas_Locking_Simulated_Oscilation_P1_with_Nois
     theme_minimal()
 dev.off()
 
-# First, simulated values of Q are generate by simulation.
-# Second the values of input variables are predicted from the simulated Q.
-# Thirds, the values were used to generate decision  trees.
-# Only 29 points are used to generate the decision tree.
-# More points can be used.
-# One way is to increase the range and skip the reference data.
 ####################################################################################################################################################################################
-# Simulations of Gas Locking
-# First, simulate each variable in function of P1
-# Split the dataset in training set and testing set
-merge_water_viscous_trainning<-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3000 ,]
-merge_water_viscous_testing  <-merge_water_viscous_sub[merge_water_viscous_sub$RPM==3500 ,]
+# Simulations of Well Sanding (Pump Plugging).
+# First, simulate each variable in function of Q
+# Start df with the results
+df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c(),oscilation=c())
 
+# The rows are increasing viscosity values and the collumns the increasing time value
+# Convert the P47_viscous_3500_data_sub to time-series for each variable
+# For each variable 
+for (oscilation in levels(factor(sim_data$oscilation)))
+{   
+  # The rows are increasing viscosity values and the collumns the increasing time value
+  # Convert the P47_viscous_3500_data_sub to time-series for each variable
+  # For each variable 
+  for (variable in c("Q","Tm.i","Tm.o","P2","T","pi","mi","mo","RPM"))
+  {  
+      # Store the trained model
+      rf_variable_versus_P1<-trainned_rf_models[[variable]]
+    
+      # Calculate predictions
+      rf_variable_versus_prediction<-predict(rf_variable_versus_P1 , data.frame(n=sim_data[sim_data$oscilation==oscilation,"Noisy_Value"]))
+  
+      # Add results of the variable
+      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=rf_variable_versus_prediction,variable=variable,oscilation=oscilation))
 
-# Create a scatter plot and add Pearson correlation
-p1<-ggplot(sim_data, aes(x = Time, y = Noisy_Value,oscilation)) +  geom_point() +  geom_line() +  stat_cor(method = "pearson", label.x = 0, label.y = 10) + facet_grid(rows = vars(oscilation),scale="free") + theme_bw() + xlab("Time") + ylab("P1")
+  }
+  # Add results of the variable
+  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=sim_data[sim_data$oscilation==oscilation,"Noisy_Value"],variable="P1",oscilation=oscilation))
+}
+####################################################################################################################################################################################
+# Add also simulated data
+####################################################################################################################################################################################
+# Relevel factors
+df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c(c("P1","Q","RPM", "Tm.i", "Tm.o", "P2", "T", "pi", "mi", "mo")))
 
+# Relevel factors
+df_predicted_results$oscilation<-factor(df_predicted_results$oscilation)
+####################################################################################################################################################################################
+# Add also simulated data
+####################################################################################################################################################################################
+# Relevel factors
+df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c("P1","Q","RPM", "Tm.i", "Tm.o", "P2", "T", "pi", "mi", "mo"))
 
+# Relevel factors
+df_predicted_results$oscilation<-factor(df_predicted_results$oscilation)
 
+# Most basic bubble plot
+p2 <- ggplot(df_predicted_results, aes(x=Time, y=value,group = oscilation, color = oscilation)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series") + scale_colour_brewer(palette = "Set1")
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Broken_Shaft_Simulated_time_series_ranfom_forest.png",sep=""), width = 15, height = 20, res=600, units = "cm")  
+  p2
+dev.off()
