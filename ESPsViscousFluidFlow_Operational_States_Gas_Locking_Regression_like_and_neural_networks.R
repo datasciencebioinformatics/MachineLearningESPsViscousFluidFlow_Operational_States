@@ -64,7 +64,7 @@ oscillation_4 <- cos(time) * 1.5  # 5 is the amplitude
 
 # Add a trend and some random noise
 trend <- 2 # seq_along(time) * 0.1
-noise <- rnorm(100, mean = 1, sd = 0.5)
+noise <- rnorm(100, mean = 2, sd = 0.5)
 
 # Combine components to create the final time series
 oscillating_ts_1 <- ts(oscillation_1 + trend + noise, start = 1, frequency = 1)
@@ -277,3 +277,107 @@ png(filename=paste(project_folder,"Gas_Locking_Simulated_performance_variables_r
   p3
 dev.off()
 #######################################################################################################
+
+#######################################################################################################
+# Fig. 7—ESP P47 performance pumping viscous fluid at 3,500 rev/min.
+ESP_P47_water_plot_Q_H <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","oscilation")], aes(x = Q, y = H,colour=oscilation))     + geom_point() + geom_line()  + theme_bw()   + ggtitle ("Flow rate Q vs. Head H")    + ylab("Head H [m]")                   + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "bottom")  
+ESP_P47_water_plot_BHP <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","oscilation")], aes(x = Q, y = BHP,colour=oscilation))   + geom_point() + geom_line() + theme_bw()   + ggtitle ("Flow rate Q vs. Power BHP") + ylab("Power BHP [W]")                + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "none")    
+ESP_P47_water_plot_n   <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","oscilation")], aes(x = Q, y = n*100,colour=oscilation)) + geom_point() + geom_line() + theme_bw()   + ggtitle ("Flow rate Q vs. Efficiency n") + ylab("Efficiency n [%]")          + labs(x = expression("Flow rate Q [" * m^3/h * "]"))   + theme(legend.position = "bottom")      
+
+# Melt tabele
+# Plot_raw_vibration_data.png                                                                                                            
+png(filename=paste(project_folder,"Broken_Shaft_ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
+  ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
+dev.off()
+#######################################################################################################
+# Start a data.frame
+df_simulated_input_variables_bck<- data.frame(c(Time=c(), Q=c(),Tm.i=c(), Tm.o=c(), P1=c(), P2=c(),T=c(),pi=c(),mi=c(),mo=c(), RPM=c(),decay=c(), P_h=c(), n=c(), H=c(), BHP=c(), Delta.Pressure=c()))
+
+# Plot the heatmap - all
+for (oscilation in unique(df_simulated_input_variables$oscilation))
+{
+    # Take dec
+    oscilation_data<-df_simulated_input_variables[which(df_simulated_input_variables$oscilation==oscilation),]
+    
+    # Take time data
+    #oscilation_data$Time<-paste("Time_",oscilation_data$Time,sep="")
+    
+    # Set rownames
+    #rownames(oscilation_data)<-oscilation_data$Time
+    n=oscilation_data[,c("n")]
+    Tm.i=oscilation_data[,c("Tm.i")]
+    Tm.o=oscilation_data[,c("Tm.o")]
+    P1=oscilation_data[,c("P1")]
+    n_discrete<-cut(n, quantile(n, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
+    P1_discrete<-cut(P1, quantile(P1, c(0:3/3)), include.lowest = T, labels = c("Low", "Medium", "High"))
+
+    # Take the median of the temperature
+    median_Tm.i<-median(Tm.i)
+    median_Tm.o<-median(Tm.o)
+
+    # Take discrete values
+    df_Tm<-data.frame(Tm.i=rep("Low",length(Tm.i)),Tm.o=rep("Low",length(Tm.o)))
+
+    # Take the high values
+    df_Tm[which(Tm.i>median_Tm.i),"Tm.i"]<-"High"
+    df_Tm[which(Tm.o>median_Tm.o),"Tm.o"]<-"High"
+
+    # Set the colnames
+    colnames(df_Tm)<-c("Tm.i_discrete","Tm.o_discrete")
+    
+    # Renames collumns
+    oscilation_data_tertiles<-data.frame(n_discrete=n_discrete,P1_discrete=P1_discrete,df_Tm)
+    
+    # Merge tables
+    oscilation_data<-cbind(oscilation_data,oscilation_data_tertiles)    
+
+    # add operational states
+    oscilation_data$operational_states<-paste(paste("n=",oscilation_data$n_discrete,sep=""),paste("P1=",oscilation_data$P1_discrete,sep=""),paste("Tm.i=",oscilation_data$Tm.i_discrete,sep=""),paste("Tm.o=",oscilation_data$Tm.o_discrete,sep=""),sep="|")
+
+    # Set Diagnosis
+    oscilation_data$Gas_Locking <-"Normal"
+
+    # If efficiency not stationary, then Diagnosis is fault
+    oscilation_data[which(oscilation_data$n_discrete!="Low" & oscilation_data$Tm.i_discrete!="High" ),"Gas_Locking"]<-"Fault"
+
+    # add data.frame with operational states and diagnosis
+    df_simulated_input_variables_bck<-rbind(df_simulated_input_variables_bck,oscilation_data)
+}
+
+# Start data.frame with operational states
+df_results_pheatmaps=data.frame(Q=c(),Tm.i=c(),Tm.o=c(),P1=c(),P2=c(),T=c(),pi=c(),mi=c(),mo=c(),decay=c(),n=c(),BHP=c(),H=c(),operational_states=c(),Gas_Locking=c())
+
+# Plot the heatmap - all
+for (decay in  unique(df_simulated_input_variables_bck$oscilation))
+{
+    # Take dec
+    decay_data<-df_simulated_input_variables_bck[which(df_simulated_input_variables_bck$oscilation==oscilation),]
+
+    # Remove row lines
+    annotation_row_exp=decay_data[,c("n_discrete","P1_discrete","Tm.i_discrete","Gas_Locking")]
+
+    # Re-set colnmaes
+    colnames(annotation_row_exp)<-c("n","P1","Tm.i","Gas_Locking")
+
+    # Specify colors
+    ann_colors = list(n = c(Low="lightgrey", Medium="darkgrey",High="black"), P1 =  c(Low="lightgrey", Medium="darkgrey",High="black"), Tm.i = c(Low="lightgrey", High="black"),Gas_Locking=c(Normal="lightgrey", Fault="black") )
+
+    # Normalized values for variables
+    decay_data_normlized <- as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], normalize))
+
+    # Normalized values for variables
+    decay_data_tertile <- as.data.frame(lapply(decay_data[,c("Q","Tm.i","Tm.o","P1","P2","T","pi","mi","mo"),], tertile))
+
+    # Set rownames
+    rownames(decay_data_normlized)<-rownames(decay_data)
+  
+    # Melt tabele
+    # Plot_raw_vibration_data.png                                                                                                            
+    png(filename=paste(project_folder,"Well_Sanding_ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
+      # Add annotation : bhp, head, efficiency
+      pheatmap(decay_data_normlized , show_rownames = F,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
+    dev.off() 
+
+    # add pheatmaps
+    df_results_pheatmaps<-rbind(df_results_pheatmaps,cbind(decay_data_tertile,annotation_row_exp,decay=decay))
+}
