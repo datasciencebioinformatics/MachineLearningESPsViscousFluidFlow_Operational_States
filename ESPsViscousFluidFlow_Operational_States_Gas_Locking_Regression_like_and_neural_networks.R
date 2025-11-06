@@ -286,7 +286,7 @@ ESP_P47_water_plot_n   <- ggplot(df_simulated_input_variables[,c("Q","n","H","BH
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Broken_Shaft_ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
+png(filename=paste(project_folder,"Gas_Locking_ESP_P47_dilluted_glucerin_Operational_states.png",sep=""), width = 20, height = 25, res=600, units = "cm")  
   ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
 dev.off()
 #######################################################################################################
@@ -373,7 +373,7 @@ for (decay in  unique(df_simulated_input_variables_bck$oscilation))
   
     # Melt tabele
     # Plot_raw_vibration_data.png                                                                                                            
-    png(filename=paste(project_folder,"Well_Sanding_ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
+    png(filename=paste(project_folder,"Gas_Locking_ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
       # Add annotation : bhp, head, efficiency
       pheatmap(decay_data_normlized , show_rownames = F,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
     dev.off() 
