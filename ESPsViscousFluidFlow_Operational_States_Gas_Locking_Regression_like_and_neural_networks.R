@@ -383,43 +383,51 @@ for (decay in  unique(df_simulated_input_variables_bck$oscilation))
 }
 #####################################################################################################################
 
-
-
-
-###############################################################################
-# Load requioment
-# Take the categories
-df_reference_data<-df_simulated_input_variables[df_simulated_input_variables$oscilation=="reference",]
-
-# Melt by Time and viscosity
-melt_reference_data<-reshape2::melt(df_reference_data,id.vars=c("Time"))
-
-# Conver to numeric
-melt_reference_data$value<-as.numeric(melt_reference_data$value)
-
-# Data.frame to store results
-df_results<-data.frame(Var=c(),Type=c(),Time=c(),Values=c())
-
-# The rows are increasing viscosity values and the collumns the increasing time value
-# Convert the P47_viscous_3500_data_sub to time-series for each variable
-# For each variable 
-for (variable in c("n","P2"))
+# Plot the heatmap - all
+for (oscilation in  unique(df_simulated_input_variables_bck$oscilation))
 {
-    # Convert the time series to a data frame
-    # It is altready on a data.frame format
-    # Check what frequency means in the ts means
-    df_reference_data_ts <- ts(as.vector(df_reference_data[,c(variable)]))
+    ###############################################################################
+    # Load requioment
+    # Take the categories
+    df_reference_data<-df_simulated_input_variables[df_simulated_input_variables$oscilation==oscilation,]
+    
+    # Melt by Time and viscosity
+    melt_reference_data<-reshape2::melt(df_reference_data,id.vars=c("Time"))
+    
+    # Conver to numeric
+    melt_reference_data$value<-as.numeric(melt_reference_data$value)
+    
+    # Data.frame to store results
+    df_results<-data.frame(Var=c(),Type=c(),Time=c(),Values=c())
+    
+    # The rows are increasing viscosity values and the collumns the increasing time value
+    # Convert the P47_viscous_3500_data_sub to time-series for each variable
+    # For each variable 
+    for (variable in c("n","P2"))
+    {
+        # Convert the time series to a data frame
+        # It is altready on a data.frame format
+        # Check what frequency means in the ts means
+        df_reference_data_ts <- ts(as.vector(df_reference_data[,c(variable)]))
+    
+    
+        # Train an ARIMA model
+        # The Autoregressive integrated moving average.
+        # Autoregressive model : the observation j+1 is calculated baed on the observation j.
+        # In other words, : a regression on past values to predict future values.
+        # turns best ARIMA model according to either AIC, AICc or BIC value.
+        arima_model      <- forecast::auto.arima(df_reference_data_ts,test="adf")
+    
+        # Forecast 12 months ahead
+        # Number of periods for forecasting.
+        forecast_result     <- forecast::forecast(arima_model, h = 50) 
 
-
-    # Train an ARIMA model
-    # The Autoregressive integrated moving average.
-    # Autoregressive model : the observation j+1 is calculated baed on the observation j.
-    # In other words, : a regression on past values to predict future values.
-    # turns best ARIMA model according to either AIC, AICc or BIC value.
-    arima_model      <- forecast::auto.arima(df_reference_data_ts,test="adf")
-
-    # Forecast 12 months ahead
-    # Number of periods for forecasting.
-    forecast_result      <- forecast::forecast(arima_model, h = 50) 
-
+        
+        # Melt tabele
+        # Plot_raw_vibration_data.png                                                                                                            
+        png(filename=paste(project_folder,"Gas_Locking_Arima_Forecast_",oscilation,"_",variable,".png",sep=""), width = 15, height = 10, res=600, units = "cm")  
+          # Add annotation : bhp, head, efficiency
+          plot(forecast_result,main=paste("Gas Locking - Arima forecast - ",oscilation," ",variable,sep=""))
+        dev.off()
+    }
 }
