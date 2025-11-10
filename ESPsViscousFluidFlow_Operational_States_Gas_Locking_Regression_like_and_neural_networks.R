@@ -129,11 +129,11 @@ for (oscilation in levels(factor(sim_data$oscilation)))
       rf_variable_versus_prediction<-predict(rf_variable_versus_P1 , data.frame(P1=sim_data[sim_data$oscilation==oscilation,"Noisy_Value"]))
   
       # Add results of the variable
-      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=rf_variable_versus_prediction,variable=variable,oscilation=oscilation))
+      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:100,value=rf_variable_versus_prediction,variable=variable,oscilation=oscilation))
 
   }
   # Add results of the variable
-  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=sim_data[sim_data$oscilation==oscilation,"Noisy_Value"],variable="P1",oscilation=oscilation))
+  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=1:100,value=sim_data[sim_data$oscilation==oscilation,"Noisy_Value"],variable="P1",oscilation=oscilation))
 }
 ####################################################################################################################################################################################
 # Add also simulated data
@@ -381,3 +381,4 @@ for (decay in  unique(df_simulated_input_variables_bck$oscilation))
     # add pheatmaps
     df_results_pheatmaps<-rbind(df_results_pheatmaps,cbind(decay_data_tertile,annotation_row_exp,decay=decay))
 }
+#####################################################################################################################
