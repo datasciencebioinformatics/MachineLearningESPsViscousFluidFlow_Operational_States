@@ -78,32 +78,21 @@ set.seed(42)
 
 # --- Define the simulation parameters ---
 # Number of data points
-time_points <- 1:100 # Number of time points
+time_points <- 1:101 # Number of time points
 
 # Exponential decay parameters
-initial_value <- 1
-decay_rate_1 <- 0.25 # This determines how quickly the value decays
-decay_rate_2 <- 0.15 # This determines how quickly the value decays
-decay_rate_3 <- 0.1 # This determines how quickly the value decays
-
-# Calculate decayed values
-decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points)
-decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points)
-decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points)
-
-# Calculate decayed values
-decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points) + rnorm(length(decayed_series_1), mean = 0, sd = 0.1) + 0.15
-decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points) + rnorm(length(decayed_series_2), mean = 0, sd = 0.1) + 0.15
-decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points) + rnorm(length(decayed_series_3), mean = 0, sd = 0.1) + 0.15
+b_1 <- pracma::sigmoid(50:-50,a=0.01,b=1) + rnorm(length(-50:50), mean = 0, sd = 0.01) 
+b_2 <- pracma::sigmoid(50:-50,a=0.05,b=1) + rnorm(length(-50:50), mean = 0, sd = 0.01)
+b_3 <- pracma::sigmoid(50:-50,a=0.1,b=1) + rnorm(length(-50:50), mean = 0, sd = 0.01)
 
 # 5. Combine the data into a data frame for easy plotting
-sim_data_1 <- data.frame(Time = time_points, Noisy_Value = decayed_series_1,decay_rate="0.25")
-sim_data_2 <- data.frame(Time = time_points, Noisy_Value = decayed_series_2,decay_rate="0.15")
-sim_data_3 <- data.frame(Time = time_points, Noisy_Value = decayed_series_3,decay_rate="0.1")
-sim_data_4 <- data.frame(Time = time_points, Noisy_Value =  merge_water_viscous_testing[time_points,"n"],decay_rate="reference")
+sim_data_1 <- data.frame(Time = time_points, Noisy_Value = b_1/10 ,a="0.01")
+sim_data_2 <- data.frame(Time = time_points, Noisy_Value = b_2/10 ,a="0.05")
+sim_data_3 <- data.frame(Time = time_points, Noisy_Value = b_3/10 ,a="0.1")
+sim_data_4 <- data.frame(Time = time_points, Noisy_Value =  merge_water_viscous_testing[time_points,"n"],a="reference")
 
 # Set data
-sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
+sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3)
 
 # Repeat each simulated time-series for different inlet viscosity valkues
 # 29 points are used for trainning decision tree.
@@ -113,9 +102,9 @@ png(filename=paste(project_folder,"Worn_Components_Simulated_Declining_Flow_Rate
   # --- Visualize the results with ggplot2 ---
   ggplot(sim_data, aes(x = Time, group=decay_rate)) +
     # Plot the noisy data as points
-    geom_point(aes(y = Noisy_Value, group=decay_rate, colour=decay_rate),alpha = 0.6) +
+    geom_point(aes(y = Noisy_Value, group=a, colour=a),alpha = 0.6) +
     # Plot the ideal, noiseless curve as a line
-    geom_line(aes(y = Noisy_Value, group=decay_rate, colour=decay_rate), color = "blue", alpha = 0.6) +
+    geom_line(aes(y = Noisy_Value, group=a, colour=a), color = "blue", alpha = 0.6) +
     # Add labels and a title
     labs(
       title = "Simulated Declining Efficiency n with Noise",
@@ -124,6 +113,7 @@ png(filename=paste(project_folder,"Worn_Components_Simulated_Declining_Flow_Rate
     ) +
     theme_minimal()
 dev.off()
+
 
 # First, simulated values of Q are generate by simulation.
 # Second the values of input variables are predicted from the simulated Q.
@@ -135,12 +125,12 @@ dev.off()
 # Simulations of Well Sanding (Pump Plugging).
 # First, simulate each variable in function of Q
 # Start df with the results
-df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c(),decay=c())
+df_predicted_results<-data.frame(Time=c(),Value=c(),variable=c(),a=c())
 
 # The rows are increasing viscosity values and the collumns the increasing time value
 # Convert the P47_viscous_3500_data_sub to time-series for each variable
 # For each variable 
-for (decay_rate in levels(factor(sim_data$decay_rate)))
+for (a in levels(factor(sim_data$a)))
 {   
   # The rows are increasing viscosity values and the collumns the increasing time value
   # Convert the P47_viscous_3500_data_sub to time-series for each variable
@@ -151,14 +141,14 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
       rf_variable_versus_n<-trainned_rf_models[[variable]]
     
       # Calculate predictions
-      rf_variable_versus_prediction<-predict(rf_variable_versus_n , data.frame(n=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"]))
+      rf_variable_versus_prediction<-predict(rf_variable_versus_n , data.frame(n=sim_data[sim_data$a==a,"Noisy_Value"]))
   
       # Add results of the variable
-      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=rf_variable_versus_prediction,variable=variable,decay=decay_rate))
+      df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=rf_variable_versus_prediction,variable=variable,a=a))
 
   }
   # Add results of the variable
-  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=sim_data[sim_data$decay_rate==decay_rate,"Noisy_Value"],variable="n",decay=decay_rate))
+  df_predicted_results<-rbind(df_predicted_results,data.frame(Time=time_points,value=sim_data[sim_data$a==a,"Noisy_Value"],variable="n",a=a))
 }
 ####################################################################################################################################################################################
 # Add also simulated data
@@ -167,7 +157,7 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
 df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c(c("n","Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
 
 # Relevel factors
-df_predicted_results$decay<-factor(df_predicted_results$decay)
+df_predicted_results$decay<-factor(df_predicted_results$a)
 
 ####################################################################################################################################################################################
 # Add also simulated data
@@ -176,10 +166,10 @@ df_predicted_results$decay<-factor(df_predicted_results$decay)
 df_predicted_results$variable<-factor(df_predicted_results$variable,levels=c(c("n","Q","RPM", "Tm.i", "Tm.o", "P1", "P2", "T", "pi", "mi", "mo")))
 
 # Relevel factors
-df_predicted_results$decay<-factor(df_predicted_results$decay)
+df_predicted_results$a<-factor(df_predicted_results$a)
 
 # Most basic bubble plot
-p2 <- ggplot(df_predicted_results, aes(x=Time, y=value,group = decay, color = decay)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series") + scale_colour_brewer(palette = "Set1")
+p2 <- ggplot(df_predicted_results, aes(x=Time, y=value,group = a, color = a)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series") + scale_colour_brewer(palette = "Set1")
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
@@ -201,10 +191,10 @@ mi   <-  df_predicted_results[which(df_predicted_results$variable=="mi"),"value"
 mo   <- df_predicted_results[which(df_predicted_results$variable=="mo"),"value"]
 RPM  <- df_predicted_results[which(df_predicted_results$variable=="RPM"),"value"]
 Time <- df_predicted_results[which(df_predicted_results$variable=="RPM"),"Time"]
-decay<- df_predicted_results[which(df_predicted_results$variable=="RPM"),"decay"]
+a<- df_predicted_results[which(df_predicted_results$variable=="RPM"),"a"]
 
 # Compile input variables
-df_simulated_input_variables<-data.frame(Time=Time,n=n, Q=Q, Tm.i=Tm.i, Tm.o=Tm.o, P1=P1, P2=P2, T=T, pi=pi, mi=mi, mo=mo, RPM=RPM, decay=decay )
+df_simulated_input_variables<-data.frame(Time=Time,n=n, Q=Q, Tm.i=Tm.i, Tm.o=Tm.o, P1=P1, P2=P2, T=T, pi=pi, mi=mi, mo=mo, RPM=RPM, a=a )
 
 # set  the gravitational constant
 # 9.81 meters per second squared (m/s2) is the approximate value of the acceleration due to gravity on Earth's surface. This value is represented by the letter g. 
@@ -290,10 +280,10 @@ for (measure in rownames(df_simulated_input_variables))
 }
 #######################################################################################################
 # add plot
-melt_simulated_input_variables<-reshape2::melt(df_simulated_input_variables,id.vars=c("Time","decay")) 
+melt_simulated_input_variables<-reshape2::melt(df_simulated_input_variables,id.vars=c("Time","a")) 
 
 # Most basic bubble plot
-p3 <- ggplot(melt_simulated_input_variables[melt_simulated_input_variables$variable %in% c("n","H","BHP"),], aes(x=Time, y=value,group = decay, color = decay)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series - performance variables") + scale_colour_brewer(palette = "Set1")
+p3 <- ggplot(melt_simulated_input_variables[melt_simulated_input_variables$variable %in% c("n","H","BHP"),], aes(x=Time, y=value,group = a, color = a)) +  geom_line() +   facet_grid(rows = vars(variable),scales="free") + theme_bw()  + ggtitle ("Random forest predicted time-series - performance variables") + scale_colour_brewer(palette = "Set1")
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
@@ -305,9 +295,9 @@ dev.off()
 
 ################################################################################################################
 # Fig. 7—ESP P47 performance pumping viscous fluid at 3,500 rev/min.
-ESP_P47_water_plot_Q_H <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","decay")], aes(x = Q, y = H,colour=decay))     + geom_point() + geom_line()  + theme_bw()   + ggtitle ("Flow rate Q vs. Head H")    + ylab("Head H [m]")                   + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "bottom")  
-ESP_P47_water_plot_BHP <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","decay")], aes(x = Q, y = BHP,colour=decay))   + geom_point() + geom_line() + theme_bw()   + ggtitle ("Flow rate Q vs. Power BHP") + ylab("Power BHP [W]")                + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "none")    
-ESP_P47_water_plot_n   <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","decay")], aes(x = Q, y = n*100,colour=decay)) + geom_point() + geom_line() + theme_bw()   + ggtitle ("Flow rate Q vs. Efficiency n") + ylab("Efficiency n [%]")          + labs(x = expression("Flow rate Q [" * m^3/h * "]"))   + theme(legend.position = "bottom")      
+ESP_P47_water_plot_Q_H <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","a")], aes(x = Q, y = H,colour=a))     + geom_point() + geom_line()  + theme_bw()   + ggtitle ("Flow rate Q vs. Head H")    + ylab("Head H [m]")                   + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "bottom")  
+ESP_P47_water_plot_BHP <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","a")], aes(x = Q, y = BHP,colour=a))   + geom_point() + geom_line() + theme_bw()   + ggtitle ("Flow rate Q vs. Power BHP") + ylab("Power BHP [W]")                + labs(x = expression("Flow rate Q [" * m^3/h * "]")) + theme(legend.position = "none")    
+ESP_P47_water_plot_n   <- ggplot(df_simulated_input_variables[,c("Q","n","H","BHP","a")], aes(x = Q, y = n*100,colour=a)) + geom_point() + geom_line() + theme_bw()   + ggtitle ("Flow rate Q vs. Efficiency n") + ylab("Efficiency n [%]")          + labs(x = expression("Flow rate Q [" * m^3/h * "]"))   + theme(legend.position = "bottom")      
 
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
@@ -331,10 +321,10 @@ df_importance_results_all<-data.frame(variables=c("Q","Tm.i","Tm.o","P1","P2","R
 # The rows are increasing viscosity values and the collumns the increasing time value
 # Convert the P47_viscous_3500_data_sub to time-series for each variable
 # For each variable 
-for (decay_rate in levels(factor(sim_data$decay_rate)))
+for (a in levels(factor(sim_data$a)))
 {   
     # Calculate varImp
-    df_simulated_input_variables_varIMP<-unique(df_simulated_input_variables[which(df_simulated_input_variables$decay == decay_rate),c("Q","Tm.i","Tm.o","P1","P2","RPM","T","pi","mi","mo","n","BHP","H")])
+    df_simulated_input_variables_varIMP<-unique(df_simulated_input_variables[which(df_simulated_input_variables$a == a),c("Q","Tm.i","Tm.o","P1","P2","RPM","T","pi","mi","mo","n","BHP","H")])
     
     # Basic Parameter Tuning
     fitControl <- trainControl(number = 3)
@@ -349,7 +339,7 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
     df_importance_results<-data.frame(df_importance_results[df_importance_results_all$variables,])
 
     # Set colnames
-    colnames(df_importance_results)<-decay_rate
+    colnames(df_importance_results)<-a
 
     # Add collukmn
     df_importance_results_all<-cbind(df_importance_results_all,df_importance_results)
@@ -361,32 +351,26 @@ for (decay_rate in levels(factor(sim_data$decay_rate)))
     bn_viscous <- hc(merge_water_viscous_sub_tertiles)
 
     # Save igraph
-    trainned_bn[[decay_rate]]<-igraph::graph_from_data_frame(bn_viscous$arcs)
+    trainned_bn[[a]]<-igraph::graph_from_data_frame(bn_viscous$arcs)
 
     # bwplot               
-    png(filename=paste(output_dir,paste("Worn_Components_Bayesian_Network_structure_",decay_rate,".png",sep="")), width = 17, height = 17, res=600, units = "cm")
+    png(filename=paste(output_dir,paste("Worn_Components_Bayesian_Network_structure_",a,".png",sep="")), width = 17, height = 17, res=600, units = "cm")
         # Add plot
-        plot(igraph::graph_from_data_frame(bn_viscous$arcs), vertex.color="black",vertex.size=25,vertex.label.color="orange",layout=layout_with_kk, main=decay_rate)
+        plot(igraph::graph_from_data_frame(bn_viscous$arcs), vertex.color="black",vertex.size=25,vertex.label.color="orange",layout=layout_with_kk, main=a)
     dev.off()    
 }
-# bwplot               
-png(filename=paste(output_dir,paste("Worn_Components_Bayesian_Network_structure_","difference_0.5",".png",sep="")), width = 17, height = 17, res=600, units = "cm")
-    # Add plot
-    plot(difference(trainned_bn[["reference"]],trainned_bn[["0.25"]]), vertex.color="black",vertex.size=25,vertex.label.color="orange",layout=layout_with_kk, main="difference 0.25")
-dev.off()    
-
 
 # If you need to flip the order (because you've flipped the orientation)
 # call position_stack() explicitly:
 melt_importance_results_all<-melt(df_importance_results_all,id.vars="variables")
 
 # Set colnames
-colnames(melt_importance_results_all)<-c("variables","decay","value")
+colnames(melt_importance_results_all)<-c("variables","a","value")
 
 # Graph
-p2<-ggplot(melt_importance_results_all, aes(fill=decay, y=value, x=variables)) + 
+p2<-ggplot(melt_importance_results_all, aes(fill=a, y=value, x=variables)) + 
     geom_bar(position="dodge", stat="identity") +
-    scale_fill_viridis(discrete = T, option = "F") +
+    scale_fill_viridis(discrete = T, option = "H") +
     theme(legend.position="bottom") + theme_bw() 
 
 # Melt tabele
