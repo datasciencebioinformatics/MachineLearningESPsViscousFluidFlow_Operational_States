@@ -430,13 +430,13 @@ for (a in  unique(df_simulated_input_variables_bck$a))
   
     # Melt tabele
     # Plot_raw_vibration_data.png                                                                                                            
-    png(filename=paste(project_folder,"Well_Sanding_ESPsViscousFluidFlow_Pheatmap_simulated_",decay,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
+    png(filename=paste(project_folder,"Well_Sanding_ESPsViscousFluidFlow_Pheatmap_simulated_",a,".png",sep=""), width = 30, height = 30, res=600, units = "cm")  
       # Add annotation : bhp, head, efficiency
       pheatmap(decay_data_normlized , show_rownames = T,annotation_row = annotation_row_exp,annotation_colors=ann_colors,cluster_rows = FALSE, main=paste("decay",decay,sep=" = "))
     dev.off() 
 
     # add pheatmaps
-    df_results_pheatmaps<-rbind(df_results_pheatmaps,cbind(decay_data_tertile,annotation_row_exp,decay=decay))
+    df_results_pheatmaps<-rbind(df_results_pheatmaps,cbind(decay_data_tertile,annotation_row_exp,a=a))
 }
 ##########################################################################################################################################
 # Count tabçes
