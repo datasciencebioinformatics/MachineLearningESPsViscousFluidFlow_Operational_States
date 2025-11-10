@@ -98,7 +98,7 @@ sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3)
 # 29 points are used for trainning decision tree.
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Well_Sanding_Simulated_Declining_Flow_Rate_n_with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+png(filename=paste(project_folder,"Well_Sanding_Simulated_Declining_Flow_Rate_Q_with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
   # --- Visualize the results with ggplot2 ---
   ggplot(sim_data, aes(x = Time, group=decay_rate)) +
     # Plot the noisy data as points
