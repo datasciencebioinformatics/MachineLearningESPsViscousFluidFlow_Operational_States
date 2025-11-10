@@ -78,30 +78,18 @@ set.seed(42)
 
 # --- Define the simulation parameters ---
 # Number of data points
-time_points <- 1:100 # Number of time points
+time_points <- 1:101 # Number of time points
 
 # Exponential decay parameters
-initial_value <- 50
-decay_rate_1 <- 0.52 # This determines how quickly the value decays
-decay_rate_2 <- 0.15 # This determines how quickly the value decays
-decay_rate_3 <- 0.1 # This determines how quickly the value decays
-
-
-# Calculate decayed values
-decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points)
-decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points)
-decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points)
-
-# Calculate decayed values
-decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points) + rnorm(length(decayed_series_1), mean = 0, sd = 0.5) + 1
-decayed_series_2 <- initial_value * exp(-decay_rate_2 * time_points) + rnorm(length(decayed_series_2), mean = 0, sd = 0.5) + 1
-decayed_series_3 <- initial_value * exp(-decay_rate_3 * time_points) + rnorm(length(decayed_series_3), mean = 0, sd = 0.5) + 1
+b_1 <- pracma::sigmoid(50:-50,a=0.1,b=1) + rnorm(length(-50:50), mean = 0, sd = 0.01) 
+b_2 <- pracma::sigmoid(50:-50,a=0.15,b=1) + rnorm(length(-50:50), mean = 0, sd = 0.01)
+b_3 <- pracma::sigmoid(50:-50,a=0.2,b=1) + rnorm(length(-50:50), mean = 0, sd = 0.01)
 
 # 5. Combine the data into a data frame for easy plotting
-sim_data_1 <- data.frame(Time = time_points , Noisy_Value = decayed_series_1,decay_rate="0.25")
-sim_data_2 <- data.frame(Time = time_points , Noisy_Value = decayed_series_2,decay_rate="0.15")
-sim_data_3 <- data.frame(Time = time_points , Noisy_Value = decayed_series_3,decay_rate="0.1")
-sim_data_4 <- data.frame(Time = time_points , Noisy_Value =  merge_water_viscous_testing[time_points,"Q"],decay_rate="reference")
+sim_data_1 <- data.frame(Time = time_points, Noisy_Value = b_1/10,b="0.25")
+sim_data_2 <- data.frame(Time = time_points, Noisy_Value = b_2/10,b="0.15")
+sim_data_3 <- data.frame(Time = time_points, Noisy_Value = b_3/10,b="0.1")
+sim_data_4 <- data.frame(Time = time_points, Noisy_Value =  merge_water_viscous_testing[time_points,"n"],b="reference")
 
 # Set data
 sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
@@ -110,21 +98,22 @@ sim_data<-rbind(sim_data_1,sim_data_2,sim_data_3,sim_data_4)
 # 29 points are used for trainning decision tree.
 # Melt tabele
 # Plot_raw_vibration_data.png                                                                                                            
-png(filename=paste(project_folder,"Well_Sanding_Simulated_Declining_Flow_Rate_Q_with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
+png(filename=paste(project_folder,"Broken_Shaft_Simulated_Declining_Flow_Rate_n_with_Noise.png",sep=""), width = 15, height = 15, res=600, units = "cm")  
   # --- Visualize the results with ggplot2 ---
   ggplot(sim_data, aes(x = Time, group=decay_rate)) +
     # Plot the noisy data as points
-    geom_point(aes(y = Noisy_Value, group=decay_rate, colour=decay_rate),alpha = 0.6) +
+    geom_point(aes(y = Noisy_Value, group=b, colour=b),alpha = 0.6) +
     # Plot the ideal, noiseless curve as a line
-    geom_line(aes(y = Noisy_Value, group=decay_rate, colour=decay_rate), color = "blue", alpha = 0.6) +
+    geom_line(aes(y = Noisy_Value, group=b, colour=b), color = "blue", alpha = 0.6) +
     # Add labels and a title
     labs(
-      title = "Simulated Declining Flow Rate Q with Noise",
+      title = "Simulated Declining Efficiency n with Noise",
       x = "Time",
       y = "Value"
     ) +
     theme_minimal()
 dev.off()
+
 
 # First, simulated values of Q are generate by simulation.
 # Second the values of input variables are predicted from the simulated Q.
