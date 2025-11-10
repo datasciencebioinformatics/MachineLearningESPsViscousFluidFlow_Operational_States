@@ -107,7 +107,7 @@ png(filename=paste(project_folder,"Well_Sanding_Simulated_Declining_Flow_Rate_n_
     geom_line(aes(y = Noisy_Value, group=a, colour=a), color = "blue", alpha = 0.6) +
     # Add labels and a title
     labs(
-      title = "Simulated Declining Efficiency n with Noise",
+      title = "Simulated Declining flow rate Q with Noise",
       x = "Time",
       y = "Value"
     ) +
