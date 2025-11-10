@@ -86,9 +86,6 @@ decay_rate_1 <- 0.52 # This determines how quickly the value decays
 decay_rate_2 <- 0.15 # This determines how quickly the value decays
 decay_rate_3 <- 0.1 # This determines how quickly the value decays
 
-# --- Simulate the data ---
-# 1. Create a time vector
-time <- 1:n_points
 
 # Calculate decayed values
 decayed_series_1 <- initial_value * exp(-decay_rate_1 * time_points)
