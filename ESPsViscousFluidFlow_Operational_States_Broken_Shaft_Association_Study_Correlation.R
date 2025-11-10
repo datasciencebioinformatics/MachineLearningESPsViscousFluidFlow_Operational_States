@@ -305,6 +305,9 @@ png(filename=paste(project_folder,"Broken_Shaft_ESP_P47_dilluted_glucerin_Operat
   ggarrange(ESP_P47_water_plot_Q_H,ESP_P47_water_plot_BHP,ESP_P47_water_plot_n, nrow =3,common.legend = TRUE,legend="bottom")
 dev.off()
 #######################################################################################################
+# Variables
+variables<-c("Q", "Tm.i", "Tm.o", "P1", "P2", "RPM", "T", "pi", "mi", "mo","n")
+
 # Simulations of Well Sanding (Pump Plugging).
 # First, simulate each variable in function of Q
 # Start df with the results
@@ -354,10 +357,13 @@ for (b in levels(factor(sim_data$b)))
 }
 ########################################################################################
 # Re-order variables
-Efficiency_lm_all_results<-Efficiency_lm_all_results[,c(c(paste("Estimate ",0.1,sep=""),paste("Estimate ",0.15,sep=""),paste("Estimate ",0.25,sep=""),paste("Estimate ","reference",sep="")),
-c(paste("Std.Error ",0.1,sep=""),paste("Std.Error ",0.15,sep=""),paste("Std.Error ",0.25,sep=""),paste("Std.Error ","reference",sep="")),
-c(paste("t.value ",0.1,sep=""),paste("t.value ",0.15,sep=""),paste("t.value ",0.25,sep=""),paste("t.value ","reference",sep="")),
-c(paste("Pr.t ",0.1,sep=""),paste("Pr.t ",0.15,sep=""),paste("Pr.t ",0.25,sep=""),paste("Pr.t ","reference",sep="")))]
+estimates<-c(1,2,6,10,14)
+value<-c(3,7,11,15)
+ttest<-c(4,8,12,16)
+probability<-c(5,9,13,17)
+
+Efficiency_lm_all_results<-na.omit(Efficiency_lm_all_results[,c(estimates,value,ttest,probability)])
+
 
 # Save the data frame as a TSV file
 write.table(
